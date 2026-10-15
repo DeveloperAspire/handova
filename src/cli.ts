@@ -1,13 +1,16 @@
 #!/usr/bin/env node
+import { existsSync } from "node:fs";
 import { parseArgs } from "node:util";
 import * as p from "@clack/prompts";
 import pkg from "../package.json" with { type: "json" };
+import { registryPath } from "./accounts";
 import { addCommand } from "./commands/add";
 import { doctorCommand } from "./commands/doctor";
 import { handoffCommand } from "./commands/handoff";
 import { listCommand } from "./commands/list";
 import { removeCommand } from "./commands/remove";
 import { renameCommand } from "./commands/rename";
+import { setupCommand } from "./commands/setup";
 import { runCommand } from "./commands/run";
 import { shellInitCommand } from "./commands/shell-init";
 
@@ -16,6 +19,7 @@ Run your AI coding agent under several accounts, and hand a conversation from on
 Supports Claude Code and Codex.
 
 Usage:
+  handova setup                        Guided setup: pick your agents, add accounts and log in
   handova <account> [args...]          Run the account's agent; args are passed to it
   handova add <name>                   Add an account and log in to it
       --agent claude|codex               Which agent (default claude)
@@ -54,6 +58,9 @@ async function main(argv: string[]): Promise<number> {
 
   switch (command) {
     case undefined:
+      if (!existsSync(registryPath())) console.log("New here? Start with: handova setup\n");
+      console.log(HELP);
+      return 0;
     case "help":
     case "-h":
     case "--help":
@@ -78,6 +85,8 @@ async function main(argv: string[]): Promise<number> {
         login: values.login ?? true,
       });
     }
+    case "setup":
+      return setupCommand();
     case "list":
       return listCommand();
     case "handoff": {

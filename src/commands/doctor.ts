@@ -5,8 +5,9 @@ import { loadAccounts } from "../accounts";
 import { getHarness } from "../harness";
 import { tildify } from "../paths";
 import { authStatus, installedVersion } from "../process";
+import { busy } from "../spinner";
 
-export function doctorCommand(): number {
+export async function doctorCommand(): Promise<number> {
   let problems = 0;
   const fail = (message: string) => {
     problems++;
@@ -15,10 +16,14 @@ export function doctorCommand(): number {
 
   const accounts = loadAccounts();
   if (!accounts.length) fail("No accounts, and neither Claude Code nor Codex is installed (looked for claude and codex).");
+  const ids = [...new Set(accounts.map((a) => a.harness))];
+  const [versions, statuses] = await busy(
+    Promise.all([Promise.all(ids.map(installedVersion)), Promise.all(accounts.map(authStatus))]),
+  );
   const installed = new Map<string, boolean>();
-  for (const id of new Set(accounts.map((a) => a.harness))) {
+  for (const [i, id] of ids.entries()) {
     const harness = getHarness(id);
-    const version = installedVersion(id);
+    const version = versions[i];
     installed.set(id, Boolean(version));
     if (version) p.log.success(`${harness.name}: ${version}`);
     else fail(`${harness.name} isn't on your PATH (looked for "${harness.bin()}").`);
@@ -31,7 +36,7 @@ export function doctorCommand(): number {
     }
   }
 
-  for (const account of accounts) {
+  for (const [i, account] of accounts.entries()) {
     const label = `${account.name} (${tildify(account.dir)})`;
     const login = `handova ${account.name} ${getHarness(account.harness).loginArgs.join(" ")}`;
     if (!existsSync(account.dir)) {
@@ -45,7 +50,7 @@ export function doctorCommand(): number {
     if (broken.length) fail(`${label}: broken links: ${broken.join(", ")}`);
 
     if (!installed.get(account.harness)) continue;
-    const status = authStatus(account);
+    const status = statuses[i];
     if (status?.loggedIn) {
       p.log.success(`${label}: ${[status.email, status.orgName].filter(Boolean).join(", ") || "logged in"}`);
     }

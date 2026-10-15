@@ -1,9 +1,10 @@
 import * as p from "@clack/prompts";
 import { getAccount } from "../accounts";
-import { handoff, sessionsHere } from "../handoff";
+import { checkSameAgent, handoff, sessionsHere } from "../handoff";
 import { getHarness } from "../harness";
 import { authStatus, runTool } from "../process";
 import { confirm } from "../prompt";
+import { busy } from "../spinner";
 
 export interface HandoffCommandOptions {
   session?: string;
@@ -24,6 +25,7 @@ export async function handoffCommand(
   const source = getAccount(from);
   const target = getAccount(to);
   if (source.name === target.name) throw new Error("Pick two different accounts.");
+  checkSameAgent(source, target);
   const cwd = process.cwd();
 
   let sessionId = options.session;
@@ -42,7 +44,7 @@ export async function handoffCommand(
   }
 
   const harness = getHarness(target.harness);
-  const status = authStatus(target);
+  const status = await busy(authStatus(target));
   if (status && !status.loggedIn) {
     throw new Error(`"${to}" isn't logged in. Run: handova ${to} ${harness.loginArgs.join(" ")}`);
   }

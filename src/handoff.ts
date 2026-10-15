@@ -32,12 +32,18 @@ export function sessionsHere(from: Account, cwd: string): Session[] {
   return sessions;
 }
 
+// Checked before anything else, so nobody is asked to confirm a handoff that can't happen.
+export function checkSameAgent(from: Account, to: Account): void {
+  if (from.harness === to.harness) return;
+  const [a, b] = [getHarness(from.harness).name, getHarness(to.harness).name];
+  throw new Error(
+    `"${from.name}" is a ${a} account and "${to.name}" is a ${b} account. Handing a conversation from ${a} to ${b} ` +
+      `isn't supported yet. Hand it to another ${a} account instead.`,
+  );
+}
+
 export function handoff(options: HandoffOptions): HandoffResult {
-  if (options.from.harness !== options.to.harness) {
-    throw new Error(
-      `"${options.from.name}" and "${options.to.name}" are for different coding agents. Handoff only works between accounts of the same agent for now.`,
-    );
-  }
+  checkSameAgent(options.from, options.to);
   const harness = getHarness(options.from.harness);
   const sessions = sessionsHere(options.from, options.cwd);
   const session = options.sessionId ? sessions.find((s) => s.id === options.sessionId) : sessions[0];

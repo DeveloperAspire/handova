@@ -50,7 +50,7 @@ test("adopting ~/.codex makes it Codex's default account, run with CODEX_HOME un
   expect(envFor(account).CODEX_HOME).toBeUndefined();
 });
 
-test("authStatus reads the email and plan from a ChatGPT login's ID token", () => {
+test("authStatus reads the email and plan from a ChatGPT login's ID token", async () => {
   const home = tempHome();
   const claims = { email: "alex@mail.com", "https://api.openai.com/auth": { chatgpt_plan_type: "plus" } };
   const token = ["e30", Buffer.from(JSON.stringify(claims)).toString("base64url"), "sig"].join(".");
@@ -58,8 +58,8 @@ test("authStatus reads the email and plan from a ChatGPT login's ID token", () =
   expect(accountInfo(join(home, ".codex-w"))).toEqual({ email: "alex@mail.com", orgName: "ChatGPT plus" });
 
   const account = addAccount("w", { agent: "codex", dir: join(home, ".codex-w"), share: false, login: false });
-  expect(authStatus(account)).toEqual({ loggedIn: true, email: "alex@mail.com", orgName: "ChatGPT plus" });
-  expect(authStatus(addAccount("x", { agent: "codex", share: false, login: false }))).toEqual({ loggedIn: false });
+  expect(await authStatus(account)).toEqual({ loggedIn: true, email: "alex@mail.com", orgName: "ChatGPT plus" });
+  expect(await authStatus(addAccount("x", { agent: "codex", share: false, login: false }))).toEqual({ loggedIn: false });
 });
 
 test("handoff copies a Codex rollout to the same dated path and moves no memory", () => {
@@ -81,7 +81,17 @@ test("handoff between a Claude Code and a Codex account is refused", () => {
   tempHome();
   addAccount("cx", { agent: "codex", share: false, login: false });
   expect(() => handoff({ from: getAccount("personal"), to: getAccount("cx"), cwd: CWD, memory: true })).toThrow(
-    /different coding agents/,
+    /Claude Code account and "cx" is a Codex account/,
   );
   expect(existsSync(join(process.env.HOME!, ".codex-cx", "sessions"))).toBe(false);
+});
+
+test("the command refuses a cross-agent handoff before asking for confirmation", async () => {
+  tempHome();
+  addAccount("cx", { agent: "codex", share: false, login: false });
+  const { handoffCommand } = await import("../src/commands/handoff");
+  // No TTY and no --yes: if it asked first, this would fail with "needs a confirmation" instead.
+  await expect(
+    handoffCommand("personal", "cx", { pick: false, memory: true, resume: false, yes: false }),
+  ).rejects.toThrow(/isn't supported yet/);
 });

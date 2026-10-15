@@ -1,7 +1,7 @@
-import { spawnSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { home } from "../paths";
+import { capture } from "../spawn";
 import type { Harness, Session } from "./types";
 
 // Claude Code names a project's folder after the directory it was started in,
@@ -23,8 +23,8 @@ export const claude: Harness = {
   sharedLinks: ["CLAUDE.md", "skills", "agents", "commands"],
   sharedCopies: ["settings.json"],
 
-  authStatus(env) {
-    const result = spawnSync(this.bin(), ["auth", "status", "--json"], { encoding: "utf8", env });
+  async authStatus(env) {
+    const result = await capture(this.bin(), ["auth", "status", "--json"], env);
     try {
       return JSON.parse(result.stdout);
     } catch {

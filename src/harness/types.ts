@@ -15,7 +15,8 @@ export interface Harness {
   sharedLinks: string[];
   /** Copied into new accounts, so each can change its own. */
   sharedCopies: string[];
-  authStatus(env: NodeJS.ProcessEnv): AuthStatus | undefined;
+  /** Undefined when the agent couldn't be run at all. */
+  authStatus(env: NodeJS.ProcessEnv): Promise<AuthStatus | undefined>;
   loginArgs: string[];
   logoutArgs: string[];
   resumeArgs(sessionId: string): string[];

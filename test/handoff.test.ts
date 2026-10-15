@@ -88,5 +88,5 @@ test("mergeMemory never overwrites, and appends missing index lines", () => {
 test("refuses to hand off between accounts of different agents", () => {
   setup();
   const other = { ...getAccount("work"), harness: "codex" };
-  expect(() => handoff({ from: getAccount("personal"), to: other, cwd: CWD, memory: true })).toThrow(/different coding agents/);
+  expect(() => handoff({ from: getAccount("personal"), to: other, cwd: CWD, memory: true })).toThrow(/isn't supported yet/);
 });

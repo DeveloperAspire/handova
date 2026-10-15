@@ -1,7 +1,7 @@
-import { spawnSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { home } from "../paths";
+import { capture } from "../spawn";
 import type { AuthStatus, Harness, Session } from "./types";
 
 // Verified on Codex 0.162:
@@ -22,8 +22,8 @@ export const codex: Harness = {
   sharedLinks: ["AGENTS.md", "prompts", "skills"],
   sharedCopies: ["config.toml"],
 
-  authStatus(env) {
-    const result = spawnSync(this.bin(), ["login", "status"], { encoding: "utf8", env });
+  async authStatus(env) {
+    const result = await capture(this.bin(), ["login", "status"], env);
     if (result.error) return undefined;
     if (result.status !== 0) return { loggedIn: false };
     return { loggedIn: true, ...accountInfo(env.CODEX_HOME || this.defaultDir()) };

@@ -1,7 +1,8 @@
-import { spawn, spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
 import { constants } from "node:os";
 import type { Account } from "./accounts";
 import { getHarness, type AuthStatus } from "./harness";
+import { capture } from "./spawn";
 
 // The default account runs with the tool's config variable unset, so it uses the tool's normal login.
 export function envFor(account: Account): NodeJS.ProcessEnv {
@@ -12,12 +13,12 @@ export function envFor(account: Account): NodeJS.ProcessEnv {
   return env;
 }
 
-export function authStatus(account: Account): AuthStatus | undefined {
+export function authStatus(account: Account): Promise<AuthStatus | undefined> {
   return getHarness(account.harness).authStatus(envFor(account));
 }
 
-export function installedVersion(harnessId: string): string | undefined {
-  const result = spawnSync(getHarness(harnessId).bin(), ["--version"], { encoding: "utf8" });
+export async function installedVersion(harnessId: string): Promise<string | undefined> {
+  const result = await capture(getHarness(harnessId).bin(), ["--version"], process.env);
   return result.status === 0 ? result.stdout.trim() : undefined;
 }
 

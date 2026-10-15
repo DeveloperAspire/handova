@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { DEFAULT_HARNESS, allHarnesses } from "./harness";
+import { DEFAULT_HARNESS, allHarnesses, type Harness } from "./harness";
 import { home, onPath } from "./paths";
 
 export interface Account {
@@ -15,7 +15,7 @@ interface Registry {
   accounts: Account[];
 }
 
-export const RESERVED_NAMES = ["add", "list", "handoff", "remove", "rename", "doctor", "shell-init", "help", "version"];
+export const RESERVED_NAMES = ["add", "list", "handoff", "remove", "rename", "setup", "doctor", "shell-init", "help", "version"];
 
 export function registryPath(): string {
   const configHome = process.env.XDG_CONFIG_HOME || join(home(), ".config");
@@ -33,6 +33,21 @@ export function loadAccounts(): Account[] {
   }
   const registry: Registry = JSON.parse(readFileSync(file, "utf8"));
   return registry.accounts.map((account) => ({ ...account, harness: account.harness ?? DEFAULT_HARNESS }));
+}
+
+// Saves the account list with the normal login of each chosen agent on it. On a first run only the chosen agents
+// are kept; after that, existing accounts stay and missing normal logins are added back.
+export function ensureNormalLogins(harnesses: Harness[]): Account[] {
+  const firstRun = !existsSync(registryPath());
+  const accounts = loadAccounts().filter((a) => !firstRun || harnesses.some((h) => h.id === a.harness));
+  for (const harness of harnesses) {
+    if (accounts.some((a) => a.dir === harness.defaultDir())) continue;
+    const taken = accounts.some((a) => a.name === harness.defaultAccountName);
+    const name = taken ? `${harness.defaultAccountName}-main` : harness.defaultAccountName;
+    accounts.push({ name, dir: harness.defaultDir(), isDefault: true, harness: harness.id });
+  }
+  saveAccounts(accounts);
+  return accounts;
 }
 
 export function saveAccounts(accounts: Account[]): void {

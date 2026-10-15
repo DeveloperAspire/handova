@@ -5,6 +5,7 @@ import { loadAccounts, saveAccounts, validateName, type Account } from "../accou
 import { DEFAULT_HARNESS, HARNESS_IDS, getHarness } from "../harness";
 import { tildify } from "../paths";
 import { authStatus, runTool } from "../process";
+import { busy } from "../spinner";
 
 export interface AddOptions {
   /** Which coding agent the account is for. Defaults to Claude Code. */
@@ -50,7 +51,7 @@ export async function addCommand(name: string | undefined, options: AddOptions):
   p.log.success(`Added "${name}" at ${tildify(account.dir)}.`);
 
   if (!options.login) return 0;
-  const status = authStatus(account);
+  const status = await busy(authStatus(account));
   if (status?.loggedIn) {
     p.log.info(`Already logged in as ${status.email} (${status.orgName}).`);
     return 0;
