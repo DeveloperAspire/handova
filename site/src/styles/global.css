@@ -1,0 +1,74 @@
+@import "tailwindcss";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+
+@theme {
+  --font-sans: "Geist Variable", ui-sans-serif, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, monospace;
+
+  /* Neutral dark: true greys, no warm tint. */
+  --color-ink: #ededed;
+  --color-ink-soft: #b4b4b4;
+  --color-muted: #8a8a8a;
+  --color-faint: #5c5c5c;
+  --color-bg: #0a0a0a;
+  --color-surface: #111111;
+  --color-raised: #181818;
+  --color-line: rgb(255 255 255 / 0.08);
+  --color-line-strong: rgb(255 255 255 / 0.14);
+
+  /* The one accent. It means "the active account" and is used for nothing else. */
+  --color-active: oklch(0.84 0.13 162);
+}
+
+html,
+body {
+  /* Both, or iOS scrolls sideways when a glow overflows. */
+  overflow-x: clip;
+}
+
+html {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+::selection {
+  background: rgb(255 255 255 / 0.18);
+}
+
+/* Content is hidden only once we know scripts run, so it always shows without JS. */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.6s cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.js .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.press {
+  transition: transform 0.12s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+.press:active {
+  transform: scale(0.96);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .js .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .press:active {
+    transform: none;
+  }
+}

@@ -1,0 +1,115 @@
+---
+import { repo } from "../data/project";
+
+const faqs = [
+  {
+    q: "Does logging in to one account log out the others?",
+    a: "No. Each account keeps its login in its own place, so they all stay signed in and you can run them at the same time in different terminals.",
+  },
+  {
+    q: "Does ccswap send my data anywhere?",
+    a: "ccswap itself makes no network requests. It copies files on your computer and starts Claude Code, which talks to Anthropic as it always does, under the account you picked.",
+  },
+  {
+    q: "Which conversation does handoff move?",
+    a: "The latest one from the folder you run it in. Add --pick to choose from a list, or --session <id> for a specific one. Run it from the same folder you started Claude Code in.",
+  },
+  {
+    q: "How many accounts can I add?",
+    a: "As many as you like. Personal and work are only examples: name them after clients, teams or anything else, and hand a conversation between any two.",
+  },
+  {
+    q: "Can I hand a conversation back?",
+    a: "Yes: ccswap handoff work personal. If you only carried on with one copy, handing it over again brings the older copy up to date.",
+  },
+  {
+    q: "What do I need to run it?",
+    a: "Claude Code, and Node.js 20.16 or newer (or Bun). It's built and tested on macOS. Linux should work; Windows isn't supported yet.",
+  },
+  {
+    q: "Is ccswap made by Anthropic?",
+    a: "No. It's an independent open-source project. It uses Claude Code's own commands for logging in and checking accounts, and changes nothing in Claude Code itself.",
+  },
+];
+---
+
+<section id="faq" class="mx-auto max-w-3xl px-4 py-24 sm:px-8">
+  <h2 class="reveal text-center text-[2rem] font-semibold tracking-[-0.03em] sm:text-[2.4rem]">Questions</h2>
+  <div class="reveal mt-10 divide-y divide-line border-y border-line">
+    {faqs.map((faq) => (
+      <details class="faq" data-faq>
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-[1.02rem] font-medium transition-colors hover:text-ink-soft [&::-webkit-details-marker]:hidden">
+          {faq.q}
+          <span class="faq-icon flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-line text-muted">
+            <svg viewBox="0 0 12 12" class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 1.5v9M1.5 6h9" /></svg>
+          </span>
+        </summary>
+        <div class="overflow-hidden" data-answer>
+          <p class="pb-5 pr-10 leading-relaxed text-ink-soft">{faq.a}</p>
+        </div>
+      </details>
+    ))}
+  </div>
+  <p class="reveal mt-8 text-center text-ink-soft">
+    Something else?{" "}
+    <a href={`${repo}/issues`} class="text-ink underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-ink">Open an issue on GitHub</a>.
+  </p>
+</section>
+
+<style>
+  /* The + turns into a × as soon as a question is clicked, not when the slide ends. */
+  .faq-icon {
+    transition: transform 0.32s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.2s, border-color 0.2s;
+  }
+  .faq.is-open .faq-icon {
+    transform: rotate(135deg);
+    color: var(--color-ink);
+    border-color: var(--color-line-strong);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .faq-icon {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  // Slide answers open and closed (a plain <details> just snaps). Clicking again mid-slide reverses smoothly from
+  // wherever it is. With Reduce Motion on, answers open and close instantly.
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+
+  document.querySelectorAll<HTMLDetailsElement>("[data-faq]").forEach((item) => {
+    const summary = item.querySelector("summary")!;
+    const answer = item.querySelector<HTMLElement>("[data-answer]")!;
+    let slide: Animation | undefined;
+
+    summary.addEventListener("click", (event) => {
+      event.preventDefault();
+      const opening = !item.classList.contains("is-open");
+      item.classList.toggle("is-open", opening);
+
+      if (reduceMotion.matches) {
+        item.open = opening;
+        return;
+      }
+
+      const from = slide ? answer.getBoundingClientRect().height : opening ? 0 : answer.offsetHeight;
+      const fromOpacity = slide ? Number(getComputedStyle(answer).opacity) : opening ? 0 : 1;
+      slide?.cancel();
+      if (opening) item.open = true;
+      const to = opening ? answer.scrollHeight : 0;
+
+      slide = answer.animate(
+        [
+          { height: `${from}px`, opacity: fromOpacity, transform: `translateY(${opening ? -4 : 0}px)` },
+          { height: `${to}px`, opacity: opening ? 1 : 0, transform: `translateY(${opening ? 0 : -4}px)` },
+        ],
+        { duration: opening ? 340 : 260, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" },
+      );
+      slide.onfinish = () => {
+        slide = undefined;
+        if (!opening) item.open = false;
+      };
+    });
+  });
+</script>

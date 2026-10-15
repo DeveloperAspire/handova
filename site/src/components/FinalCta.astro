@@ -1,0 +1,20 @@
+---
+import CopyCommand from "./CopyCommand.astro";
+import InstallCommand from "./InstallCommand.astro";
+import { repo } from "../data/project";
+---
+
+<section class="border-t border-line">
+  <div class="reveal mx-auto max-w-2xl px-4 py-24 text-center sm:px-8">
+    <h2 class="text-[2rem] font-semibold leading-tight tracking-[-0.03em] sm:text-[2.4rem]">Keep working when the limit hits.</h2>
+    <p class="mt-4 text-ink-soft">Install it, then add your other accounts:</p>
+    <div class="mx-auto mt-7 max-w-sm space-y-2.5 text-left">
+      <InstallCommand />
+      <CopyCommand command="ccswap add work" label="Copy add account command" />
+    </div>
+    <a href={repo} class="press mt-8 inline-flex items-center gap-1.5 text-[0.9rem] text-ink-soft hover:text-ink">
+      Read the source on GitHub
+      <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5" /></svg>
+    </a>
+  </div>
+</section>

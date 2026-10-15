@@ -39,6 +39,14 @@ without opening `~/.claude`.
   are shortened, hence the fallback scan on the `cwd` field.
 - `<dir>/projects/<key>/<id>/` holds subagent transcripts. `<dir>/projects/<key>/memory/` holds memory.
 
+## Website (site/)
+
+Astro + Tailwind v4, deployed on Vercel with the root folder set to `site/`, at https://ccswap.vercel.app for now.
+Neutral dark (`#0a0a0a`, true greys), Geist + Geist Mono. One accent, `--color-active` (mint): it means "the active
+account" and nothing else. The version comes from the CLI's package.json (`site/src/data/project.ts`), and the
+commands section (`site/src/data/commands.ts`) mirrors the README: change both together. Demo data is made up
+(alex@mail.com, Lumen Studio); never use real names or emails.
+
 ## Working conventions
 
 - Never touch the real `~/.claude`, `~/.claude-*`, `~/.config/ccswap` or shell profile in tests or manual

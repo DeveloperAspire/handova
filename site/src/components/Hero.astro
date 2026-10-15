@@ -1,0 +1,31 @@
+---
+import InstallCommand from "./InstallCommand.astro";
+import Terminal from "./Terminal.astro";
+import { version } from "../data/project";
+---
+
+<section class="relative mx-auto max-w-5xl px-4 pb-20 pt-16 sm:px-8 sm:pt-24">
+  <div class="pointer-events-none absolute inset-x-0 top-0 -z-10 mx-auto h-[28rem] max-w-3xl bg-[radial-gradient(ellipse_at_top,rgb(255_255_255/0.07),transparent_65%)]" aria-hidden="true"></div>
+
+  <div class="reveal mx-auto max-w-2xl text-center">
+    <p class="mb-5 inline-flex items-center gap-2 rounded-[5px] border border-line px-2.5 py-1 font-mono text-[0.72rem] text-muted">
+      v{version} · free and open source
+    </p>
+    <h1 class="text-[clamp(1.9rem,9vw,2.5rem)] font-semibold leading-[1.05] tracking-[-0.04em] sm:text-[3.6rem]">
+      One Claude Code.<br />Every account.
+    </h1>
+    <p class="mx-auto mt-5 max-w-xl text-[1.05rem] leading-relaxed text-ink-soft sm:text-[1.15rem]">
+      ccswap runs Claude Code under as many accounts as you have, side by side: personal, work, a client's. Hit a
+      usage limit on one, and it hands the conversation to another in one command.
+    </p>
+    <div class="mx-auto mt-8 flex max-w-sm flex-col items-center">
+      <div class="w-full [&_[role=group]]:mx-auto">
+        <InstallCommand />
+      </div>
+    </div>
+  </div>
+
+  <div id="demo" class="reveal mx-auto mt-14 max-w-3xl">
+    <Terminal />
+  </div>
+</section>

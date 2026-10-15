@@ -1,0 +1,38 @@
+---
+import { npm, repo, version } from "../data/project";
+---
+
+<footer class="border-t border-line">
+  <div class="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-8 text-[0.82rem] text-muted sm:flex-row sm:items-center sm:justify-between sm:px-8">
+    <div class="space-y-1.5">
+      <p>
+        Made with <span class="heart inline-block text-ink-soft" role="img" aria-label="love">♥</span> by{" "}
+        <a href="https://www.franklinokolie.com/" class="text-ink-soft underline decoration-line-strong underline-offset-4 transition-colors hover:text-ink hover:decoration-ink">Franklin Okolie</a>
+      </p>
+      <p>
+        <span class="font-mono text-ink-soft">ccswap</span> v{version} · MIT licence · Not affiliated with Anthropic.
+      </p>
+    </div>
+    <div class="flex gap-5">
+      <a href={repo} class="transition-colors hover:text-ink">GitHub</a>
+      <a href={npm} class="transition-colors hover:text-ink">npm</a>
+      <a href={`${repo}/issues`} class="transition-colors hover:text-ink">Report an issue</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  footer:hover .heart {
+    animation: beat 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  @keyframes beat {
+    30% {
+      transform: scale(1.25);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    footer:hover .heart {
+      animation: none;
+    }
+  }
+</style>

@@ -1,0 +1,45 @@
+---
+import { commands } from "../data/commands";
+---
+
+<section id="commands" class="border-t border-line">
+  <div class="mx-auto max-w-5xl px-4 py-24 sm:px-8">
+    <div class="reveal max-w-xl">
+      <p class="font-mono text-[0.75rem] uppercase tracking-[0.12em] text-muted">Commands</p>
+      <h2 class="mt-3 text-[2rem] font-semibold leading-tight tracking-[-0.03em] sm:text-[2.4rem]">Every command, part by part.</h2>
+    </div>
+
+    <div class="mt-12 divide-y divide-line border-y border-line">
+      {commands.map((command) => (
+        <article id={command.id} class="reveal grid gap-5 py-9 md:grid-cols-[1fr_1.15fr] md:gap-12">
+          <div>
+            <h3 class="text-[1.1rem] font-semibold tracking-[-0.01em]">{command.title}</h3>
+            <p class="mt-2.5 leading-relaxed text-ink-soft">{command.body}</p>
+          </div>
+          <div>
+            <div class="flex flex-wrap gap-x-3 gap-y-3 rounded-xl border border-line bg-surface px-4 py-4 font-mono text-[0.85rem] sm:px-5">
+              {command.parts.map((part) => (
+                <span class="flex flex-col">
+                  <span class={part.label ? "text-ink" : "text-muted"}>{part.text}</span>
+                  {part.label && (
+                    <span class="mt-1 whitespace-nowrap text-[0.68rem] text-faint">↑ {part.label}</span>
+                  )}
+                </span>
+              ))}
+            </div>
+            {command.options && (
+              <dl class="mt-4 space-y-2 text-[0.88rem]">
+                {command.options.map(([flag, meaning]) => (
+                  <div class="flex flex-wrap gap-x-3">
+                    <dt class="font-mono text-ink">{flag}</dt>
+                    <dd class="text-muted">{meaning}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

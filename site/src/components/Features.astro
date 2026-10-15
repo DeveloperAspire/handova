@@ -1,0 +1,44 @@
+---
+const features = [
+  {
+    title: "Every account stays signed in",
+    body: "Each account gets its own folder and login. Logging in or out of one never touches another, and you can run them side by side in different terminals.",
+    code: "ccswap work",
+  },
+  {
+    title: "Hand off in one command",
+    body: "When one account hits its limit, ccswap copies the conversation and that folder's memory to any account you choose, then opens it there so you carry on.",
+    code: "ccswap handoff personal work",
+  },
+  {
+    title: "Nothing gets overwritten",
+    body: "Memory that already exists on the receiving account is kept. A conversation that was continued on both copies is left alone, and ccswap tells you where to resume it.",
+    code: "ccswap handoff personal work --pick",
+  },
+  {
+    title: "One CLAUDE.md, every account",
+    body: "New accounts share your CLAUDE.md, skills, agents and commands, so your instructions follow you. Settings are copied, so each account can have its own.",
+    code: "ccswap add work",
+  },
+];
+---
+
+<section class="mx-auto max-w-5xl px-4 py-24 sm:px-8">
+  <div class="reveal max-w-xl">
+    <p class="font-mono text-[0.75rem] uppercase tracking-[0.12em] text-muted">What it does</p>
+    <h2 class="mt-3 text-[2rem] font-semibold leading-tight tracking-[-0.03em] sm:text-[2.4rem]">
+      Switch accounts without losing your place.
+    </h2>
+  </div>
+  <div class="mt-12 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2">
+    {features.map((feature) => (
+      <div class="reveal flex flex-col bg-bg p-6 sm:p-8">
+        <h3 class="text-[1.1rem] font-semibold tracking-[-0.01em]">{feature.title}</h3>
+        <p class="mt-2.5 flex-1 leading-relaxed text-ink-soft">{feature.body}</p>
+        <code class="mt-6 self-start rounded-[5px] border border-line bg-surface px-2.5 py-1 font-mono text-[0.78rem] text-ink-soft">
+          {feature.code}
+        </code>
+      </div>
+    ))}
+  </div>
+</section>

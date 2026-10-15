@@ -1,0 +1,81 @@
+---
+// The install command for each package manager, all listed with the active one marked. Every copy on the page
+// stays in sync, and the choice is remembered.
+import CopyCommand from "./CopyCommand.astro";
+import { installCommands } from "../data/project";
+const [first] = installCommands;
+---
+
+<div data-install>
+  <div class="relative mb-2 flex w-fit gap-0.5 rounded-[8px] border border-line bg-surface p-0.5" role="group" aria-label="Package manager">
+    <span class="install-indicator absolute inset-y-0.5 left-0 rounded-[6px] bg-white/[0.09]" aria-hidden="true" data-indicator></span>
+    {installCommands.map(({ manager }, i) => (
+      <button
+        type="button"
+        class="relative rounded-[6px] px-2.5 py-1 font-mono text-[0.75rem] text-muted transition-colors hover:text-ink aria-pressed:text-ink"
+        aria-pressed={i === 0 ? "true" : "false"}
+        data-manager={manager}
+      >
+        {manager}
+      </button>
+    ))}
+  </div>
+  <CopyCommand command={first.command} label="Copy install command" />
+  <p class="mt-2 hidden text-left text-[0.78rem] leading-snug text-muted" data-note></p>
+</div>
+
+<style>
+  .install-indicator {
+    transition: transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .install-indicator {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import { installCommands } from "../data/project";
+
+  const KEY = "ccswap:package-manager";
+  const roots = [...document.querySelectorAll<HTMLElement>("[data-install]")];
+
+  function select(manager: string) {
+    const choice = installCommands.find((c) => c.manager === manager) ?? installCommands[0];
+    for (const root of roots) {
+      root.querySelectorAll<HTMLButtonElement>("[data-manager]").forEach((button) => {
+        const active = button.dataset.manager === choice.manager;
+        button.setAttribute("aria-pressed", String(active));
+        if (active) {
+          const indicator = root.querySelector<HTMLElement>("[data-indicator]")!;
+          indicator.style.width = `${button.offsetWidth}px`;
+          indicator.style.transform = `translateX(${button.offsetLeft}px)`;
+        }
+      });
+      root.querySelector("[data-command]")!.textContent = choice.command;
+      const note = root.querySelector<HTMLElement>("[data-note]")!;
+      note.textContent = choice.note ?? "";
+      note.classList.toggle("hidden", !choice.note);
+    }
+  }
+
+  let saved: string | null = null;
+  try {
+    saved = localStorage.getItem(KEY);
+  } catch {}
+  select(saved ?? installCommands[0].manager);
+
+  for (const root of roots) {
+    root.querySelectorAll<HTMLButtonElement>("[data-manager]").forEach((button) => {
+      button.addEventListener("click", () => {
+        select(button.dataset.manager!);
+        try {
+          localStorage.setItem(KEY, button.dataset.manager!);
+        } catch {}
+      });
+    });
+  }
+  // Fonts change the tab widths once they load.
+  document.fonts?.ready.then(() => select(roots[0]?.querySelector<HTMLElement>('[aria-pressed="true"]')?.dataset.manager ?? "npm"));
+</script>

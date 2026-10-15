@@ -1,0 +1,244 @@
+---
+// A terminal you can drive: each button types a real ccswap command and plays its output.
+// Demo data is made up (alex@mail.com, Lumen Studio).
+const commands = [
+  { id: "handoff", label: "ccswap handoff personal work" },
+  { id: "list", label: "ccswap list" },
+  { id: "continue", label: "ccswap work --continue" },
+  { id: "personal", label: "ccswap personal" },
+];
+---
+
+<div class="terminal-demo" data-terminal>
+  <div class="overflow-hidden rounded-2xl border border-line-strong bg-surface shadow-[0_30px_80px_-30px_rgb(0_0_0/0.9)]">
+    <div class="flex items-center gap-3 border-b border-line px-4 py-3">
+      <div class="flex gap-1.5" aria-hidden="true">
+        <span class="h-2.5 w-2.5 rounded-full bg-white/15"></span>
+        <span class="h-2.5 w-2.5 rounded-full bg-white/15"></span>
+        <span class="h-2.5 w-2.5 rounded-full bg-white/15"></span>
+      </div>
+      <span class="min-w-0 flex-1 truncate font-mono text-[0.72rem] text-muted">~/code/upload-service</span>
+      <span class="account-chip flex items-center gap-1.5 rounded-[5px] border border-line bg-raised px-2 py-1 font-mono text-[0.7rem] text-ink-soft">
+        <span class="h-1.5 w-1.5 rounded-full bg-active" aria-hidden="true"></span>
+        <span class="sr-only">Active account:</span>
+        <span data-active>personal</span>
+      </span>
+    </div>
+    <div
+      class="terminal-body h-[19rem] overflow-y-auto overscroll-contain px-4 py-4 font-mono text-[0.7rem] leading-[1.7] sm:h-[21rem] sm:px-5 sm:text-[0.8rem]"
+      role="log"
+      aria-label="Terminal output"
+      data-output
+    >
+      <div class="line"><span class="text-muted">claude ·</span> <span class="text-active">personal</span> <span class="text-muted">· alex@mail.com</span></div>
+      <div class="line"><span class="text-faint">&gt;</span> Add rate limiting to the upload API</div>
+      <div class="line"><span class="text-ink-soft">⏺</span> Added a token bucket to /upload. Writing the tests next…</div>
+      <div class="line text-[#f28b82]">✗ Usage limit reached for alex@mail.com · resets at 4pm</div>
+      <div class="line"><span class="text-faint">$</span> <span class="cursor" aria-hidden="true"></span></div>
+    </div>
+  </div>
+
+  <div class="mt-4 flex flex-wrap justify-center gap-2" role="group" aria-label="Commands to try">
+    {commands.map((command, i) => (
+      <button
+        type="button"
+        class:list={[
+          "press rounded-[5px] border px-3 py-1.5 font-mono text-[0.75rem]",
+          i === 0 ? "border-line-strong bg-white/[0.07] text-ink hover:bg-white/[0.12]" : "border-line text-ink-soft hover:border-line-strong hover:text-ink",
+        ]}
+        data-run={command.id}
+      >
+        {command.label}
+      </button>
+    ))}
+  </div>
+  <p class="mt-3 text-center text-[0.8rem] text-faint">Click a command to run it.</p>
+</div>
+
+<!-- Global, because the script adds lines that Astro's scoped styles wouldn't reach. -->
+<style is:global>
+  /* Long lines wrap with a hanging indent on narrow screens; tables scroll sideways instead. */
+  [data-terminal] .line {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    padding-left: 3ch;
+    text-indent: -3ch;
+    animation: line-in 0.22s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  [data-terminal] .terminal-body {
+    scrollbar-width: none;
+  }
+  [data-terminal] .line.term-table {
+    white-space: pre;
+    overflow-x: auto;
+    padding-left: 0;
+    text-indent: 0;
+    scrollbar-width: none;
+  }
+  [data-terminal] .cursor {
+    display: inline-block;
+    width: 0.55em;
+    height: 1.1em;
+    vertical-align: -0.2em;
+    background: var(--color-ink-soft);
+    animation: blink 1.1s steps(1) infinite;
+  }
+  [data-terminal] .account-chip.is-switching {
+    animation: chip 0.42s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  @keyframes line-in {
+    from {
+      opacity: 0;
+      transform: translateY(3px);
+    }
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+  @keyframes chip {
+    40% {
+      transform: scale(1.08);
+      border-color: var(--color-active);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-terminal] .line,
+    [data-terminal] .account-chip.is-switching {
+      animation: none;
+    }
+    [data-terminal] .cursor {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  type Step = { html: string; wait?: number } | { table: string[]; wait?: number } | { account: string; wait?: number };
+
+  const dim = (text: string) => `<span class="text-muted">${text}</span>`;
+  const faint = (text: string) => `<span class="text-faint">${text}</span>`;
+  const active = (text: string) => `<span class="text-active">${text}</span>`;
+  const claudeHeader = (account: string, email: string) =>
+    `${dim("claude ·")} ${active(account)} ${dim(`· ${email}`)}`;
+
+  const scripts: Record<string, { command: string; steps: Step[] }> = {
+    handoff: {
+      command: "ccswap handoff personal work",
+      steps: [
+        { html: `${faint("◇")}  Send the conversation and memory to Lumen Studio (alex@lumen.studio)?`, wait: 380 },
+        { html: `${faint("│")}  Yes`, wait: 520 },
+        { html: `◆  Session 42decdbd ("Add rate limiting to the upload API") copied.`, wait: 300 },
+        { html: `${dim("●")}  Memory: 3 file(s) copied.`, wait: 200 },
+        { html: `${dim("●")}  This is a copy. What you do on "work" from here won't appear in "personal".`, wait: 520 },
+        { account: "work" },
+        { html: " " },
+        { html: claudeHeader("work", "alex@lumen.studio"), wait: 260 },
+        { html: `${faint(">")} Add rate limiting to the upload API`, wait: 120 },
+        { html: `<span class="text-ink-soft">⏺</span> Added a token bucket to /upload. Writing the tests next…`, wait: 520 },
+        { html: `<span class="text-ink-soft">⏺</span> Picking up where we left off: tests for /upload.`, wait: 300 },
+      ],
+    },
+    list: {
+      command: "ccswap list",
+      steps: [
+        {
+          table: [
+            dim("ACCOUNT             EMAIL               ORGANIZATION"),
+            "personal (default)  alex@mail.com       Personal",
+            "work                alex@lumen.studio   Lumen Studio",
+            "client              alex@brightline.co  Brightline",
+          ],
+        },
+      ],
+    },
+    continue: {
+      command: "ccswap work --continue",
+      steps: [
+        { account: "work", wait: 200 },
+        { html: claudeHeader("work", "alex@lumen.studio"), wait: 260 },
+        { html: `${faint(">")} Add rate limiting to the upload API`, wait: 120 },
+        { html: `<span class="text-ink-soft">⏺</span> Tests for /upload are passing. Anything else?`, wait: 200 },
+      ],
+    },
+    personal: {
+      command: "ccswap personal",
+      steps: [
+        { account: "personal", wait: 200 },
+        { html: claudeHeader("personal", "alex@mail.com"), wait: 260 },
+        { html: `<span class="text-[#f28b82]">✗ Usage limit reached for alex@mail.com · resets at 4pm</span>`, wait: 200 },
+      ],
+    },
+  };
+
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+
+  document.querySelectorAll<HTMLElement>("[data-terminal]").forEach((root) => {
+    const output = root.querySelector<HTMLElement>("[data-output]")!;
+    const activeLabel = root.querySelector<HTMLElement>("[data-active]")!;
+    const chip = activeLabel.closest<HTMLElement>(".account-chip")!;
+    // Bumped on every click, so a newer run stops an older one mid-way.
+    let run = 0;
+
+    const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, reduceMotion.matches ? 0 : ms));
+    const scrollDown = () => output.scrollTo({ top: output.scrollHeight, behavior: reduceMotion.matches ? "auto" : "smooth" });
+
+    const promptLine = () => {
+      const line = document.createElement("div");
+      line.className = "line";
+      line.innerHTML = `<span class="text-faint">$</span> <span data-typed></span><span class="cursor" aria-hidden="true"></span>`;
+      output.append(line);
+      return line;
+    };
+
+    const switchAccount = (account: string) => {
+      activeLabel.textContent = account;
+      chip.classList.remove("is-switching");
+      void chip.offsetWidth;
+      chip.classList.add("is-switching");
+    };
+
+    async function play(id: string) {
+      const mine = ++run;
+      const { command, steps } = scripts[id];
+
+      // Reuse the waiting prompt line at the bottom.
+      output.querySelector(".cursor")?.closest(".line")?.remove();
+      const line = promptLine();
+      const typed = line.querySelector<HTMLElement>("[data-typed]")!;
+      scrollDown();
+
+      for (const char of command) {
+        typed.textContent += char;
+        await sleep(26 + Math.random() * 30);
+        if (mine !== run) return;
+      }
+      line.querySelector(".cursor")?.remove();
+      await sleep(260);
+
+      for (const step of steps) {
+        if (mine !== run) return;
+        if ("account" in step) switchAccount(step.account);
+        else {
+          const el = document.createElement("div");
+          el.className = "table" in step ? "line term-table" : "line";
+          el.innerHTML = "table" in step ? step.table.join("\n") : step.html;
+          output.append(el);
+          scrollDown();
+        }
+        await sleep(step.wait ?? 140);
+      }
+      if (mine !== run) return;
+      const gap = document.createElement("div");
+      gap.className = "h-3";
+      output.append(gap);
+      promptLine();
+      scrollDown();
+    }
+
+    root.querySelectorAll<HTMLButtonElement>("[data-run]").forEach((button) => {
+      button.addEventListener("click", () => play(button.dataset.run!));
+    });
+  });
+</script>

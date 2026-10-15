@@ -1,0 +1,49 @@
+---
+const moves = [
+  "The conversation, every message of it",
+  "Files Claude saved alongside it, like subagent transcripts",
+  "Claude's memory for that folder",
+];
+const stays = [
+  "Anything you do after the handoff. The copy is its own fork.",
+  "The undo history for file edits, so rewind can't reach before the handoff",
+  "Your other conversations, unless you hand them over too",
+];
+---
+
+<section class="mx-auto max-w-5xl px-4 pb-24 sm:px-8">
+  <div class="reveal max-w-xl">
+    <p class="font-mono text-[0.75rem] uppercase tracking-[0.12em] text-muted">Handoff</p>
+    <h2 class="mt-3 text-[2rem] font-semibold leading-tight tracking-[-0.03em] sm:text-[2.4rem]">
+      Exactly what moves, and what stays.
+    </h2>
+  </div>
+  <div class="mt-10 grid gap-4 sm:grid-cols-2">
+    <div class="reveal rounded-2xl border border-line bg-surface p-6 sm:p-8">
+      <h3 class="font-mono text-[0.8rem] uppercase tracking-[0.1em] text-ink">Copied</h3>
+      <ul class="mt-5 space-y-3.5">
+        {moves.map((item) => (
+          <li class="flex gap-3 leading-relaxed text-ink-soft">
+            <svg class="mt-1.5 h-3.5 w-3.5 shrink-0 text-ink" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5" /></svg>
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+    <div class="reveal rounded-2xl border border-line p-6 sm:p-8">
+      <h3 class="font-mono text-[0.8rem] uppercase tracking-[0.1em] text-muted">Not copied</h3>
+      <ul class="mt-5 space-y-3.5">
+        {stays.map((item) => (
+          <li class="flex gap-3 leading-relaxed text-muted">
+            <svg class="mt-1.5 h-3.5 w-3.5 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h8" /></svg>
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+  <p class="reveal mt-6 max-w-3xl text-[0.92rem] leading-relaxed text-muted">
+    Handing a conversation to another account means it's processed under that account's organization. ccswap names the
+    organization and asks before it copies. If your workplace doesn't allow moving work between accounts, don't.
+  </p>
+</section>
