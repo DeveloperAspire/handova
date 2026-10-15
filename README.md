@@ -1,8 +1,8 @@
 # Handova
 
-**Hit your limit. Hand it over.**
+**Hit your usage limit. Hand it over.**
 
-Handova runs your AI coding agent under as many accounts as you have: personal, work, a client's. When one
+Handova runs and manages your AI coding agent across as many accounts as you have: personal, work, a client's. When one
 account hits its usage limit, it hands the conversation (and what the agent learned about your project) to another
 account, and you carry on.
 

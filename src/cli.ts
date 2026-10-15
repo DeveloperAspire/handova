@@ -15,7 +15,7 @@ import { runCommand } from "./commands/run";
 import { shellInitCommand } from "./commands/shell-init";
 
 const HELP = `handova ${pkg.version}
-Run your AI coding agent under several accounts, and hand a conversation from one account to another.
+Run and manage your AI coding agent across several accounts, and hand a conversation from one account to another.
 Supports Claude Code and Codex.
 
 Usage:

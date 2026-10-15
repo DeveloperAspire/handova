@@ -24,7 +24,7 @@ export const commands: Command[] = [
   },
   {
     id: "run",
-    title: "Run your coding agent under an account",
+    title: "Run your coding agent as an account",
     short: "Open Claude Code or Codex logged in as that account.",
     parts: [{ text: "handova" }, { text: "work", label: "account" }, { text: "--continue", label: "passed to the tool" }],
     body: "Opens the account's coding agent, Claude Code or Codex, logged in as work. Anything after the account name is passed to it, so it works the same as running the agent yourself.",
