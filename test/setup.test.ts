@@ -38,16 +38,18 @@ test("naming a primary login again replaces its old entry instead of adding a se
 
 test("add picks the only installed agent, and never guesses when there are two", async () => {
   tempHome();
-  // Both fake agents are installed and there's no terminal to ask in.
-  await expect(chooseAgent(undefined)).rejects.toThrow(/--agent claude or --agent codex/);
-  expect((await chooseAgent("codex")).id).toBe("codex");
+  // Both fake agents are installed and there's no one to ask. Said explicitly, so the test behaves the same when
+  // it runs in a real terminal (where Handova would ask).
+  const canAsk = false;
+  await expect(chooseAgent(undefined, canAsk)).rejects.toThrow(/--agent claude or --agent codex/);
+  expect((await chooseAgent("codex", canAsk)).id).toBe("codex");
 
   process.env.HANDOVA_CODEX_BIN = "/not/installed/codex";
-  expect((await chooseAgent(undefined)).id).toBe("claude");
-  await expect(chooseAgent("codex")).rejects.toThrow(/Codex isn't installed/);
+  expect((await chooseAgent(undefined, canAsk)).id).toBe("claude");
+  await expect(chooseAgent("codex", canAsk)).rejects.toThrow(/Codex isn't installed/);
 
   process.env.HANDOVA_CLAUDE_BIN = "/not/installed/claude";
-  await expect(chooseAgent(undefined)).rejects.toThrow(/Neither Claude Code nor Codex is installed/);
+  await expect(chooseAgent(undefined, canAsk)).rejects.toThrow(/Neither Claude Code nor Codex is installed/);
 });
 
 test("the spinner stays out of the way when there's no terminal", async () => {

@@ -64,7 +64,7 @@ export async function addCommand(name: string | undefined, options: AddOptions):
 
 // Which agent a new account is for: the one asked for with --agent, the only one installed, or the person's choice.
 // Handova never guesses when more than one agent is installed.
-export async function chooseAgent(asked: string | undefined): Promise<Harness> {
+export async function chooseAgent(asked: string | undefined, canAsk = Boolean(process.stdin.isTTY)): Promise<Harness> {
   if (asked) {
     const harness = getHarness(asked);
     if (!onPath(harness.bin())) throw new Error(`${harness.name} isn't installed (looked for "${harness.bin()}"). Install it first.`);
@@ -73,7 +73,7 @@ export async function chooseAgent(asked: string | undefined): Promise<Harness> {
   const installed = allHarnesses().filter((harness) => onPath(harness.bin()));
   if (!installed.length) throw new Error("Neither Claude Code nor Codex is installed. Install one first.");
   if (installed.length === 1) return installed[0];
-  if (!process.stdin.isTTY) {
+  if (!canAsk) {
     throw new Error(`Which agent is this account for? Run it again with ${installed.map((h) => `--agent ${h.id}`).join(" or ")}.`);
   }
   const choice = await p.select({
