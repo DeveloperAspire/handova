@@ -2,7 +2,7 @@
 
 **Hit your usage limit. Hand it over.**
 
-Handova runs and manages your AI coding agent across as many accounts as you have: personal, work, a client's. When one
+Handova runs and manages your AI coding agent across as many accounts as you have: a primary, a backup, or more. When one
 account hits its usage limit, it hands the conversation (and what the agent learned about your project) to another
 account, and you carry on.
 
@@ -39,20 +39,20 @@ work; Windows isn't supported yet.
 After `handova setup`, or without it:
 
 ```sh
-handova add work                  # asks which agent, then logs you in to the new account
-handova work                      # run work's agent as work
-handova handoff personal work     # personal hit its limit: carry on as work
+handova add backup                # asks which agent, then logs you in to the new account
+handova backup                    # run backup's agent as backup
+handova handoff primary backup    # primary hit its limit: carry on as backup
 ```
 
 Your usual `claude` and `codex` keep working as before. Handova calls them your **primary logins**, and you choose
-their names in setup (for example `personal` or `main`). Without setup they start as `personal` for Claude Code
+their names in setup, which suggests `primary` for Claude Code and `codex` for Codex. Without setup they start as `primary` for Claude Code
 and `codex` for Codex.
 
 With Codex, skip the question by naming the agent:
 
 ```sh
-handova add codex-work --agent codex   # add a second Codex account
-handova handoff codex codex-work       # carry on in the other Codex account
+handova add codex-backup --agent codex   # add a second Codex account
+handova handoff codex codex-backup       # carry on in the other Codex account
 ```
 
 ## How it works
@@ -66,7 +66,7 @@ at a different one:
 | Codex | `~/.codex` | `~/.codex-<name>` | `CODEX_HOME` |
 
 Your usual login for each agent, the one in its usual folder, is your **primary login**, marked **(primary)** in
-`handova list`. Setup asks what to call each one; until then Handova shows them as `personal` for Claude Code and
+`handova list`. Setup asks what to call each one; until then Handova shows them as `primary` for Claude Code and
 `codex` for Codex. Names are only labels: change any of them with `handova rename`. Every other account gets its own
 folder, and Handova points the agent at it when it starts.
 
@@ -85,30 +85,30 @@ handova  setup
 Walks you through everything: which agents you use, what to call your primary login for each, extra accounts and
 their logins. Run it again any time to add more; it keeps what you already have.
 
-An "account" is one of your logins. The examples use `personal` and `work`, but you can add as many as you
+An "account" is one of your logins. The examples use `primary` and `backup`, but you can add as many as you
 like and name them anything.
 
 ### Run your coding agent under an account
 
 ```
-handova  work  --continue
-         │     └─ anything after the account is passed to the tool
+handova  backup  --continue
+         │       └─ anything after the account is passed to the tool
          └─ account
 ```
 
-Opens the account's agent, Claude Code or Codex, logged in as **work**. Anything after the account name is
+Opens the account's agent, Claude Code or Codex, logged in as **backup**. Anything after the account name is
 passed to the agent, so it works the same as running it yourself. For Claude Code:
 
-- `handova work` starts a new conversation.
-- `handova work --continue` reopens the last conversation in this folder.
-- `handova work --resume` shows a list of past conversations to pick from.
-- `handova work --resume <id>` opens one specific conversation.
+- `handova backup` starts a new conversation.
+- `handova backup --continue` reopens the last conversation in this folder.
+- `handova backup --resume` shows a list of past conversations to pick from.
+- `handova backup --resume <id>` opens one specific conversation.
 
 ### Hand a conversation to another account
 
 ```
-handova  handoff  personal  work
-         │        │         └─ to this one
+handova  handoff  primary  backup
+         │        │        └─ to this one
          │        └─ from this account
          └─ action
 ```
@@ -122,9 +122,9 @@ For when one account hits its usage limit. **Both accounts must be the same agen
 | Claude Code account | Codex account, or the other way | Not yet | Nothing. Handova stops before copying and tells you why |
 
 ```sh
-handova handoff personal work       # Claude Code → Claude Code
-handova handoff codex codex-work    # Codex → Codex
-handova handoff work personal       # and back again
+handova handoff primary backup       # Claude Code → Claude Code
+handova handoff codex codex-backup   # Codex → Codex
+handova handoff backup primary       # and back again
 ```
 
 #### What gets handed over
@@ -166,8 +166,8 @@ Run it in the folder you were working in. It:
 4. Opens the conversation on the second account, so you carry on.
 
 ```
-handova  handoff  personal  work  --pick
-                                  └─ optional, see below
+handova  handoff  primary  backup  --pick
+                                   └─ optional, see below
 ```
 
 - `--pick` lets you choose the conversation from a list, instead of the latest.
@@ -187,27 +187,27 @@ conversations to a personal account, or personal ones to work, if that isn't all
 ### Add an account
 
 ```
-handova  add  client
+handova  add  backup
          │    └─ a name you choose
          └─ action
 ```
 
-Sets up a new account called **client**. If you have both Claude Code and Codex installed, it first asks which
+Sets up a new account called **backup**. If you have both Claude Code and Codex installed, it first asks which
 agent the account is for; with only one installed, it uses that one. A Claude Code account gets the folder
-`~/.claude-client`, shares your `CLAUDE.md`, `skills`, `agents` and `commands` with it (so edits show up in every
+`~/.claude-backup`, shares your `CLAUDE.md`, `skills`, `agents` and `commands` with it (so edits show up in every
 account), copies `settings.json` (so each account can change its own), then opens the login.
 
 ```
-handova  add  client  --agent codex
-                      └─ make it a Codex account
+handova  add  codex-backup  --agent codex
+                            └─ make it a Codex account
 ```
 
-A Codex account gets `~/.codex-client`, shares `AGENTS.md`, `prompts` and `skills` from `~/.codex`, and copies
+A Codex account gets `~/.codex-backup`, shares `AGENTS.md`, `prompts` and `skills` from `~/.codex`, and copies
 `config.toml`.
 
 ```
-handova  add  work  --dir ~/.claude-work
-                    └─ use this existing folder instead of creating one
+handova  add  backup  --dir ~/.claude-backup
+                      └─ use this existing folder instead of creating one
 ```
 
 - `--agent claude|codex` names the agent, so it doesn't ask. Without a terminal to ask in (scripts, CI), it's
@@ -230,17 +230,17 @@ handova  list
 Shows every account with its agent, email, organization and folder:
 
 ```
-ACCOUNT             AGENT        EMAIL           ORGANIZATION  FOLDER
-personal (primary)  Claude Code  me@example.com  Personal      ~/.claude
-work                Claude Code  me@company.com  Company       ~/.claude-work
-codex (primary)     Codex        me@example.com  ChatGPT plus  ~/.codex
+ACCOUNT            AGENT        EMAIL           ORGANIZATION  FOLDER
+primary (primary)  Claude Code  me@example.com  Personal      ~/.claude
+backup             Claude Code  me@company.com  Company       ~/.claude-backup
+codex (primary)    Codex        me@example.com  ChatGPT plus  ~/.codex
 ```
 
 ### Remove an account
 
 ```
-handova  remove  work  --purge
-         │       │     └─ optional: also log out and delete its folder
+handova  remove  backup  --purge
+         │       │       └─ optional: also log out and delete its folder
          │       └─ account
          └─ action
 ```
@@ -253,14 +253,14 @@ don't use Claude Code), but `--purge` never deletes an agent's usual folder.
 ### Rename an account
 
 ```
-handova  rename  work  office
-         │       │     └─ new name
+handova  rename  backup  spare
+         │       │       └─ new name
          │       └─ current name
          └─ action
 ```
 
-Changes only the name. The folder and login stay the same. Works for primary logins too, so `personal` can
-become `main` or anything you like.
+Changes only the name. The folder and login stay the same. Works for primary logins too, so `primary` can
+become `main`, `personal` or anything you like.
 
 ### Check everything
 
@@ -279,7 +279,7 @@ handova  shell-init
          └─ action, no names needed
 ```
 
-Prints one shortcut per account, named after its agent, such as `claude-work` for `handova work`. It's optional. To use them, add this
+Prints one shortcut per account, named after its agent, such as `claude-backup` for `handova backup`. It's optional. To use them, add this
 line to your `~/.zshrc` or `~/.bashrc`:
 
 ```sh

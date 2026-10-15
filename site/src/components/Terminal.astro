@@ -1,12 +1,13 @@
 ---
-// A terminal you can drive: each button types a real handova command and plays its output.
-// Demo data is made up (alex@mail.com, Lumen Studio).
+// A terminal you can drive. It starts inside a Claude Code session that has just hit its usage limit; each button
+// leaves the session, runs a real handova command and plays its output. The Claude Code screen follows the real app:
+// welcome box, ⏺ tool calls with ⎿ results, and the input box. Demo data is made up (alex@mail.com, Lumen Studio).
 const commands = [
-  { id: "handoff", label: "handova handoff personal work" },
-  { id: "codex", label: "handova handoff codex codex-work" },
+  { id: "handoff", label: "handova handoff primary backup" },
+  { id: "codex", label: "handova handoff codex codex-backup" },
   { id: "list", label: "handova list" },
-  { id: "continue", label: "handova work --continue" },
-  { id: "personal", label: "handova personal" },
+  { id: "continue", label: "handova backup --continue" },
+  { id: "primary", label: "handova primary" },
 ];
 ---
 
@@ -21,21 +22,27 @@ const commands = [
       <span class="min-w-0 flex-1 truncate font-mono text-[0.72rem] text-muted">~/code/upload-service</span>
       <span class="account-chip flex items-center gap-1.5 rounded-[5px] border border-line bg-raised px-2 py-1 font-mono text-[0.7rem] text-ink-soft">
         <span class="h-1.5 w-1.5 rounded-full bg-active" aria-hidden="true"></span>
+        <span class="hidden font-sans text-faint sm:inline" data-agent>Claude Code</span>
         <span class="sr-only">Active account:</span>
-        <span data-active>personal</span>
+        <span data-active>primary</span>
       </span>
     </div>
-    <div
-      class="terminal-body h-[19rem] overflow-y-auto overscroll-contain px-4 py-4 font-mono text-[0.7rem] leading-[1.7] sm:h-[21rem] sm:px-5 sm:text-[0.8rem]"
-      role="log"
-      aria-label="Terminal output"
-      data-output
-    >
-      <div class="line"><span class="text-muted">claude ·</span> <span class="text-active">personal</span> <span class="text-muted">· alex@mail.com</span></div>
-      <div class="line"><span class="text-faint">&gt;</span> Add rate limiting to the upload API</div>
-      <div class="line"><span class="text-ink-soft">⏺</span> Added a token bucket to /upload. Writing the tests next…</div>
-      <div class="line text-[#f28b82]">✗ Usage limit reached for alex@mail.com · resets at 4pm</div>
-      <div class="line"><span class="text-faint">$</span> <span class="cursor" aria-hidden="true"></span></div>
+    <div class="flex h-[22rem] flex-col font-mono text-[0.7rem] leading-[1.7] sm:h-[25rem] sm:text-[0.8rem]">
+      <div class="terminal-body min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pt-4 sm:px-5" role="log" aria-label="Terminal output" data-output>
+        <div class="line cc-box"><span class="spark" aria-hidden="true"></span>Welcome to <b>Claude Code</b>!<br /><span class="text-muted">cwd: /Users/alex/code/upload-service</span></div>
+        <div class="line cc-user"><span class="text-muted">&gt;</span> Add rate limiting to the upload API</div>
+        <div class="line"><span class="text-ink">⏺</span> I'll add rate limiting to the upload endpoint, starting with the handler.</div>
+        <div class="line"><span class="text-muted">⏺</span> <b class="text-ink">Update</b><span class="text-ink-soft">(src/upload/handler.ts)</span></div>
+        <div class="line result"><span class="elbow" aria-hidden="true"></span><span class="text-muted">Updated src/upload/handler.ts with 22 additions and 3 removals</span></div>
+        <div class="line"><span class="text-muted">⏺</span> <b class="text-ink">Bash</b><span class="text-ink-soft">(npm test)</span></div>
+        <div class="line result"><span class="elbow" aria-hidden="true"></span><b class="text-[#f28b82]">Claude usage limit reached. Your limit will reset at 4pm.</b></div>
+      </div>
+      <div class="px-3 pb-3 pt-2 sm:px-4" data-input>
+        <div class="flex items-center rounded-[8px] border border-white/20 px-3 py-1.5">
+          <span class="text-muted" data-input-prefix>&gt;</span>&nbsp;<span class="cursor" aria-hidden="true"></span>
+        </div>
+        <div class="mt-1 pl-3 text-[0.62rem] text-faint sm:text-[0.68rem]">? for shortcuts</div>
+      </div>
     </div>
   </div>
 
@@ -53,7 +60,7 @@ const commands = [
       </button>
     ))}
   </div>
-  <p class="mt-3 text-center text-[0.8rem] text-faint">Click a command to run it.</p>
+  <p class="mt-3 text-center text-[0.8rem] text-faint">The session above just hit its limit. Click a command to run it.</p>
 </div>
 
 <!-- Global, because the script adds lines that Astro's scoped styles wouldn't reach. -->
@@ -62,9 +69,16 @@ const commands = [
   [data-terminal] .line {
     white-space: pre-wrap;
     overflow-wrap: anywhere;
-    padding-left: 3ch;
-    text-indent: -3ch;
+    padding-left: 2ch;
+    text-indent: -2ch;
     animation: line-in 0.22s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  [data-terminal] .line.result {
+    padding-left: 5ch;
+    text-indent: -3ch;
+  }
+  [data-terminal] .line.dim {
+    opacity: 0.5;
   }
   [data-terminal] .terminal-body {
     scrollbar-width: none;
@@ -75,6 +89,56 @@ const commands = [
     padding-left: 0;
     text-indent: 0;
     scrollbar-width: none;
+  }
+  /* Claude Code's welcome box, and Codex's header box. */
+  [data-terminal] .cc-box {
+    display: inline-block;
+    max-width: 100%;
+    margin: 0 0 0.9em;
+    padding: 0.45em 1em 0.45em 0.9em;
+    border: 1.5px solid #d97757;
+    border-radius: 8px;
+    text-indent: 0;
+    line-height: 1.8;
+  }
+  [data-terminal] .cc-box.codex {
+    border-color: var(--color-line-strong);
+  }
+  /* The user's message, on a faint band like the real app. */
+  [data-terminal] .cc-user {
+    margin: 0 -0.5em 0.15em;
+    padding-right: 0.5em;
+    padding-left: calc(2ch + 0.5em);
+    border-radius: 5px;
+    background: rgb(255 255 255 / 0.05);
+  }
+  /* Glyphs Geist Mono doesn't have: Claude Code's spark and the ⎿ result elbow. */
+  [data-terminal] .spark {
+    position: relative;
+    display: inline-block;
+    width: 0.95em;
+    height: 0.95em;
+    margin-right: 0.55em;
+    vertical-align: -0.12em;
+    background:
+      linear-gradient(#d97757, #d97757) center / 0.16em 100% no-repeat,
+      linear-gradient(#d97757, #d97757) center / 100% 0.16em no-repeat;
+  }
+  [data-terminal] .spark::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: inherit;
+    transform: rotate(45deg);
+  }
+  [data-terminal] .elbow {
+    display: inline-block;
+    width: 1.1em;
+    height: 0.6em;
+    margin: 0 0.9em 0 0.3em;
+    vertical-align: 0.3em;
+    border-left: 1.5px solid var(--color-faint);
+    border-bottom: 1.5px solid var(--color-faint);
   }
   [data-terminal] .cursor {
     display: inline-block;
@@ -106,9 +170,7 @@ const commands = [
   }
   @media (prefers-reduced-motion: reduce) {
     [data-terminal] .line,
-    [data-terminal] .account-chip.is-switching {
-      animation: none;
-    }
+    [data-terminal] .account-chip.is-switching,
     [data-terminal] .cursor {
       animation: none;
     }
@@ -116,44 +178,64 @@ const commands = [
 </style>
 
 <script>
-  type Step = { html: string; wait?: number } | { table: string[]; wait?: number } | { account: string; wait?: number };
+  type Mode = "claude" | "codex" | "shell";
+  type Step =
+    | { html: string; className?: string; wait?: number }
+    | { table: string[]; wait?: number }
+    | { account: string; agent: string; wait?: number }
+    | { open: Mode; wait?: number };
 
-  const dim = (text: string) => `<span class="text-muted">${text}</span>`;
+  const muted = (text: string) => `<span class="text-muted">${text}</span>`;
   const faint = (text: string) => `<span class="text-faint">${text}</span>`;
-  const active = (text: string) => `<span class="text-active">${text}</span>`;
-  const header = (agent: string, account: string, email: string) =>
-    `${dim(`${agent} ·`)} ${active(account)} ${dim(`· ${email}`)}`;
+  const PROMPT = "Add rate limiting to the upload API";
+  const CWD = "/Users/alex/code/upload-service";
+
+  // Claude Code's screen, piece by piece.
+  const welcome: Step = { html: `<span class="spark" aria-hidden="true"></span>Welcome to <b>Claude Code</b>!<br>${muted(`cwd: ${CWD}`)}`, className: "cc-box", wait: 220 };
+  const user = (text: string, dim = false): Step => ({ html: `${muted(">")} ${text}`, className: dim ? "cc-user dim" : "cc-user", wait: 90 });
+  const say = (text: string): Step => ({ html: `<span class="text-ink">⏺</span> ${text}`, wait: 380 });
+  const tool = (name: string, arg: string, dim = false): Step => ({
+    html: `${muted("⏺")} <b class="text-ink">${name}</b><span class="text-ink-soft">(${arg})</span>`,
+    className: dim ? "dim" : undefined,
+    wait: dim ? 60 : 320,
+  });
+  const result = (text: string): Step => ({ html: `<span class="elbow" aria-hidden="true"></span>${text}`, className: "result", wait: 260 });
+  // A handova prompt line, in its rail.
+  const ask = (question: string, answer: string, note = ""): Step => ({
+    html: `${faint("◇")}  ${question}${note ? ` ${muted(note)}` : ""}  ${muted(answer)}`,
+    wait: 520,
+  });
 
   const scripts: Record<string, { command: string; steps: Step[] }> = {
     handoff: {
-      command: "handova handoff personal work",
+      command: "handova handoff primary backup",
       steps: [
-        { html: `${faint("◇")}  The conversation and memory will go to "work" (alex@lumen.studio, Lumen Studio). Continue?`, wait: 380 },
-        { html: `${faint("│")}  Yes`, wait: 520 },
-        { html: `◆  Session 42decdbd ("Add rate limiting to the upload API") copied.`, wait: 300 },
-        { html: `${dim("●")}  Memory: 3 file(s) copied.`, wait: 200 },
-        { html: `${dim("●")}  This is a copy. What you do on "work" from here won't appear in "personal".`, wait: 520 },
-        { account: "work" },
-        { html: " " },
-        { html: header("claude", "work", "alex@lumen.studio"), wait: 260 },
-        { html: `${faint(">")} Add rate limiting to the upload API`, wait: 120 },
-        { html: `<span class="text-ink-soft">⏺</span> Added a token bucket to /upload. Writing the tests next…`, wait: 520 },
-        { html: `<span class="text-ink-soft">⏺</span> Picking up where we left off: tests for /upload.`, wait: 300 },
+        ask(`The conversation and memory will go to "backup"`, "Yes", "(Lumen Studio)."),
+        { html: `◆  Session "${PROMPT}" copied, with 3 memory files.`, wait: 260 },
+        { html: `${muted("●")}  This is a copy. What you do on "backup" won't appear on "primary".`, wait: 260 },
+        { html: `${muted("●")}  Resuming on "backup"…`, wait: 520 },
+        { account: "backup", agent: "Claude Code" },
+        { open: "claude", wait: 160 },
+        welcome,
+        user(PROMPT, true),
+        tool("Update", "src/upload/handler.ts", true),
+        tool("Bash", "npm test", true),
+        say("Picking up where we left off. Running the tests again."),
+        tool("Bash", "npm test"),
+        result(`<span class="text-ink-soft">14 passed (1.9s)</span>`),
       ],
     },
     codex: {
-      command: "handova handoff codex codex-work",
+      command: "handova handoff codex codex-backup",
       steps: [
-        { html: `${faint("◇")}  The conversation will go to "codex-work" (alex@lumen.studio, ChatGPT pro). Continue?`, wait: 380 },
-        { html: `${faint("│")}  Yes`, wait: 520 },
-        { html: `◆  Session 019a6c2e ("Fix the flaky upload test") copied.`, wait: 300 },
-        { html: `${dim("●")}  Codex keeps memory per account, not per project, so only the conversation moved.`, wait: 200 },
-        { html: `${dim("●")}  This is a copy. What you do on "codex-work" from here won't appear in "codex".`, wait: 520 },
-        { account: "codex-work" },
-        { html: " " },
-        { html: header("codex", "codex-work", "alex@lumen.studio"), wait: 260 },
-        { html: `${faint(">")} Fix the flaky upload test`, wait: 120 },
-        { html: `<span class="text-ink-soft">•</span> Picking up from the retry logic in upload.test.ts.`, wait: 300 },
+        ask(`The conversation will go to "codex-backup"`, "Yes", "(ChatGPT plus)."),
+        { html: `◆  Session "Fix the flaky upload test" copied.`, wait: 260 },
+        { html: `${muted("●")}  Codex keeps memory per account, so only the conversation moved.`, wait: 520 },
+        { account: "codex-backup", agent: "Codex" },
+        { open: "codex", wait: 160 },
+        { html: `${muted(">_")} <b>OpenAI Codex</b> ${muted("(v0.162.1)")}<br>${muted(`directory: ${CWD}`)}`, className: "cc-box codex", wait: 220 },
+        { html: `${muted("›")} Fix the flaky upload test`, className: "cc-user", wait: 240 },
+        { html: `<span class="text-ink">•</span> Picking up where we left off: the retry in handler.test.ts.`, wait: 200 },
       ],
     },
     list: {
@@ -161,30 +243,36 @@ const commands = [
       steps: [
         {
           table: [
-            dim("ACCOUNT             AGENT        EMAIL              ORGANIZATION"),
-            "personal (primary)  Claude Code  alex@mail.com      Personal",
-            "work                Claude Code  alex@lumen.studio  Lumen Studio",
-            "codex (primary)     Codex        alex@mail.com      ChatGPT plus",
-            "codex-work          Codex        alex@lumen.studio  ChatGPT pro",
+            muted("ACCOUNT            AGENT        EMAIL              ORGANIZATION"),
+            "primary (primary)  Claude Code  alex@mail.com      Personal",
+            "backup             Claude Code  alex@lumen.studio  Lumen Studio",
+            "codex (primary)    Codex        alex@mail.com      ChatGPT plus",
+            "codex-backup       Codex        alex@lumen.studio  ChatGPT pro",
           ],
         },
       ],
     },
     continue: {
-      command: "handova work --continue",
+      command: "handova backup --continue",
       steps: [
-        { account: "work", wait: 200 },
-        { html: header("claude", "work", "alex@lumen.studio"), wait: 260 },
-        { html: `${faint(">")} Add rate limiting to the upload API`, wait: 120 },
-        { html: `<span class="text-ink-soft">⏺</span> Tests for /upload are passing. Anything else?`, wait: 200 },
+        { account: "backup", agent: "Claude Code", wait: 200 },
+        { open: "claude", wait: 160 },
+        welcome,
+        user(PROMPT, true),
+        tool("Update", "src/upload/handler.ts", true),
+        tool("Bash", "npm test", true),
+        say("Rate limiting is in place and the tests pass. Anything else?"),
       ],
     },
-    personal: {
-      command: "handova personal",
+    primary: {
+      command: "handova primary",
       steps: [
-        { account: "personal", wait: 200 },
-        { html: header("claude", "personal", "alex@mail.com"), wait: 260 },
-        { html: `<span class="text-[#f28b82]">✗ Usage limit reached for alex@mail.com · resets at 4pm</span>`, wait: 200 },
+        { account: "primary", agent: "Claude Code", wait: 200 },
+        { open: "claude", wait: 160 },
+        welcome,
+        user(PROMPT, true),
+        tool("Bash", "npm test", true),
+        result(`<b class="text-[#f28b82]">Claude usage limit reached. Your limit will reset at 4pm.</b>`),
       ],
     },
   };
@@ -193,24 +281,38 @@ const commands = [
 
   document.querySelectorAll<HTMLElement>("[data-terminal]").forEach((root) => {
     const output = root.querySelector<HTMLElement>("[data-output]")!;
+    const input = root.querySelector<HTMLElement>("[data-input]")!;
+    const inputPrefix = root.querySelector<HTMLElement>("[data-input-prefix]")!;
     const activeLabel = root.querySelector<HTMLElement>("[data-active]")!;
+    const agentLabel = root.querySelector<HTMLElement>("[data-agent]")!;
     const chip = activeLabel.closest<HTMLElement>(".account-chip")!;
+    let mode: Mode = "claude";
     // Bumped on every click, so a newer run stops an older one mid-way.
     let run = 0;
 
     const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, reduceMotion.matches ? 0 : ms));
     const scrollDown = () => output.scrollTo({ top: output.scrollHeight, behavior: reduceMotion.matches ? "auto" : "smooth" });
 
-    const promptLine = () => {
-      const line = document.createElement("div");
-      line.className = "line";
-      line.innerHTML = `<span class="text-faint">$</span> <span data-typed></span><span class="cursor" aria-hidden="true"></span>`;
-      output.append(line);
-      return line;
+    // Switch what the terminal is running: an agent's full screen (with its input box) or the shell.
+    const open = (next: Mode) => {
+      mode = next;
+      output.replaceChildren();
+      input.hidden = next === "shell";
+      inputPrefix.textContent = next === "codex" ? "›" : ">";
     };
 
-    const switchAccount = (account: string) => {
+    const add = (html: string, className = "") => {
+      const el = document.createElement("div");
+      el.className = `line ${className}`.trim();
+      el.innerHTML = html;
+      output.append(el);
+      scrollDown();
+      return el;
+    };
+
+    const switchAccount = (account: string, agent: string) => {
       activeLabel.textContent = account;
+      agentLabel.textContent = agent;
       chip.classList.remove("is-switching");
       void chip.offsetWidth;
       chip.classList.add("is-switching");
@@ -220,15 +322,18 @@ const commands = [
       const mine = ++run;
       const { command, steps } = scripts[id];
 
-      // Reuse the waiting prompt line at the bottom.
-      output.querySelector(".cursor")?.closest(".line")?.remove();
-      const line = promptLine();
+      // handova runs in the shell, so leave the agent's screen first.
+      if (mode !== "shell") {
+        open("shell");
+      } else {
+        output.querySelector(".cursor")?.closest(".line")?.remove();
+      }
+      const line = add(`${faint("$")} <span data-typed></span><span class="cursor" aria-hidden="true"></span>`);
       const typed = line.querySelector<HTMLElement>("[data-typed]")!;
-      scrollDown();
 
       for (const char of command) {
         typed.textContent += char;
-        await sleep(26 + Math.random() * 30);
+        await sleep(24 + Math.random() * 28);
         if (mine !== run) return;
       }
       line.querySelector(".cursor")?.remove();
@@ -236,22 +341,14 @@ const commands = [
 
       for (const step of steps) {
         if (mine !== run) return;
-        if ("account" in step) switchAccount(step.account);
-        else {
-          const el = document.createElement("div");
-          el.className = "table" in step ? "line term-table" : "line";
-          el.innerHTML = "table" in step ? step.table.join("\n") : step.html;
-          output.append(el);
-          scrollDown();
-        }
+        if ("account" in step) switchAccount(step.account, step.agent);
+        else if ("open" in step) open(step.open);
+        else if ("table" in step) add(step.table.join("\n"), "term-table");
+        else add(step.html, step.className);
         await sleep(step.wait ?? 140);
       }
       if (mine !== run) return;
-      const gap = document.createElement("div");
-      gap.className = "h-3";
-      output.append(gap);
-      promptLine();
-      scrollDown();
+      if (mode === "shell") add(`${faint("$")} <span class="cursor" aria-hidden="true"></span>`);
     }
 
     root.querySelectorAll<HTMLButtonElement>("[data-run]").forEach((button) => {

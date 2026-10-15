@@ -6,8 +6,8 @@ A public CLI for running an AI coding agent under several accounts and handing a
 Code, that folder's memory) from one account to another. Supports Claude Code and Codex; each agent is a
 "harness" in `src/harness/`, so more can be added. Product notes: docs/PRD.md. User docs: README.md.
 
-**One sentence:** `handova work` runs Claude Code as your work account; `handova handoff personal work` moves
-what you were doing over when personal hits its limit.
+**One sentence:** `handova backup` runs Claude Code as your backup account; `handova handoff primary backup`
+moves what you were doing over when primary hits its limit.
 
 **It wins if:** someone who hits a usage limit is working again on their other account within 30 seconds,
 without opening `~/.claude`.

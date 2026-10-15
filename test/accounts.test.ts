@@ -11,16 +11,16 @@ import { tempHome, write } from "./helpers";
 test("on first run, lists the normal login of each installed agent, without writing anything", () => {
   const home = tempHome();
   expect(loadAccounts()).toEqual([
-    { name: "personal", dir: join(home, ".claude"), isDefault: true, harness: "claude" },
+    { name: "primary", dir: join(home, ".claude"), isDefault: true, harness: "claude" },
     { name: "codex", dir: join(home, ".codex"), isDefault: true, harness: "codex" },
   ]);
   expect(existsSync(registryPath())).toBe(false);
 
   process.env.HANDOVA_CODEX_BIN = "/not/installed/codex";
-  expect(loadAccounts().map((a) => a.name)).toEqual(["personal"]);
+  expect(loadAccounts().map((a) => a.name)).toEqual(["primary"]);
   process.env.HANDOVA_CLAUDE_BIN = "/not/installed/claude";
   expect(loadAccounts()).toEqual([]);
-  expect(() => getAccount("personal")).toThrow(/No accounts yet/);
+  expect(() => getAccount("primary")).toThrow(/No accounts yet/);
 });
 
 test("add links shared files and copies settings", () => {
@@ -40,7 +40,7 @@ test("add links shared files and copies settings", () => {
 
 test("add adopts an existing folder without overwriting what's in it", () => {
   const home = tempHome();
-  write(join(home, ".claude", "settings.json"), "personal");
+  write(join(home, ".claude", "settings.json"), "primary");
   write(join(home, "existing", "settings.json"), "work");
   addAccount("work", { dir: join(home, "existing"), share: true, login: false });
   expect(readFileSync(join(home, "existing", "settings.json"), "utf8")).toBe("work");
@@ -58,7 +58,7 @@ test("the default account runs with CLAUDE_CONFIG_DIR unset", () => {
   const home = tempHome();
   process.env.CLAUDE_CONFIG_DIR = "/leaked";
   addAccount("work", { share: false, login: false });
-  expect(envFor(getAccount("personal")).CLAUDE_CONFIG_DIR).toBeUndefined();
+  expect(envFor(getAccount("primary")).CLAUDE_CONFIG_DIR).toBeUndefined();
   expect(envFor(getAccount("work")).CLAUDE_CONFIG_DIR).toBe(join(home, ".claude-work"));
 });
 
@@ -73,8 +73,8 @@ test("remove without --purge keeps the folder", async () => {
 test("a normal login can be taken off the list, stays off, and is never purged", async () => {
   const home = tempHome();
   write(join(home, ".claude", "settings.json"), "{}");
-  await expect(removeCommand("personal", { purge: true, yes: true })).rejects.toThrow(/won't delete it/);
-  await removeCommand("personal", { purge: false, yes: true });
+  await expect(removeCommand("primary", { purge: true, yes: true })).rejects.toThrow(/won't delete it/);
+  await removeCommand("primary", { purge: false, yes: true });
   expect(loadAccounts().map((a) => a.name)).toEqual(["codex"]);
   expect(existsSync(join(home, ".claude", "settings.json"))).toBe(true);
 });
@@ -85,7 +85,7 @@ test("rename changes only the name", () => {
   renameCommand("work", "office");
   expect(getAccount("office")).toMatchObject({ dir: join(home, ".claude-work"), harness: "claude" });
   expect(() => getAccount("work")).toThrow();
-  renameCommand("personal", "main");
+  renameCommand("primary", "main");
   expect(getAccount("main").isDefault).toBe(true);
   expect(() => renameCommand("main", "office")).toThrow(/already an account/);
   expect(() => renameCommand("main", "list")).toThrow(/command/);

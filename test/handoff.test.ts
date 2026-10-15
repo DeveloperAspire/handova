@@ -18,7 +18,7 @@ function setup() {
   write(join(src, "abc", "subagents", "agent-1.jsonl"), "{}\n");
   write(join(src, "memory", "MEMORY.md"), "- [A](a.md) — a\n");
   write(join(src, "memory", "a.md"), "fact a");
-  const run = () => handoff({ from: getAccount("personal"), to: getAccount("work"), cwd: CWD, memory: true });
+  const run = () => handoff({ from: getAccount("primary"), to: getAccount("work"), cwd: CWD, memory: true });
   return { src, dst, run };
 }
 
@@ -61,7 +61,7 @@ test("says so when the target copy is already further along", () => {
 
 test("errors clearly when the folder has no sessions", () => {
   const { run } = setup();
-  expect(() => handoff({ from: getAccount("personal"), to: getAccount("work"), cwd: "/nope", memory: true })).toThrow(
+  expect(() => handoff({ from: getAccount("primary"), to: getAccount("work"), cwd: "/nope", memory: true })).toThrow(
     /No sessions/,
   );
   expect(run).not.toThrow();
@@ -88,5 +88,5 @@ test("mergeMemory never overwrites, and appends missing index lines", () => {
 test("refuses to hand off between accounts of different agents", () => {
   setup();
   const other = { ...getAccount("work"), harness: "codex" };
-  expect(() => handoff({ from: getAccount("personal"), to: other, cwd: CWD, memory: true })).toThrow(/isn't supported yet/);
+  expect(() => handoff({ from: getAccount("primary"), to: other, cwd: CWD, memory: true })).toThrow(/isn't supported yet/);
 });

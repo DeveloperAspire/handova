@@ -88,8 +88,8 @@ const toc = [
         </li>
         <li>
           <strong>Your primary login.</strong> For each agent it asks what to call the login you already have, the one the
-          agent uses on its own, and shows which email it belongs to. Call it <code>personal</code>, <code>main</code>,
-          <code>primary</code> or anything you like. If it isn't logged in yet, setup offers to log in.
+          agent uses on its own, and shows which email it belongs to. Setup suggests <code>primary</code>; call it
+          <code>personal</code>, <code>main</code> or anything you like. If it isn't logged in yet, setup offers to log in.
         </li>
         <li>
           <strong>More accounts.</strong> It asks whether to add another account, suggests a name, creates it with your
@@ -132,21 +132,21 @@ const toc = [
       <h2 id="accounts">Accounts</h2>
       <p>
         An account is one of your logins for one agent. Each account remembers its agent, so after you add it you only use its
-        name: <code>handova work</code> starts Claude Code if <code>work</code> is a Claude Code account, and Codex if it's a
+        name: <code>handova backup</code> starts Claude Code if <code>backup</code> is a Claude Code account, and Codex if it's a
         Codex account. The name is only a label.
       </p>
 
       <h3 id="primary-logins">Primary logins</h3>
       <p>
         Your primary login for an agent is the one it already uses on its own, in its usual folder. Setup asks what to call
-        each one. Until you've run setup, Handova shows them as <code>personal</code> for Claude Code and <code>codex</code> for
+        each one. Until you've run setup, Handova shows them as <code>primary</code> for Claude Code and <code>codex</code> for
         Codex. They're marked <strong>(primary)</strong> in <code>handova list</code> and run the agent exactly as it runs on
         its own. Rename them any time, or take one off the list if you don't use that agent.
       </p>
 
       <h3 id="adding">Adding an account</h3>
-      <CodeBlock code={`handova add work                     # asks which agent it's for
-handova add codex-work --agent codex # says so up front`} />
+      <CodeBlock code={`handova add backup                       # asks which agent it's for
+handova add codex-backup --agent codex   # says so up front`} />
       <p>
         If you have both Claude Code and Codex installed, <code>handova add</code> asks which agent the account is for. With
         only one installed, it uses that one without asking. In scripts, where there's no one to ask, pass
@@ -171,9 +171,9 @@ handova add codex-work --agent codex # says so up front`} />
       <p>Names use lowercase letters, digits and dashes.</p>
 
       <h3 id="renaming">Renaming and removing</h3>
-      <CodeBlock code={`handova rename work office   # only the name changes
-handova remove office         # forget it; folder and login stay
-handova remove office --purge # also log out and delete its folder`} />
+      <CodeBlock code={`handova rename backup spare    # only the name changes
+handova remove spare           # forget it; folder and login stay
+handova remove spare --purge   # also log out and delete its folder`} />
       <p>
         <code>--purge</code> asks first, and never deletes an agent's usual folder: removing a primary login only takes it off
         Handova's list.
@@ -192,9 +192,9 @@ handova remove office --purge # also log out and delete its folder`} />
           <tr><td>Claude Code</td><td>Codex, or back</td><td>Not yet</td><td>Nothing. Handova stops before copying and explains why</td></tr>
         </tbody>
       </table>
-      <CodeBlock code={`handova handoff personal work     # Claude Code to Claude Code
-handova handoff codex codex-work  # Codex to Codex
-handova handoff work personal     # and back again`} />
+      <CodeBlock code={`handova handoff primary backup       # Claude Code to Claude Code
+handova handoff codex codex-backup   # Codex to Codex
+handova handoff backup primary       # and back again`} />
 
       <h3 id="what-moves">What gets handed over</h3>
       <p><strong>Claude Code to Claude Code</strong> copies:</p>
@@ -317,7 +317,7 @@ handova handoff work personal     # and back again`} />
       </ul>
 
       <h2 id="uninstall">Uninstall</h2>
-      <CodeBlock code={`handova remove work --purge   # optional: delete extra accounts first
+      <CodeBlock code={`handova remove backup --purge   # optional: delete extra accounts first
 npm uninstall -g handova      # or: pnpm remove -g, yarn global remove, bun remove -g`} />
       <p>
         Your primary Claude Code and Codex logins aren't touched. To forget Handova's account list too, delete

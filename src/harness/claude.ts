@@ -18,7 +18,7 @@ export const claude: Harness = {
   // Setting it for the default account, even to ~/.claude, makes Claude Code look for a different login.
   configEnv: "CLAUDE_CONFIG_DIR",
   defaultDir: () => join(home(), ".claude"),
-  defaultAccountName: "personal",
+  defaultAccountName: "primary",
   newAccountDir: (account) => join(home(), `.claude-${account}`),
   sharedLinks: ["CLAUDE.md", "skills", "agents", "commands"],
   sharedCopies: ["settings.json"],

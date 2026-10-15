@@ -42,7 +42,7 @@ Usage:
   handova shell-init                   Print <agent>-<account> aliases, for: eval "$(handova shell-init)"
 
 Your usual login for each installed agent is its primary login. Setup asks what to call it; until then it shows
-as "personal" for Claude Code (~/.claude) and "codex" for Codex (~/.codex).`;
+as "primary" for Claude Code (~/.claude) and "codex" for Codex (~/.codex).`;
 
 async function main(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;

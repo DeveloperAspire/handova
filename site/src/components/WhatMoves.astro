@@ -9,7 +9,7 @@ const routes = [
     from: "Claude Code",
     to: "Claude Code",
     supported: true,
-    command: "handova handoff personal work",
+    command: "handova handoff primary backup",
     moves: [
       "The whole conversation: your messages, Claude's replies, and every tool call and its result",
       "Files saved alongside it, like subagent transcripts and long tool output",
@@ -20,7 +20,7 @@ const routes = [
     from: "Codex",
     to: "Codex",
     supported: true,
-    command: "handova handoff codex codex-work",
+    command: "handova handoff codex codex-backup",
     moves: ["The whole conversation: your messages, Codex's replies, and every tool call and its result"],
     note: "Codex keeps its memory per account, not per folder, so memory stays where it is.",
   },
@@ -28,7 +28,7 @@ const routes = [
     from: "Claude Code",
     to: "Codex",
     supported: false,
-    command: "handova handoff personal codex",
+    command: "handova handoff primary codex",
     note: "The two agents save conversations in different ways, so one can't open the other's. Handova stops and tells you before anything is copied.",
   },
 ];

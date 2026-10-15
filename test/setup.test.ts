@@ -16,11 +16,11 @@ test("the primary login gets the name the person chose, and agents not chosen st
 
 test("on a first run the detected names don't block the person's choice", () => {
   tempHome();
-  // personal and codex are detected (not saved), so they're free to use.
-  addPrimary(getHarness("claude"), "personal");
+  // primary and codex are detected (not saved), so they're free to use.
+  addPrimary(getHarness("claude"), "primary");
   addPrimary(getHarness("codex"), "codex");
-  expect(loadAccounts().map((a) => a.name)).toEqual(["personal", "codex"]);
-  expect(() => addPrimary(getHarness("codex"), "personal")).toThrow(/already an account/);
+  expect(loadAccounts().map((a) => a.name)).toEqual(["primary", "codex"]);
+  expect(() => addPrimary(getHarness("codex"), "primary")).toThrow(/already an account/);
   expect(() => addPrimary(getHarness("codex"), "Primary")).toThrow(/valid account name/);
 });
 

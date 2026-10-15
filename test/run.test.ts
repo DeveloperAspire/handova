@@ -9,7 +9,7 @@ import { tempHome } from "./helpers";
 // keeps running, so handova must keep running too and wait for it.
 test("survives Ctrl-C while claude runs, and returns claude's exit code", async () => {
   const home = tempHome();
-  const running = runTool(getAccount("personal"), ["sleep"]);
+  const running = runTool(getAccount("primary"), ["sleep"]);
   await Bun.sleep(300);
   process.kill(process.pid, "SIGINT");
   expect(await running).toBe(0);
@@ -18,7 +18,7 @@ test("survives Ctrl-C while claude runs, and returns claude's exit code", async 
 
 test("fails clearly when claude isn't installed", async () => {
   tempHome();
-  const personal = getAccount("personal");
+  const primary = getAccount("primary");
   process.env.HANDOVA_CLAUDE_BIN = "/no/such/claude";
-  await expect(runTool(personal, [])).rejects.toThrow(/Couldn't start Claude Code/);
+  await expect(runTool(primary, [])).rejects.toThrow(/Couldn't start Claude Code/);
 });

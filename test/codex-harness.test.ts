@@ -80,7 +80,7 @@ test("handoff copies a Codex rollout to the same dated path and moves no memory"
 test("handoff between a Claude Code and a Codex account is refused", () => {
   tempHome();
   addAccount("cx", { agent: "codex", share: false, login: false });
-  expect(() => handoff({ from: getAccount("personal"), to: getAccount("cx"), cwd: CWD, memory: true })).toThrow(
+  expect(() => handoff({ from: getAccount("primary"), to: getAccount("cx"), cwd: CWD, memory: true })).toThrow(
     /Claude Code account and "cx" is a Codex account/,
   );
   expect(existsSync(join(process.env.HOME!, ".codex-cx", "sessions"))).toBe(false);
@@ -92,6 +92,6 @@ test("the command refuses a cross-agent handoff before asking for confirmation",
   const { handoffCommand } = await import("../src/commands/handoff");
   // No TTY and no --yes: if it asked first, this would fail with "needs a confirmation" instead.
   await expect(
-    handoffCommand("personal", "cx", { pick: false, memory: true, resume: false, yes: false }),
+    handoffCommand("primary", "cx", { pick: false, memory: true, resume: false, yes: false }),
   ).rejects.toThrow(/isn't supported yet/);
 });
