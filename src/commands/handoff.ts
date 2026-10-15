@@ -1,6 +1,6 @@
 import * as p from "@clack/prompts";
 import { getAccount } from "../accounts";
-import { handoff, sourceProject } from "../handoff";
+import { handoff, sessionsHere } from "../handoff";
 import { getHarness } from "../harness";
 import { authStatus, runTool } from "../process";
 import { confirm } from "../prompt";
@@ -28,7 +28,7 @@ export async function handoffCommand(
 
   let sessionId = options.session;
   if (options.pick) {
-    const sessions = getHarness(source.harness).listSessions(sourceProject(source, cwd));
+    const sessions = sessionsHere(source, cwd);
     const choice = await p.select({
       message: "Which session?",
       options: sessions.map((s) => ({
@@ -41,10 +41,15 @@ export async function handoffCommand(
     sessionId = choice;
   }
 
+  const harness = getHarness(target.harness);
   const status = authStatus(target);
-  if (status && !status.loggedIn) throw new Error(`"${to}" isn't logged in. Run: handova ${to} auth login`);
-  if (status?.orgName && !options.yes) {
-    const ok = await confirm(`The conversation and memory will be sent to ${status.orgName} (${status.email}). Continue?`);
+  if (status && !status.loggedIn) {
+    throw new Error(`"${to}" isn't logged in. Run: handova ${to} ${harness.loginArgs.join(" ")}`);
+  }
+  const who = [status?.email, status?.orgName].filter(Boolean).join(", ");
+  if (who && !options.yes) {
+    const what = options.memory && harness.memoryDir ? "The conversation and memory" : "The conversation";
+    const ok = await confirm(`${what} will go to "${to}" (${who}). Continue?`);
     if (!ok) return 1;
   }
 
@@ -62,12 +67,14 @@ export async function handoffCommand(
     if (memory.conflicts.length) {
       p.log.warn(`Kept the target's version of: ${memory.conflicts.join(", ")} (they differ from "${from}").`);
     }
+  } else if (options.memory && !harness.memoryDir) {
+    p.log.info(`${harness.name} keeps memory per account, not per project, so only the conversation moved.`);
   }
   p.log.info(`This is a copy. What you do on "${to}" from here won't appear in "${from}".`);
 
   if (!options.resume) {
-    p.log.step(`Resume it with: handova ${to} --resume ${session.id}`);
+    p.log.step(`Resume it with: handova ${to} ${harness.resumeArgs(session.id).join(" ")}`);
     return 0;
   }
-  return runTool(target, getHarness(target.harness).resumeArgs(session.id), cwd);
+  return runTool(target, harness.resumeArgs(session.id), cwd);
 }

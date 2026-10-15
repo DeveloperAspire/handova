@@ -14,12 +14,13 @@ export function doctorCommand(): number {
   };
 
   const accounts = loadAccounts();
+  if (!accounts.length) fail("No accounts, and neither Claude Code nor Codex is installed (looked for claude and codex).");
   const installed = new Map<string, boolean>();
   for (const id of new Set(accounts.map((a) => a.harness))) {
     const harness = getHarness(id);
     const version = installedVersion(id);
     installed.set(id, Boolean(version));
-    if (version) p.log.success(`${harness.name} ${version}`);
+    if (version) p.log.success(`${harness.name}: ${version}`);
     else fail(`${harness.name} isn't on your PATH (looked for "${harness.bin()}").`);
 
     if (process.env[harness.configEnv]) {
@@ -45,7 +46,9 @@ export function doctorCommand(): number {
 
     if (!installed.get(account.harness)) continue;
     const status = authStatus(account);
-    if (status?.loggedIn) p.log.success(`${label}: ${status.email} (${status.orgName})`);
+    if (status?.loggedIn) {
+      p.log.success(`${label}: ${[status.email, status.orgName].filter(Boolean).join(", ") || "logged in"}`);
+    }
     else fail(`${label}: not logged in. Run: ${login}`);
   }
   return problems ? 1 : 0;

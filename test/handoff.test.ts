@@ -85,8 +85,8 @@ test("mergeMemory never overwrites, and appends missing index lines", () => {
   expect(readFileSync(join(dst, "MEMORY.md"), "utf8")).toBe("- [A](a.md) — a\n- [C](c.md) — c\n- [B](b.md) — b\n");
 });
 
-test("refuses to hand off between accounts of different tools", () => {
+test("refuses to hand off between accounts of different agents", () => {
   setup();
   const other = { ...getAccount("work"), harness: "codex" };
-  expect(() => handoff({ from: getAccount("personal"), to: other, cwd: CWD, memory: true })).toThrow(/different tools/);
+  expect(() => handoff({ from: getAccount("personal"), to: other, cwd: CWD, memory: true })).toThrow(/different coding agents/);
 });

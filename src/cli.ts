@@ -7,31 +7,38 @@ import { doctorCommand } from "./commands/doctor";
 import { handoffCommand } from "./commands/handoff";
 import { listCommand } from "./commands/list";
 import { removeCommand } from "./commands/remove";
+import { renameCommand } from "./commands/rename";
 import { runCommand } from "./commands/run";
 import { shellInitCommand } from "./commands/shell-init";
 
 const HELP = `handova ${pkg.version}
-Run Claude Code under several accounts, and hand a session over from one to another.
+Run your AI coding agent under several accounts, and hand a conversation from one account to another.
+Supports Claude Code and Codex.
 
 Usage:
-  handova <account> [claude args...]   Run Claude Code under an account
+  handova <account> [args...]          Run the account's agent; args are passed to it
   handova add <name>                   Add an account and log in to it
-      --dir <path>                      Use this folder (default ~/.claude-<name>); an existing one is adopted
-      --no-share                        Don't link CLAUDE.md, skills, agents and commands or copy settings.json
-      --no-login                        Skip logging in
-  handova list                         Show accounts with their email and organization
-  handova handoff <from> <to>          Copy this folder's latest session and its memory, then resume it
-      --pick                            Choose the session from a list
-      --session <id>                    Hand over this session
-      --no-memory                       Leave memory behind
-      --no-resume                       Copy only; don't start Claude Code
-      --yes                             Skip the confirmation
+      --agent claude|codex               Which agent (default claude)
+      --dir <path>                       Use this folder (default ~/.claude-<name> or ~/.codex-<name>);
+                                         an existing one is adopted
+      --no-share                         Don't share instructions, skills and settings from your normal account
+      --no-login                         Skip logging in
+  handova list                         Show accounts with their agent, email and organization
+  handova handoff <from> <to>          Copy this folder's latest conversation (and memory, for Claude Code),
+                                       then resume it
+      --pick                             Choose the conversation from a list
+      --session <id>                     Hand over this conversation
+      --no-memory                        Leave memory behind
+      --no-resume                        Copy only; don't start the agent
+      --yes                              Skip the confirmation
   handova remove <name>                Forget an account (its folder and login are kept)
-      --purge                           Also log out and delete its folder
-  handova doctor                       Check Claude Code, every account's login and shared links
-  handova shell-init                   Print claude-<account> aliases, for: eval "$(handova shell-init)"
+      --purge                            Also log out and delete its folder (never an agent's normal folder)
+  handova rename <old> <new>           Rename an account
+  handova doctor                       Check each agent, every account's login and shared links
+  handova shell-init                   Print <agent>-<account> aliases, for: eval "$(handova shell-init)"
 
-The "personal" account is Claude Code's default (~/.claude).`;
+On first run, Handova lists the normal login of each agent that's installed: "personal" for Claude Code
+(~/.claude) and "codex" for Codex (~/.codex).`;
 
 async function main(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;
@@ -59,11 +66,13 @@ async function main(argv: string[]): Promise<number> {
       return 0;
     case "add": {
       const { values, positionals } = parse({
+        agent: { type: "string" },
         dir: { type: "string" },
         share: { type: "boolean" },
         login: { type: "boolean" },
       });
       return addCommand(positionals[0], {
+        agent: values.agent,
         dir: values.dir,
         share: values.share ?? true,
         login: values.login ?? true,
@@ -91,6 +100,8 @@ async function main(argv: string[]): Promise<number> {
       const { values, positionals } = parse({ purge: { type: "boolean" }, yes: { type: "boolean" } });
       return removeCommand(positionals[0], { purge: values.purge ?? false, yes: values.yes ?? false });
     }
+    case "rename":
+      return renameCommand(rest[0], rest[1]);
     case "doctor":
       return doctorCommand();
     case "shell-init":

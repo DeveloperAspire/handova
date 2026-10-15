@@ -2,9 +2,9 @@
 
 ## What this is
 
-A public CLI for running a coding agent under several accounts and handing a session (plus that folder's memory)
-from one account to another. v1 supports Claude Code only; the name is neutral on purpose so other tools (Codex,
-Gemini CLI, ...) can be added as harnesses. Product notes: docs/PRD.md. User docs: README.md.
+A public CLI for running an AI coding agent under several accounts and handing a session (plus, for Claude
+Code, that folder's memory) from one account to another. Supports Claude Code and Codex; each agent is a
+"harness" in `src/harness/`, so more can be added. Product notes: docs/PRD.md. User docs: README.md.
 
 **One sentence:** `handova work` runs Claude Code as your work account; `handova handoff personal work` moves
 what you were doing over when personal hits its limit.
@@ -30,12 +30,16 @@ without opening `~/.claude`.
 
 ## Code layout
 
-- `src/harness/types.ts`: the `Harness` interface, everything tool-specific. `src/harness/claude.ts` is the only
-  one so far. `getHarness(id)` in `src/harness/index.ts`.
+- `src/harness/types.ts`: the `Harness` interface, everything agent-specific. `claude.ts` and `codex.ts`
+  implement it; `getHarness(id)` and `HARNESS_IDS` are in `src/harness/index.ts`.
 - `src/process.ts`: `envFor`, `authStatus`, `runTool`, `installedVersion`. These launch whichever tool an
   account uses.
 - `src/accounts.ts`: the registry. Every account has a `harness`, and entries without one load as `"claude"`.
-- `src/handoff.ts`: copies a session and merges memory. It only works between accounts of the same harness.
+  Before anything is saved, `loadAccounts()` returns the normal login (`defaultAccountName`, `defaultDir()`) of
+  every harness whose binary is on PATH. Once saved, the file is the source of truth, so removed accounts stay
+  removed.
+- `src/handoff.ts`: copies a session file (and its extras) to the same path relative to the other account's
+  folder, and merges memory when the harness has `memoryDir`. Same-harness only.
 - `src/commands/*`: one file per command. Commands never name a tool directly; they go through the harness.
 
 ## Adding a harness
@@ -47,7 +51,7 @@ without opening `~/.claude`.
    - where sessions are saved and how one is resumed by ID;
    - whether it has per-project memory.
 2. Add `src/harness/<id>.ts` implementing `Harness`, and register it in `src/harness/index.ts`.
-3. Give `handova add` a way to pick the harness. Today it always creates Claude Code accounts.
+3. `handova add --agent <id>` picks it up automatically through `HARNESS_IDS`; update the help text in `cli.ts`.
 4. Add tests with a fake binary, like `test/fixtures/fake-claude.sh`, and update the README, site and FAQ.
 
 ## How Claude Code stores things (verified on 2.1.296)
@@ -62,6 +66,19 @@ without opening `~/.claude`.
   are shortened, hence the fallback scan on the `cwd` field.
 - `<dir>/projects/<key>/<id>/` holds subagent transcripts. `<dir>/projects/<key>/memory/` holds memory.
 
+## How Codex stores things (verified on 0.162.1)
+
+- `CODEX_HOME` points Codex at a folder (default `~/.codex`, run with it unset). Each folder keeps its own login
+  in `auth.json`: `auth_mode`, plus `tokens.id_token` (a JWT with `email` and the
+  `https://api.openai.com/auth`.`chatgpt_plan_type` claim) for ChatGPT logins, or `OPENAI_API_KEY`.
+- `codex login status` exits 0 or 1 and prints one line to **stderr**. There's no JSON form.
+- Sessions: `sessions/<yyyy>/<mm>/<dd>/rollout-<time>-<id>.jsonl`; the first line is `session_meta` with `id` and
+  `cwd`. Codex also indexes threads in `state_5.sqlite` and `thread_history_1.sqlite`, but rebuilds them from a
+  rollout copied into another `CODEX_HOME`: `codex resume <id>` continues it with the full history.
+- Memory is a per-account database (`memories_1.sqlite`), not per project, so handoffs don't move it.
+- Verified with a real ChatGPT login (free plan) and with API-key logins: `list` shows the email and
+  "ChatGPT <plan>", or "API key".
+
 ## Website (site/)
 
 Astro + Tailwind v4, deployed on Vercel with the root folder set to `site/`, at https://handova.franklinokolie.com.
@@ -72,7 +89,8 @@ commands section (`site/src/data/commands.ts`) mirrors the README: change both t
 
 Copy rules: the product is **Handova** in prose and titles; only typed things (commands, install lines, package
 name, paths, URLs) are lowercase `handova`. Position it as a tool for any AI coding agent's accounts, but be honest:
-Claude Code is the only one supported today. Codex appears only as "planned". Never imply it works.
+Claude Code and Codex are supported. Handoff only works between accounts of the same agent, and only Claude Code
+handoffs move memory: never imply otherwise.
 
 ## Working conventions
 

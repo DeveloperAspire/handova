@@ -5,12 +5,22 @@ import { getAccount, loadAccounts, registryPath, saveAccounts } from "../src/acc
 import { envFor } from "../src/process";
 import { addAccount } from "../src/commands/add";
 import { removeCommand } from "../src/commands/remove";
+import { renameCommand } from "../src/commands/rename";
 import { tempHome, write } from "./helpers";
 
-test("starts with only the default personal account, without writing anything", () => {
+test("on first run, lists the normal login of each installed agent, without writing anything", () => {
   const home = tempHome();
-  expect(loadAccounts()).toEqual([{ name: "personal", dir: join(home, ".claude"), isDefault: true, harness: "claude" }]);
+  expect(loadAccounts()).toEqual([
+    { name: "personal", dir: join(home, ".claude"), isDefault: true, harness: "claude" },
+    { name: "codex", dir: join(home, ".codex"), isDefault: true, harness: "codex" },
+  ]);
   expect(existsSync(registryPath())).toBe(false);
+
+  process.env.HANDOVA_CODEX_BIN = "/not/installed/codex";
+  expect(loadAccounts().map((a) => a.name)).toEqual(["personal"]);
+  process.env.HANDOVA_CLAUDE_BIN = "/not/installed/claude";
+  expect(loadAccounts()).toEqual([]);
+  expect(() => getAccount("personal")).toThrow(/No accounts yet/);
 });
 
 test("add links shared files and copies settings", () => {
@@ -58,7 +68,28 @@ test("remove without --purge keeps the folder", async () => {
   await removeCommand("work", { purge: false, yes: true });
   expect(existsSync(join(home, ".claude-work"))).toBe(true);
   expect(() => getAccount("work")).toThrow();
-  await expect(removeCommand("personal", { purge: false, yes: true })).rejects.toThrow();
+});
+
+test("a normal login can be taken off the list, stays off, and is never purged", async () => {
+  const home = tempHome();
+  write(join(home, ".claude", "settings.json"), "{}");
+  await expect(removeCommand("personal", { purge: true, yes: true })).rejects.toThrow(/won't delete it/);
+  await removeCommand("personal", { purge: false, yes: true });
+  expect(loadAccounts().map((a) => a.name)).toEqual(["codex"]);
+  expect(existsSync(join(home, ".claude", "settings.json"))).toBe(true);
+});
+
+test("rename changes only the name", () => {
+  const home = tempHome();
+  addAccount("work", { share: false, login: false });
+  renameCommand("work", "office");
+  expect(getAccount("office")).toMatchObject({ dir: join(home, ".claude-work"), harness: "claude" });
+  expect(() => getAccount("work")).toThrow();
+  renameCommand("personal", "main");
+  expect(getAccount("main").isDefault).toBe(true);
+  expect(() => renameCommand("main", "office")).toThrow(/already an account/);
+  expect(() => renameCommand("main", "list")).toThrow(/command/);
+  expect(() => renameCommand("nope", "x")).toThrow(/No account named/);
 });
 
 test("a registry written before harnesses existed loads every account as Claude Code", () => {

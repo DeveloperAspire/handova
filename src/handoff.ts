@@ -1,5 +1,5 @@
 import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { basename, join, relative } from "node:path";
+import { dirname, join, relative } from "node:path";
 import type { Account } from "./accounts";
 import { getHarness, type Session } from "./harness";
 
@@ -14,6 +14,7 @@ export interface HandoffOptions {
 export interface HandoffResult {
   session: Session;
   sessionStatus: "copied" | "updated" | "unchanged";
+  /** Absent when memory wasn't asked for, or the agent doesn't keep memory per project. */
   memory?: MemoryResult;
 }
 
@@ -23,21 +24,22 @@ export interface MemoryResult {
   indexLinesAdded: number;
 }
 
-export function sourceProject(from: Account, cwd: string): string {
-  const dir = getHarness(from.harness).findProject(from.dir, cwd);
-  if (!dir) throw new Error(`No sessions for ${cwd} in the "${from.name}" account. Run handoff from the folder you worked in.`);
-  return dir;
+export function sessionsHere(from: Account, cwd: string): Session[] {
+  const sessions = getHarness(from.harness).listSessions(from.dir, cwd);
+  if (!sessions.length) {
+    throw new Error(`No sessions for ${cwd} in the "${from.name}" account. Run handoff from the folder you worked in.`);
+  }
+  return sessions;
 }
 
 export function handoff(options: HandoffOptions): HandoffResult {
   if (options.from.harness !== options.to.harness) {
     throw new Error(
-      `"${options.from.name}" and "${options.to.name}" are for different tools. Handoff only works between accounts of the same tool for now.`,
+      `"${options.from.name}" and "${options.to.name}" are for different coding agents. Handoff only works between accounts of the same agent for now.`,
     );
   }
   const harness = getHarness(options.from.harness);
-  const srcProject = sourceProject(options.from, options.cwd);
-  const sessions = harness.listSessions(srcProject);
+  const sessions = sessionsHere(options.from, options.cwd);
   const session = options.sessionId ? sessions.find((s) => s.id === options.sessionId) : sessions[0];
   if (!session) {
     throw new Error(
@@ -47,22 +49,26 @@ export function handoff(options: HandoffOptions): HandoffResult {
     );
   }
 
-  // Same machine, so the target uses the same project folder name.
-  const dstProject = join(harness.projectsDir(options.to.dir), basename(srcProject));
-  mkdirSync(dstProject, { recursive: true });
+  // Same machine and same agent, so the session goes to the same place inside the other account's folder.
+  const target = (path: string) => join(options.to.dir, relative(options.from.dir, path));
 
-  const result: HandoffResult = { session, sessionStatus: copySession(session, dstProject, options.to.name) };
-  if (options.memory) {
-    result.memory = mergeMemory(harness.memoryDir(srcProject), harness.memoryDir(dstProject));
-  }
+  const resume = `handova ${options.to.name} ${harness.resumeArgs(session.id).join(" ")}`;
+  const result: HandoffResult = { session, sessionStatus: copySession(session, target, options.to.name, resume) };
+  const memory = options.memory ? harness.memoryDir?.(options.from.dir, options.cwd) : undefined;
+  if (memory) result.memory = mergeMemory(memory, target(memory));
   return result;
 }
 
 // A target copy that the source extends is the same conversation, just behind
 // (handed over earlier, then continued on the source), so it's safe to bring up
 // to date. Anything else on the target is its own work and is never overwritten.
-function copySession(session: Session, dstProject: string, target: string): HandoffResult["sessionStatus"] {
-  const dstFile = join(dstProject, basename(session.file));
+function copySession(
+  session: Session,
+  target: (path: string) => string,
+  account: string,
+  resume: string,
+): HandoffResult["sessionStatus"] {
+  const dstFile = target(session.file);
   let status: HandoffResult["sessionStatus"] = "copied";
 
   if (existsSync(dstFile)) {
@@ -72,20 +78,23 @@ function copySession(session: Session, dstProject: string, target: string): Hand
     else if (src.startsWith(dst)) status = "updated";
     else if (dst.startsWith(src)) {
       throw new Error(
-        `Session ${session.id} is already further along on "${target}". Nothing was copied. ` +
-          `Resume it there with: handova ${target} --resume ${session.id}`,
+        `Session ${session.id} is already further along on "${account}". Nothing was copied. ` +
+          `Resume it there with: ${resume}`,
       );
     } else {
       throw new Error(
         `Session ${session.id} has been continued on both accounts, so the two copies have diverged. ` +
-          `Nothing was copied. Resume it on "${target}" with: handova ${target} --resume ${session.id}`,
+          `Nothing was copied. Resume it on "${account}" with: ${resume}`,
       );
     }
   }
-  if (status !== "unchanged") copyFileSync(session.file, dstFile);
+  if (status !== "unchanged") {
+    mkdirSync(dirname(dstFile), { recursive: true });
+    copyFileSync(session.file, dstFile);
+  }
 
   if (session.extras) {
-    cpSync(session.extras, join(dstProject, basename(session.extras)), { recursive: true, force: false, errorOnExist: false });
+    cpSync(session.extras, target(session.extras), { recursive: true, force: false, errorOnExist: false });
   }
   return status;
 }

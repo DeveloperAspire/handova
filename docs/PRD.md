@@ -34,7 +34,8 @@ A small public CLI that:
 
 ## Later
 
-- Other coding tools behind the harness interface (`src/harness/`), starting with Codex (`CODEX_HOME`).
+- More agents behind the harness interface (`src/harness/`). Codex was added on 15 October 2026, before the
+  first release.
 - Handing off between different tools via a written brief rather than a transcript copy.
 
 ## Out of scope for now

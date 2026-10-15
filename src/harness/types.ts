@@ -8,6 +8,8 @@ export interface Harness {
   /** The environment variable that points the tool at a config folder. Unset for the default account. */
   configEnv: string;
   defaultDir(): string;
+  /** What Handova calls the agent's normal login when it adds it on first run. */
+  defaultAccountName: string;
   newAccountDir(account: string): string;
   /** Linked from the default account into new ones, so edits show up everywhere. */
   sharedLinks: string[];
@@ -17,11 +19,11 @@ export interface Harness {
   loginArgs: string[];
   logoutArgs: string[];
   resumeArgs(sessionId: string): string[];
-  projectsDir(configDir: string): string;
-  /** The folder holding sessions started in cwd, if there are any. */
-  findProject(configDir: string, cwd: string): string | undefined;
-  listSessions(projectDir: string): Session[];
-  memoryDir(projectDir: string): string;
+  /** Sessions started in cwd, newest first. Their files live inside configDir; a handoff copies them to the
+   * same relative path in the other account's folder. */
+  listSessions(configDir: string, cwd: string): Session[];
+  /** The tool's memory for cwd, if it keeps memory per project as files. Absent when it doesn't. */
+  memoryDir?(configDir: string, cwd: string): string | undefined;
 }
 
 export interface AuthStatus {

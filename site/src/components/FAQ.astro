@@ -7,8 +7,8 @@ const faqs = [
     a: "No. Each account keeps its login in its own place, so they all stay signed in and you can run them at the same time in different terminals.",
   },
   {
-    q: "Does it work with Codex or other coding agents?",
-    a: "Not yet. Handova supports Claude Code today and is built so other coding agents can be added. Codex is planned next.",
+    q: "Which coding agents does it work with?",
+    a: "Handova supports Claude Code and Codex. Add a Codex account with handova add <name> --agent codex. Handoffs work between two accounts of the same agent; handing a conversation from Claude Code to Codex isn't supported yet.",
   },
   {
     q: "Does Handova send my data anywhere?",
@@ -17,6 +17,10 @@ const faqs = [
   {
     q: "Which conversation does handoff move?",
     a: "The latest one from the folder you run it in. Add --pick to choose from a list, or --session <id> for a specific one. Run it from the same folder you started the tool in.",
+  },
+  {
+    q: "What if I only use one of the agents?",
+    a: "Handova only lists the agents you have installed. The first time it runs, it adds your normal Claude Code login as personal and your normal Codex login as codex, if each is installed. Remove or rename either one whenever you like.",
   },
   {
     q: "How many accounts can I add?",
@@ -28,7 +32,7 @@ const faqs = [
   },
   {
     q: "What do I need to run it?",
-    a: "Claude Code (the tool Handova supports today), and Node.js 20.16 or newer (or Bun). It's built and tested on macOS. Linux should work; Windows isn't supported yet.",
+    a: "Claude Code or Codex, and Node.js 20.16 or newer (or Bun). It's built and tested on macOS. Linux should work; Windows isn't supported yet.",
   },
   {
     q: "Is Handova made by Anthropic or OpenAI?",

@@ -1,9 +1,16 @@
 import { claude } from "./claude";
+import { codex } from "./codex";
 import type { Harness } from "./types";
 
-const harnesses: Record<string, Harness> = { claude };
+const harnesses: Record<string, Harness> = { claude, codex };
 
 export const DEFAULT_HARNESS = "claude";
+
+export const HARNESS_IDS = Object.keys(harnesses);
+
+export function allHarnesses(): Harness[] {
+  return Object.values(harnesses);
+}
 
 export function getHarness(id: string): Harness {
   const harness = harnesses[id];

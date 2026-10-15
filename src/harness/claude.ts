@@ -18,6 +18,7 @@ export const claude: Harness = {
   // Setting it for the default account, even to ~/.claude, makes Claude Code look for a different login.
   configEnv: "CLAUDE_CONFIG_DIR",
   defaultDir: () => join(home(), ".claude"),
+  defaultAccountName: "personal",
   newAccountDir: (account) => join(home(), `.claude-${account}`),
   sharedLinks: ["CLAUDE.md", "skills", "agents", "commands"],
   sharedCopies: ["settings.json"],
@@ -34,24 +35,9 @@ export const claude: Harness = {
   logoutArgs: ["auth", "logout"],
   resumeArgs: (sessionId) => ["--resume", sessionId],
 
-  projectsDir: (configDir) => join(configDir, "projects"),
-
-  findProject(configDir, cwd) {
-    const root = this.projectsDir(configDir);
-    const direct = join(root, projectKey(cwd));
-    if (existsSync(direct)) return direct;
-    if (!existsSync(root)) return undefined;
-
-    for (const entry of readdirSync(root, { withFileTypes: true })) {
-      if (!entry.isDirectory()) continue;
-      const dir = join(root, entry.name);
-      const first = readdirSync(dir).find((name) => name.endsWith(".jsonl"));
-      if (first && sessionCwd(join(dir, first)) === cwd) return dir;
-    }
-    return undefined;
-  },
-
-  listSessions(projectDir) {
+  listSessions(configDir, cwd) {
+    const projectDir = findProject(configDir, cwd);
+    if (!projectDir) return [];
     return readdirSync(projectDir)
       .filter((name) => name.endsWith(".jsonl"))
       .map((name): Session => {
@@ -68,8 +54,26 @@ export const claude: Harness = {
       .sort((a, b) => b.modified.getTime() - a.modified.getTime());
   },
 
-  memoryDir: (projectDir) => join(projectDir, "memory"),
+  memoryDir(configDir, cwd) {
+    const projectDir = findProject(configDir, cwd);
+    return projectDir && join(projectDir, "memory");
+  },
 };
+
+export function findProject(configDir: string, cwd: string): string | undefined {
+  const root = join(configDir, "projects");
+  const direct = join(root, projectKey(cwd));
+  if (existsSync(direct)) return direct;
+  if (!existsSync(root)) return undefined;
+
+  for (const entry of readdirSync(root, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const dir = join(root, entry.name);
+    const first = readdirSync(dir).find((name) => name.endsWith(".jsonl"));
+    if (first && sessionCwd(join(dir, first)) === cwd) return dir;
+  }
+  return undefined;
+}
 
 function* records(file: string): Generator<Record<string, any>> {
   for (const line of readFileSync(file, "utf8").split("\n")) {

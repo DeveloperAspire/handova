@@ -18,6 +18,7 @@ test("survives Ctrl-C while claude runs, and returns claude's exit code", async 
 
 test("fails clearly when claude isn't installed", async () => {
   tempHome();
+  const personal = getAccount("personal");
   process.env.HANDOVA_CLAUDE_BIN = "/no/such/claude";
-  await expect(runTool(getAccount("personal"), [])).rejects.toThrow(/Couldn't start Claude Code/);
+  await expect(runTool(personal, [])).rejects.toThrow(/Couldn't start Claude Code/);
 });
