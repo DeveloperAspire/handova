@@ -2,9 +2,22 @@
 
 **Hit your usage limit. Hand it over.**
 
-Handova runs and manages your AI coding agent across as many accounts as you have: a primary, a backup, or more. When one
-account hits its usage limit, it hands the conversation (and what the agent learned about your project) to another
-account, and you carry on.
+Got more than one Claude Code or Codex account? Switch between them without logging out and back in. When one hits its
+usage limit, hand the conversation and its memory to another, and every account keeps its own clean profile.
+
+- **No logging out.** Every account stays signed in: `handova backup` and you're there. Run several side by side.
+- **Each account kept clean.** Its own conversations, memory and settings, with no other organization's data mixed in.
+- **Memory comes with it.** `handova handoff primary backup` moves the real conversation, plus that folder's memory for
+  Claude Code, and resumes it right where it stopped.
+
+Why not just log out and log in? Claude Code and Codex do keep your conversations on your computer, so they survive a
+switch. But every switch is a browser sign-in, you can only run one account at a time, and all the accounts that used
+that folder end up sharing one pile of conversations, memory and organization data. Handova keeps them apart and moves a
+conversation only when you hand it over.
+
+Why not just `/export`? It saves a text transcript. Pasted into another account it arrives as one long message: it uses
+up a lot of that account's usage, the agent reads about the work instead of resuming it, and memory doesn't come with
+it. Handova copies the conversation itself.
 
 [Website](https://handova.franklinokolie.com) · [Docs](https://handova.franklinokolie.com/docs)
 
@@ -227,13 +240,17 @@ handova  list
          └─ action, no names needed
 ```
 
-Shows every account with its agent, email, organization and folder:
+Shows every account in a table: the agent, who it's signed in as, the organization and its folder.
 
 ```
-ACCOUNT            AGENT        EMAIL           ORGANIZATION  FOLDER
-primary (primary)  Claude Code  me@example.com  Personal      ~/.claude
-backup             Claude Code  me@company.com  Company       ~/.claude-backup
-codex (primary)    Codex        me@example.com  ChatGPT plus  ~/.codex
+┌─────────────────┬─────────────┬───────────────────┬──────────────┬──────────────────┐
+│ Account         │ Agent       │ Signed in as      │ Organization │ Folder           │
+├─────────────────┼─────────────┼───────────────────┼──────────────┼──────────────────┤
+│ primary         │ Claude Code │ alex@mail.com     │ Personal     │ ~/.claude        │
+│ backup          │ Claude Code │ alex@lumen.studio │ Lumen Studio │ ~/.claude-backup │
+│ codex (primary) │ Codex       │ alex@mail.com     │ ChatGPT plus │ ~/.codex         │
+│ codex-backup    │ Codex       │ alex@lumen.studio │ ChatGPT pro  │ ~/.codex-backup  │
+└─────────────────┴─────────────┴───────────────────┴──────────────┴──────────────────┘
 ```
 
 ### Remove an account

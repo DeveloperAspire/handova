@@ -102,6 +102,9 @@ const commands = [
     padding-left: 0;
     text-indent: 0;
     scrollbar-width: none;
+    /* Box-drawing lines only join up when rows touch. */
+    line-height: 1.2;
+    margin-block: 0.4em;
   }
   /* Claude Code's welcome box, and Codex's header box. */
   [data-terminal] .cc-box {
@@ -270,11 +273,14 @@ const commands = [
       steps: [
         {
           table: [
-            muted("ACCOUNT            AGENT        EMAIL              ORGANIZATION"),
-            "primary (primary)  Claude Code  alex@mail.com      Personal",
-            "backup             Claude Code  alex@lumen.studio  Lumen Studio",
-            "codex (primary)    Codex        alex@mail.com      ChatGPT plus",
-            "codex-backup       Codex        alex@lumen.studio  ChatGPT pro",
+            muted("┌─────────────────┬─────────────┬───────────────────┬──────────────┬──────────────────┐"),
+            `${muted("│")} <b>Account        </b> ${muted("│")} <b>Agent      </b> ${muted("│")} <b>Signed in as     </b> ${muted("│")} <b>Organization</b> ${muted("│")} <b>Folder          </b> ${muted("│")}`,
+            muted("├─────────────────┼─────────────┼───────────────────┼──────────────┼──────────────────┤"),
+            `${muted("│")} <b>primary        </b> ${muted("│")} Claude Code ${muted("│")} alex@mail.com     ${muted("│")} Personal     ${muted("│")} ~/.claude        ${muted("│")}`,
+            `${muted("│")} <b>backup         </b> ${muted("│")} Claude Code ${muted("│")} alex@lumen.studio ${muted("│")} Lumen Studio ${muted("│")} ~/.claude-backup ${muted("│")}`,
+            `${muted("│")} <b>codex (primary)</b> ${muted("│")} Codex       ${muted("│")} alex@mail.com     ${muted("│")} ChatGPT plus ${muted("│")} ~/.codex         ${muted("│")}`,
+            `${muted("│")} <b>codex-backup   </b> ${muted("│")} Codex       ${muted("│")} alex@lumen.studio ${muted("│")} ChatGPT pro  ${muted("│")} ~/.codex-backup  ${muted("│")}`,
+            muted("└─────────────────┴─────────────┴───────────────────┴──────────────┴──────────────────┘"),
           ],
         },
       ],

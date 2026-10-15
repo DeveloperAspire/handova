@@ -18,9 +18,17 @@ import { repo, version } from "../data/project";
       Hit your usage limit.<br /><span class="text-muted">Hand it over.</span>
     </h1>
     <p class="mx-auto mt-6 max-w-xl text-[1.05rem] leading-relaxed text-ink-soft sm:text-[1.2rem]">
-      Handova runs and manages your AI coding agent across as many accounts as you have. When one runs out, it
-      hands the conversation to another in one command.
+      Got more than one Claude Code or Codex account? Switch between them without logging out and back in. When one hits
+      its usage limit, hand the conversation and its memory to another, and every account keeps its own clean profile.
     </p>
+    <ul class="mx-auto mt-6 flex max-w-xl flex-wrap justify-center gap-x-5 gap-y-2 text-[0.85rem] text-ink-soft">
+      {["No logging out", "Each account kept clean", "Memory comes with it"].map((point) => (
+        <li class="flex items-center gap-1.5">
+          <svg class="size-3.5 text-ink" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          {point}
+        </li>
+      ))}
+    </ul>
 
     <div class="mx-auto mt-9 flex max-w-sm flex-col items-center">
       <div class="w-full [&_[role=group]]:mx-auto">

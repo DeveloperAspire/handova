@@ -12,6 +12,18 @@ const faqs = [
     a: "Claude Code and Codex. Add a Codex account with handova add <name> --agent codex, and a Claude Code account with handova add <name>.",
   },
   {
+    q: "Can't I just log out and log in to another account?",
+    a: "You can: Claude Code and Codex keep conversations on your computer, so they survive a switch. But each switch means a browser sign-in, only one account can run at a time, and every account that has used the folder ends up sharing one pile of conversations, memory and organization data. Handova keeps each account signed in and separate, and moves a conversation only when you hand it over.",
+  },
+  {
+    q: "Can't I just export the conversation?",
+    a: "/export saves a text transcript. Pasted into another account it arrives as one long message: it uses up a lot of that account's usage straight away, the agent reads about the work instead of resuming it, and memory doesn't come with it. Handova copies the conversation itself, so the agent resumes it exactly where it stopped, with that folder's memory for Claude Code.",
+  },
+  {
+    q: "Why does each account need its own folder?",
+    a: "A folder holds one login at a time. Giving every account its own folder (~/.claude-backup, ~/.codex-backup) lets them all stay signed in, run side by side, and keep their history apart. Because the folders are separate, a handover is how a conversation crosses from one account to another, only when you ask.",
+  },
+  {
     q: "Which accounts can I hand a conversation between?",
     a: "Any two accounts of the same agent: one Claude Code account to another, or one Codex account to another. Claude Code handoffs also move that folder's memory; Codex keeps memory per account, so only the conversation moves.",
   },

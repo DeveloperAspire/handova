@@ -4,17 +4,17 @@ import SectionHead from "./SectionHead.astro";
 const features = [
   {
     title: "Every account stays signed in",
-    body: "Each account gets its own folder and login for your coding agent. Logging in or out of one never touches another, and you can run them side by side in different terminals.",
+    body: "No logging out and back in. Switch to any account with one word, or run several side by side in different terminals. Logging in or out of one never touches another.",
     code: "handova backup",
   },
   {
-    title: "Hand off in one command",
-    body: "When one account hits its limit, Handova copies the conversation to another account of the same agent (Claude Code to Claude Code, Codex to Codex) and opens it there so you carry on.",
+    title: "Hand over the conversation and its memory",
+    body: "When one account hits its limit, Handova moves the conversation, and for Claude Code that folder's memory, to another account of the same agent, then opens it there so you carry on.",
     code: "handova handoff primary backup",
   },
   {
-    title: "Nothing gets overwritten",
-    body: "Memory that already exists on the receiving account is kept. A conversation that was continued on both copies is left alone, and Handova tells you where to resume it.",
+    title: "Each account stays clean",
+    body: "Every account has its own conversations, memory and settings, so one organization's work never piles up with another's. A handover adds only what you choose, and never overwrites anything.",
     code: "handova handoff primary backup --pick",
   },
   {
@@ -26,8 +26,8 @@ const features = [
 ---
 
 <section class="mx-auto max-w-6xl px-4 py-28 sm:px-8">
-  <SectionHead title="Switch accounts" muted="without losing your place.">
-    Every account keeps its own login, your instructions follow you, and a conversation can move to another account in
+  <SectionHead title="Switch and hand off," muted="without logging out.">
+    Every account keeps its own login and its own history, your instructions follow you, and a conversation moves to another account in
     one command.
   </SectionHead>
   <div class="mt-14 grid gap-4 sm:grid-cols-2">

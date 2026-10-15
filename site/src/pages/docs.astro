@@ -58,8 +58,9 @@ const toc = [
         Getting <span class="text-muted">started.</span>
       </h1>
       <p class="!mt-5 text-[1.08rem]">
-        Install Handova, let the guided setup add your accounts, then hand a conversation to another account whenever one
-        hits its usage limit. Handova works with Claude Code and Codex.
+        Got more than one Claude Code or Codex account? Handova lets you switch between them without logging out and back in,
+        and hand a conversation and its memory to another account when one hits its usage limit. Every account keeps its own
+        clean profile. Install it, let the guided setup add your accounts, and you're ready.
       </p>
 
       <h2 id="install">Install</h2>
@@ -122,7 +123,14 @@ const toc = [
       </table>
       <p>
         Because every account has its own folder, the logins are separate. Logging in or out of one account never affects
-        another, and you can run several at once in different terminals.
+        another, and you can run several at once in different terminals. Each account keeps its own clean profile: its own
+        conversations, memory and settings, with no other organization's data mixed in.
+      </p>
+      <p>
+        The flip side is that one account can't see another's conversations. That's what <a href="#handoff">handoff</a> is
+        for: it copies the conversation itself (and, for Claude Code, that folder's memory) to the other account, so the agent
+        resumes it exactly where it stopped. That's different from <code>/export</code>, which saves a text transcript: pasted
+        into another account it arrives as one long message, uses up a lot of that account's usage, and brings no memory.
       </p>
       <p>
         Handova keeps its list of accounts in <code>~/.config/handova/accounts.json</code>. Until something is saved there, it

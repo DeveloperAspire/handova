@@ -1,19 +1,58 @@
 ---
 import SectionHead from "./SectionHead.astro";
+
+// Items are HTML so commands can be <code>. Switching by hand against switching with Handova. Keep both lists the same length so the rows line up.
+const byHand = [
+  "A browser sign-in and a pasted code on every switch.",
+  "One account at a time.",
+  "Every account's conversations, memory and organization data piled into one folder.",
+  "Or <code>/export</code>: a long transcript pasted into the other account, using up its usage, with no memory.",
+];
+const withHandova = [
+  "Every account stays signed in. <code>handova backup</code> and you're there.",
+  "Run accounts side by side in different terminals.",
+  "Each account keeps its own clean profile: its own conversations, memory and settings.",
+  "<code>handova handoff</code> moves the real conversation and its memory, and it resumes right where it stopped.",
+];
 ---
 
-<section class="border-y border-line bg-surface/40">
+<section class="problem border-y border-line bg-surface/40">
   <div class="mx-auto max-w-6xl px-4 py-24 sm:px-8">
-    <SectionHead title="Your work is stuck" muted="in the wrong account.">
-      <p>
-        AI coding agents like Claude Code and Codex hold one login at a time. Switching means logging out and back in,
-        and when an account runs out mid-task, the conversation and everything the agent learned about your project stay
-        behind with it.
-      </p>
-      <p class="mt-4 text-ink">
-        Handova manages a separate login for every account, so they all stay signed in, and moves a conversation to
-        whichever one you need to keep going.
-      </p>
+    <SectionHead title="Switching accounts" muted="without signing in again.">
+      Claude Code and Codex hold one login per folder, so switching by hand means logging out and back in. Handova gives
+      every account its own signed-in profile and hands work between them on purpose.
     </SectionHead>
+    <div class="mt-14 grid gap-4 md:grid-cols-2">
+      <div class="reveal rounded-2xl border border-line bg-bg/60 p-6 sm:p-8">
+        <h3 class="text-[0.8rem] font-medium uppercase tracking-[0.12em] text-muted">Logging out and in</h3>
+        <ul class="mt-5 space-y-4">
+          {byHand.map((item) => (
+            <li class="flex gap-3 leading-relaxed text-muted">
+              <span class="mt-[0.2rem] text-faint" aria-hidden="true">✕</span>
+              <span set:html={item} />
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="reveal rounded-2xl border border-line-strong bg-surface p-6 sm:p-8">
+        <h3 class="text-[0.8rem] font-medium uppercase tracking-[0.12em] text-ink">With Handova</h3>
+        <ul class="mt-5 space-y-4">
+          {withHandova.map((item) => (
+            <li class="flex gap-3 leading-relaxed text-ink-soft">
+              <svg class="mt-[0.35rem] size-3.5 shrink-0 text-ink" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              <span set:html={item} />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
   </div>
 </section>
+
+<style>
+  .problem :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.86em;
+    color: var(--color-ink);
+  }
+</style>
