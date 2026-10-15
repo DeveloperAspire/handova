@@ -3,7 +3,7 @@ import { appendFileSync, existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { getAccount } from "../src/accounts";
 import { addAccount } from "../src/commands/add";
-import { projectKey } from "../src/claude-paths";
+import { projectKey } from "../src/harness/claude";
 import { handoff, mergeMemory } from "../src/handoff";
 import { sessionLines, tempHome, write } from "./helpers";
 
@@ -83,4 +83,10 @@ test("mergeMemory never overwrites, and appends missing index lines", () => {
   expect(result).toEqual({ copied: ["b.md"], conflicts: ["a.md"], indexLinesAdded: 1 });
   expect(readFileSync(join(dst, "a.md"), "utf8")).toBe("old a");
   expect(readFileSync(join(dst, "MEMORY.md"), "utf8")).toBe("- [A](a.md) — a\n- [C](c.md) — c\n- [B](b.md) — b\n");
+});
+
+test("refuses to hand off between accounts of different tools", () => {
+  setup();
+  const other = { ...getAccount("work"), harness: "codex" };
+  expect(() => handoff({ from: getAccount("personal"), to: other, cwd: CWD, memory: true })).toThrow(/different tools/);
 });

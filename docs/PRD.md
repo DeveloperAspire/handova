@@ -1,4 +1,4 @@
-# cchandover: product notes
+# handova: product notes
 
 Written at kickoff, 12 October 2026, from the planning conversation.
 
@@ -19,10 +19,11 @@ A small public CLI that:
 
 ## Decisions
 
-- Name `cchandover` (`cc` = Claude Code; avoids "claude" in a third-party name). Renamed from `ccswap` on
-  15 October 2026, before the first npm release: a Python tool for the same job already ships as `ccswap` on
-  PyPI (errhythm/ccswap), so both would install a `ccswap` command. `cchandover` was free on npm, PyPI and
-  GitHub.
+- Name `handova` ("hand over"). It's neutral on purpose: Claude Code comes first, but other coding tools (Codex,
+  Gemini CLI, ...) may be added later. History, all on 15 October 2026 and before the first npm release:
+  - `ccswap`: dropped because a Python tool for the same job already ships as `ccswap` on PyPI (errhythm/ccswap).
+  - `cchandover`: dropped because "cc" ties the name to Claude Code.
+  - `handova`: free on npm, PyPI and Homebrew. The GitHub repos with the name are unrelated.
 - TypeScript on Bun, published to npm for Node 20.16+, with a compiled binary as an extra.
 - `personal` is Claude Code's default account and runs with `CLAUDE_CONFIG_DIR` unset; setting it even to
   `~/.claude` makes Claude Code look for a different login.
@@ -31,9 +32,14 @@ A small public CLI that:
   refused.
 - Handoff names the target organization and asks before copying.
 
+## Later
+
+- Other coding tools behind the harness interface (`src/harness/`), starting with Codex (`CODEX_HOME`).
+- Handing off between different tools via a written brief rather than a transcript copy.
+
 ## Out of scope for now
 
 - Migrating the author's own `.zshrc` aliases and `~/.claude-work` (he'll do it himself with
-  `cchandover add work --dir ~/.claude-work`).
+  `handova add work --dir ~/.claude-work`).
 - Syncing in both directions or merging diverged sessions.
 - Copying file-edit history, so rewind doesn't reach edits made before a handoff.

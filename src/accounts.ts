@@ -1,11 +1,14 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { defaultConfigDir, home } from "./claude-paths";
+import { DEFAULT_HARNESS, getHarness } from "./harness";
+import { home } from "./paths";
 
 export interface Account {
   name: string;
   dir: string;
   isDefault: boolean;
+  /** Which coding tool the account is for. Registries written before this field existed are all Claude Code. */
+  harness: string;
 }
 
 interface Registry {
@@ -16,15 +19,17 @@ export const RESERVED_NAMES = ["add", "list", "handoff", "remove", "doctor", "sh
 
 export function registryPath(): string {
   const configHome = process.env.XDG_CONFIG_HOME || join(home(), ".config");
-  return join(configHome, "cchandover", "accounts.json");
+  return join(configHome, "handova", "accounts.json");
 }
 
 // Until something is saved, the registry holds just the default account.
 export function loadAccounts(): Account[] {
   const file = registryPath();
-  if (!existsSync(file)) return [{ name: "personal", dir: defaultConfigDir(), isDefault: true }];
+  if (!existsSync(file)) {
+    return [{ name: "personal", dir: getHarness(DEFAULT_HARNESS).defaultDir(), isDefault: true, harness: DEFAULT_HARNESS }];
+  }
   const registry: Registry = JSON.parse(readFileSync(file, "utf8"));
-  return registry.accounts;
+  return registry.accounts.map((account) => ({ ...account, harness: account.harness ?? DEFAULT_HARNESS }));
 }
 
 export function saveAccounts(accounts: Account[]): void {
@@ -37,7 +42,7 @@ export function getAccount(name: string): Account {
   const account = loadAccounts().find((a) => a.name === name);
   if (!account) {
     const names = loadAccounts().map((a) => a.name).join(", ");
-    throw new Error(`No account named "${name}". Accounts: ${names}. Add one with: cchandover add ${name}`);
+    throw new Error(`No account named "${name}". Accounts: ${names}. Add one with: handova add ${name}`);
   }
   return account;
 }
@@ -47,19 +52,7 @@ export function validateName(name: string): void {
     throw new Error(`"${name}" isn't a valid account name. Use lowercase letters, digits and dashes.`);
   }
   if (RESERVED_NAMES.includes(name)) {
-    throw new Error(`"${name}" is a cchandover command, so it can't be an account name.`);
+    throw new Error(`"${name}" is a handova command, so it can't be an account name.`);
   }
 }
 
-// The default account must run with CLAUDE_CONFIG_DIR unset. Setting it, even to
-// ~/.claude, makes Claude Code look for a different login.
-export function envFor(account: Account): NodeJS.ProcessEnv {
-  const env = { ...process.env };
-  if (account.isDefault) delete env.CLAUDE_CONFIG_DIR;
-  else env.CLAUDE_CONFIG_DIR = account.dir;
-  return env;
-}
-
-export function tildify(path: string): string {
-  return path.startsWith(home()) ? "~" + path.slice(home().length) : path;
-}

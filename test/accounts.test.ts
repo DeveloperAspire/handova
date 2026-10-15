@@ -1,14 +1,15 @@
 import { expect, test } from "bun:test";
 import { existsSync, lstatSync, mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { envFor, getAccount, loadAccounts, registryPath } from "../src/accounts";
+import { getAccount, loadAccounts, registryPath, saveAccounts } from "../src/accounts";
+import { envFor } from "../src/process";
 import { addAccount } from "../src/commands/add";
 import { removeCommand } from "../src/commands/remove";
 import { tempHome, write } from "./helpers";
 
 test("starts with only the default personal account, without writing anything", () => {
   const home = tempHome();
-  expect(loadAccounts()).toEqual([{ name: "personal", dir: join(home, ".claude"), isDefault: true }]);
+  expect(loadAccounts()).toEqual([{ name: "personal", dir: join(home, ".claude"), isDefault: true, harness: "claude" }]);
   expect(existsSync(registryPath())).toBe(false);
 });
 
@@ -58,4 +59,12 @@ test("remove without --purge keeps the folder", async () => {
   expect(existsSync(join(home, ".claude-work"))).toBe(true);
   expect(() => getAccount("work")).toThrow();
   await expect(removeCommand("personal", { purge: false, yes: true })).rejects.toThrow();
+});
+
+test("a registry written before harnesses existed loads every account as Claude Code", () => {
+  const home = tempHome();
+  write(registryPath(), JSON.stringify({ accounts: [{ name: "work", dir: join(home, ".claude-work"), isDefault: false }] }));
+  expect(getAccount("work").harness).toBe("claude");
+  saveAccounts(loadAccounts());
+  expect(JSON.parse(readFileSync(registryPath(), "utf8")).accounts[0].harness).toBe("claude");
 });

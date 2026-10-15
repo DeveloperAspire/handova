@@ -1,11 +1,12 @@
-# cchandover
+# handova
 
 ## What this is
 
-A public CLI for running Claude Code under several accounts and handing a session (plus that folder's
-memory) from one account to another. Product notes: docs/PRD.md. User docs: README.md.
+A public CLI for running a coding tool under several accounts and handing a session (plus that folder's memory)
+from one account to another. v1 supports Claude Code only; the name is neutral on purpose so other tools (Codex,
+Gemini CLI, ...) can be added as harnesses. Product notes: docs/PRD.md. User docs: README.md.
 
-**One sentence:** `cchandover work` runs Claude Code as your work account; `cchandover handoff personal work` moves
+**One sentence:** `handova work` runs Claude Code as your work account; `handova handoff personal work` moves
 what you were doing over when personal hits its limit.
 
 **It wins if:** someone who hits a usage limit is working again on their other account within 30 seconds,
@@ -23,9 +24,31 @@ without opening `~/.claude`.
 | Layer | Choice | Notes |
 |---|---|---|
 | Runtime | Bun for dev, Node 20.16+ for the published build | `parseArgs` `allowNegative` needs 20.16 |
-| CLI | `node:util` `parseArgs` | `cchandover <account> ...` passes args to claude unparsed |
+| CLI | `node:util` `parseArgs` | `handova <account> ...` passes args to claude unparsed |
 | Prompts | `@clack/prompts` | the only runtime dependency |
-| Tests | `bun test` | temp HOME + `test/fixtures/fake-claude.sh` via `CCHANDOVER_CLAUDE_BIN` |
+| Tests | `bun test` | temp HOME + `test/fixtures/fake-claude.sh` via `HANDOVA_CLAUDE_BIN` |
+
+## Code layout
+
+- `src/harness/types.ts`: the `Harness` interface, everything tool-specific. `src/harness/claude.ts` is the only
+  one so far. `getHarness(id)` in `src/harness/index.ts`.
+- `src/process.ts`: `envFor`, `authStatus`, `runTool`, `installedVersion`. These launch whichever tool an
+  account uses.
+- `src/accounts.ts`: the registry. Every account has a `harness`, and entries without one load as `"claude"`.
+- `src/handoff.ts`: copies a session and merges memory. It only works between accounts of the same harness.
+- `src/commands/*`: one file per command. Commands never name a tool directly; they go through the harness.
+
+## Adding a harness
+
+1. Verify on a real install, and write down here, how the tool stores things:
+   - which environment variable points it at a config folder;
+   - where the login lives, and whether two folders really keep separate logins;
+   - how to check login status from the command line;
+   - where sessions are saved and how one is resumed by ID;
+   - whether it has per-project memory.
+2. Add `src/harness/<id>.ts` implementing `Harness`, and register it in `src/harness/index.ts`.
+3. Give `handova add` a way to pick the harness. Today it always creates Claude Code accounts.
+4. Add tests with a fake binary, like `test/fixtures/fake-claude.sh`, and update the README, site and FAQ.
 
 ## How Claude Code stores things (verified on 2.1.296)
 
@@ -41,7 +64,7 @@ without opening `~/.claude`.
 
 ## Website (site/)
 
-Astro + Tailwind v4, deployed on Vercel with the root folder set to `site/`, at https://cchandover.franklinokolie.com.
+Astro + Tailwind v4, deployed on Vercel with the root folder set to `site/`, at https://handova.franklinokolie.com.
 Neutral dark (`#0a0a0a`, true greys), Geist + Geist Mono. One accent, `--color-active` (mint): it means "the active
 account" and nothing else. The version comes from the CLI's package.json (`site/src/data/project.ts`), and the
 commands section (`site/src/data/commands.ts`) mirrors the README: change both together. Demo data is made up
@@ -49,8 +72,8 @@ commands section (`site/src/data/commands.ts`) mirrors the README: change both t
 
 ## Working conventions
 
-- Never touch the real `~/.claude`, `~/.claude-*`, `~/.config/cchandover` or shell profile in tests or manual
-  checks. Use a temp HOME. `cchandover list` is read-only and safe on the real machine.
+- Never touch the real `~/.claude`, `~/.claude-*`, `~/.config/handova` or shell profile in tests or manual
+  checks. Use a temp HOME. `handova list` is read-only and safe on the real machine.
 - Every command that sends data to another organization or deletes something confirms first, needs `--yes`
   when there's no TTY, and says what it did.
 - Errors are `throw new Error(<sentence that says what to do next>)`; `cli.ts` prints them.

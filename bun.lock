@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "cchandover",
+      "name": "handova",
       "dependencies": {
         "@clack/prompts": "^1.8.1",
       },

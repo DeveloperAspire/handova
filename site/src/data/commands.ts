@@ -16,19 +16,19 @@ export const commands: Command[] = [
   {
     id: "run",
     title: "Run Claude Code under an account",
-    parts: [{ text: "cchandover" }, { text: "work", label: "account" }, { text: "--continue", label: "passed to Claude" }],
+    parts: [{ text: "handova" }, { text: "work", label: "account" }, { text: "--continue", label: "passed to Claude" }],
     body: "Opens Claude Code logged in as work. Anything after the account name works the same as it does with plain claude.",
     options: [
-      ["cchandover work", "starts a new conversation"],
-      ["cchandover work --continue", "reopens the last conversation in this folder"],
-      ["cchandover work --resume", "lists past conversations to pick from"],
+      ["handova work", "starts a new conversation"],
+      ["handova work --continue", "reopens the last conversation in this folder"],
+      ["handova work --resume", "lists past conversations to pick from"],
     ],
   },
   {
     id: "handoff",
     title: "Hand a conversation to another account",
-    parts: [{ text: "cchandover" }, { text: "handoff", label: "action" }, { text: "personal", label: "from" }, { text: "work", label: "to" }],
-    body: "Run it in the folder you were working in. It finds your latest conversation there on personal, names the organization it's going to and asks first, copies the conversation and memory to work, and opens it there. Any two accounts work: cchandover handoff work client, or back again with cchandover handoff work personal.",
+    parts: [{ text: "handova" }, { text: "handoff", label: "action" }, { text: "personal", label: "from" }, { text: "work", label: "to" }],
+    body: "Run it in the folder you were working in. It finds your latest conversation there on personal, names the organization it's going to and asks first, copies the conversation and memory to work, and opens it there. Any two accounts work: handova handoff work client, or back again with handova handoff work personal.",
     options: [
       ["--pick", "choose the conversation from a list"],
       ["--session <id>", "hand over one specific conversation"],
@@ -40,7 +40,7 @@ export const commands: Command[] = [
   {
     id: "add",
     title: "Add an account",
-    parts: [{ text: "cchandover" }, { text: "add", label: "action" }, { text: "client", label: "name you choose" }],
+    parts: [{ text: "handova" }, { text: "add", label: "action" }, { text: "client", label: "name you choose" }],
     body: "Creates ~/.claude-client, shares your CLAUDE.md, skills, agents and commands with it, copies settings.json, then opens the login.",
     options: [
       ["--dir <folder>", "use a folder you already have"],
@@ -51,25 +51,25 @@ export const commands: Command[] = [
   {
     id: "list",
     title: "List accounts",
-    parts: [{ text: "cchandover" }, { text: "list", label: "action" }],
+    parts: [{ text: "handova" }, { text: "list", label: "action" }],
     body: "Shows every account with its email, organization and folder.",
   },
   {
     id: "remove",
     title: "Remove an account",
-    parts: [{ text: "cchandover" }, { text: "remove", label: "action" }, { text: "work", label: "account" }, { text: "--purge", label: "optional" }],
+    parts: [{ text: "handova" }, { text: "remove", label: "action" }, { text: "work", label: "account" }, { text: "--purge", label: "optional" }],
     body: "Forgets the account and keeps its folder and login. With --purge, it also logs the account out and deletes its folder, after asking.",
   },
   {
     id: "doctor",
     title: "Check everything",
-    parts: [{ text: "cchandover" }, { text: "doctor", label: "action" }],
+    parts: [{ text: "handova" }, { text: "doctor", label: "action" }],
     body: "Checks that Claude Code is installed, every account is logged in, and the shared links still work. For anything wrong, it says how to fix it.",
   },
   {
     id: "shell-init",
     title: "Print shortcuts",
-    parts: [{ text: "cchandover" }, { text: "shell-init", label: "action" }],
-    body: 'Prints a claude-<account> shortcut for each account. Add eval "$(cchandover shell-init)" to your shell profile to use them.',
+    parts: [{ text: "handova" }, { text: "shell-init", label: "action" }],
+    body: 'Prints a claude-<account> shortcut for each account. Add eval "$(handova shell-init)" to your shell profile to use them.',
   },
 ];

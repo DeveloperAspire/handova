@@ -1,5 +1,6 @@
-import { loadAccounts, tildify } from "../accounts";
-import { authStatus } from "../claude";
+import { loadAccounts } from "../accounts";
+import { tildify } from "../paths";
+import { authStatus } from "../process";
 
 export function listCommand(): number {
   const rows = loadAccounts().map((account) => {

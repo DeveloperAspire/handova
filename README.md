@@ -1,4 +1,4 @@
-# cchandover
+# handova
 
 Run Claude Code under as many accounts as you have, such as personal, work and a client's, and hand a
 conversation from one account to another when you hit a usage limit.
@@ -6,22 +6,22 @@ conversation from one account to another when you hit a usage limit.
 Install it with your package manager:
 
 ```sh
-npm install -g cchandover
-pnpm add -g cchandover
-yarn global add cchandover    # Yarn 1; Yarn 2 and later have no global installs
-bun add -g cchandover
+npm install -g handova
+pnpm add -g handova
+yarn global add handova    # Yarn 1; Yarn 2 and later have no global installs
+bun add -g handova
 ```
 
-Or run it once without installing: `npx cchandover`, `pnpm dlx cchandover` or `bunx cchandover`.
+Or run it once without installing: `npx handova`, `pnpm dlx handova` or `bunx handova`.
 
 ## How it works
 
 Claude Code keeps an account's login, settings, conversations and memory in a config folder. Your normal
-`claude` uses `~/.claude`, which cchandover calls `personal`. Every other account gets its own folder, and cchandover
+`claude` uses `~/.claude`, which handova calls `personal`. Every other account gets its own folder, and handova
 points Claude Code at it (through `CLAUDE_CONFIG_DIR`) when it starts.
 
 The logins are separate. Logging in or out of one account never affects another, and you can run them side
-by side in different terminals. Accounts are listed in `~/.config/cchandover/accounts.json`.
+by side in different terminals. Accounts are listed in `~/.config/handova/accounts.json`.
 
 ## Commands
 
@@ -31,22 +31,22 @@ you like and name them anything.
 ### Run Claude Code under an account
 
 ```
-cchandover  work  --continue
+handova  work  --continue
         ↑ account  ↑ anything after the account is passed to Claude
 ```
 
 Opens Claude Code logged in as **work**. Anything after the account name works the same as it does with plain
 `claude`:
 
-- `cchandover work` starts a new conversation.
-- `cchandover work --continue` reopens the last conversation in this folder.
-- `cchandover work --resume` shows a list of past conversations to pick from.
-- `cchandover work --resume <id>` opens one specific conversation.
+- `handova work` starts a new conversation.
+- `handova work --continue` reopens the last conversation in this folder.
+- `handova work --resume` shows a list of past conversations to pick from.
+- `handova work --resume <id>` opens one specific conversation.
 
 ### Hand a conversation to another account
 
 ```
-cchandover  handoff  personal  work
+handova  handoff  personal  work
         ↑ action  ↑ from     ↑ to
 ```
 
@@ -57,10 +57,10 @@ For when one account hits its usage limit. Run it in the folder you were working
 3. Copies the conversation and that folder's memory to **work**.
 4. Opens the conversation on **work**, so you can carry on.
 
-Any two accounts work: `cchandover handoff work client`, or back again with `cchandover handoff work personal`.
+Any two accounts work: `handova handoff work client`, or back again with `handova handoff work personal`.
 
 ```
-cchandover  handoff  personal  work  --pick
+handova  handoff  personal  work  --pick
                                  ↑ optional, see below
 ```
 
@@ -75,13 +75,13 @@ listed, and missing lines are added to `MEMORY.md`. Handing the same conversatio
 up to date, unless it has also been continued on the receiving account.
 
 The copy is a fork: what you do on the new account doesn't flow back. It also means the conversation is now
-processed under the receiving account's organization, which cchandover names before it copies. Don't hand work
+processed under the receiving account's organization, which handova names before it copies. Don't hand work
 conversations to a personal account, or personal ones to work, if that isn't allowed where you work.
 
 ### Add an account
 
 ```
-cchandover  add  client
+handova  add  client
         ↑ action  ↑ name you choose for the new account
 ```
 
@@ -90,7 +90,7 @@ Sets up a new account called **client**: creates the folder `~/.claude-client`, 
 each account can change its own), then opens the login.
 
 ```
-cchandover  add  work  --dir ~/.claude-work
+handova  add  work  --dir ~/.claude-work
                    ↑ use this existing folder instead of creating a new one
 ```
 
@@ -103,7 +103,7 @@ Names use lowercase letters, digits and dashes.
 ### List accounts
 
 ```
-cchandover  list
+handova  list
         ↑ action (no names needed)
 ```
 
@@ -118,18 +118,18 @@ work                me@company.com     Company       ~/.claude-work
 ### Remove an account
 
 ```
-cchandover  remove  work  --purge
+handova  remove  work  --purge
         ↑ action  ↑ account  ↑ optional: also log out and delete its folder
 ```
 
-Without `--purge`, cchandover only forgets the account; its folder and login stay, so you can add it back later.
+Without `--purge`, handova only forgets the account; its folder and login stay, so you can add it back later.
 With `--purge`, it also logs the account out and deletes its folder, including its conversations and memory.
 It asks first (`--yes` skips the question). The default account can't be removed.
 
 ### Check everything
 
 ```
-cchandover  doctor
+handova  doctor
         ↑ action (no names needed)
 ```
 
@@ -139,21 +139,21 @@ still work. For anything wrong, it tells you how to fix it.
 ### Print shortcuts
 
 ```
-cchandover  shell-init
+handova  shell-init
         ↑ action (no names needed)
 ```
 
-Prints one shortcut per account, such as `claude-work` for `cchandover work`. It's optional. To use them, add this
+Prints one shortcut per account, such as `claude-work` for `handova work`. It's optional. To use them, add this
 line to your `~/.zshrc` or `~/.bashrc`:
 
 ```sh
-eval "$(cchandover shell-init)"
+eval "$(handova shell-init)"
 ```
 
 ### Help and version
 
 ```
-cchandover  help             cchandover  --version
+handova  help             handova  --version
         ↑ every command          ↑ the installed version
 ```
 

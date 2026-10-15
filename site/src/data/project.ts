@@ -2,11 +2,11 @@
 import pkg from "../../../package.json";
 
 export const version = pkg.version;
-export const repo = "https://github.com/DeveloperAspire/cchandover";
-export const npm = "https://www.npmjs.com/package/cchandover";
+export const repo = "https://github.com/DeveloperAspire/handova";
+export const npm = "https://www.npmjs.com/package/handova";
 export const installCommands = [
-  { manager: "npm", command: "npm install -g cchandover" },
-  { manager: "pnpm", command: "pnpm add -g cchandover" },
-  { manager: "yarn", command: "yarn global add cchandover", note: "Yarn 2 and later have no global installs. Use Yarn 1, or one of the others." },
-  { manager: "bun", command: "bun add -g cchandover" },
+  { manager: "npm", command: "npm install -g handova" },
+  { manager: "pnpm", command: "pnpm add -g handova" },
+  { manager: "yarn", command: "yarn global add handova", note: "Yarn 2 and later have no global installs. Use Yarn 1, or one of the others." },
+  { manager: "bun", command: "bun add -g handova" },
 ];

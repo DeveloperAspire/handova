@@ -1,11 +1,18 @@
 {
-  "name": "cchandover",
+  "name": "handova",
   "version": "1.0.0",
-  "description": "Run Claude Code under several accounts, and hand a session over from one account to another.",
+  "description": "Run Claude Code under several accounts, and hand a conversation over from one account to another.",
   "license": "MIT",
+  "author": "Franklin Okolie (https://www.franklinokolie.com)",
+  "homepage": "https://handova.franklinokolie.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DeveloperAspire/handova.git"
+  },
+  "bugs": "https://github.com/DeveloperAspire/handova/issues",
   "type": "module",
   "bin": {
-    "cchandover": "dist/cli.js"
+    "handova": "dist/cli.js"
   },
   "files": [
     "dist"
@@ -21,7 +28,7 @@
   ],
   "scripts": {
     "build": "bun build src/cli.ts --target node --outfile dist/cli.js",
-    "compile": "bun build src/cli.ts --compile --outfile build/cchandover",
+    "compile": "bun build src/cli.ts --compile --outfile build/handova",
     "test": "bun test",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "bun run typecheck && bun test && bun run build"

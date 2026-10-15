@@ -1,11 +1,11 @@
 ---
-// A terminal you can drive: each button types a real cchandover command and plays its output.
+// A terminal you can drive: each button types a real handova command and plays its output.
 // Demo data is made up (alex@mail.com, Lumen Studio).
 const commands = [
-  { id: "handoff", label: "cchandover handoff personal work" },
-  { id: "list", label: "cchandover list" },
-  { id: "continue", label: "cchandover work --continue" },
-  { id: "personal", label: "cchandover personal" },
+  { id: "handoff", label: "handova handoff personal work" },
+  { id: "list", label: "handova list" },
+  { id: "continue", label: "handova work --continue" },
+  { id: "personal", label: "handova personal" },
 ];
 ---
 
@@ -125,7 +125,7 @@ const commands = [
 
   const scripts: Record<string, { command: string; steps: Step[] }> = {
     handoff: {
-      command: "cchandover handoff personal work",
+      command: "handova handoff personal work",
       steps: [
         { html: `${faint("◇")}  Send the conversation and memory to Lumen Studio (alex@lumen.studio)?`, wait: 380 },
         { html: `${faint("│")}  Yes`, wait: 520 },
@@ -141,7 +141,7 @@ const commands = [
       ],
     },
     list: {
-      command: "cchandover list",
+      command: "handova list",
       steps: [
         {
           table: [
@@ -154,7 +154,7 @@ const commands = [
       ],
     },
     continue: {
-      command: "cchandover work --continue",
+      command: "handova work --continue",
       steps: [
         { account: "work", wait: 200 },
         { html: claudeHeader("work", "alex@lumen.studio"), wait: 260 },
@@ -163,7 +163,7 @@ const commands = [
       ],
     },
     personal: {
-      command: "cchandover personal",
+      command: "handova personal",
       steps: [
         { account: "personal", wait: 200 },
         { html: claudeHeader("personal", "alex@mail.com"), wait: 260 },

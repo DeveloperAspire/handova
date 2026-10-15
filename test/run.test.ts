@@ -2,14 +2,14 @@ import { expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { getAccount } from "../src/accounts";
-import { runClaude } from "../src/claude";
+import { runTool } from "../src/process";
 import { tempHome } from "./helpers";
 
-// Ctrl-C goes to both cchandover and claude. Claude uses it to interrupt a reply and
-// keeps running, so cchandover must keep running too and wait for it.
+// Ctrl-C goes to both handova and claude. Claude uses it to interrupt a reply and
+// keeps running, so handova must keep running too and wait for it.
 test("survives Ctrl-C while claude runs, and returns claude's exit code", async () => {
   const home = tempHome();
-  const running = runClaude(getAccount("personal"), ["sleep"]);
+  const running = runTool(getAccount("personal"), ["sleep"]);
   await Bun.sleep(300);
   process.kill(process.pid, "SIGINT");
   expect(await running).toBe(0);
@@ -18,6 +18,6 @@ test("survives Ctrl-C while claude runs, and returns claude's exit code", async 
 
 test("fails clearly when claude isn't installed", async () => {
   tempHome();
-  process.env.CCHANDOVER_CLAUDE_BIN = "/no/such/claude";
-  await expect(runClaude(getAccount("personal"), [])).rejects.toThrow(/Couldn't start Claude Code/);
+  process.env.HANDOVA_CLAUDE_BIN = "/no/such/claude";
+  await expect(runTool(getAccount("personal"), [])).rejects.toThrow(/Couldn't start Claude Code/);
 });

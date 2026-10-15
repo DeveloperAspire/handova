@@ -1,7 +1,9 @@
 import { rmSync } from "node:fs";
 import * as p from "@clack/prompts";
-import { getAccount, loadAccounts, saveAccounts, tildify } from "../accounts";
-import { runClaude } from "../claude";
+import { getAccount, loadAccounts, saveAccounts } from "../accounts";
+import { getHarness } from "../harness";
+import { tildify } from "../paths";
+import { runTool } from "../process";
 import { confirm } from "../prompt";
 
 export interface RemoveOptions {
@@ -10,9 +12,9 @@ export interface RemoveOptions {
 }
 
 export async function removeCommand(name: string | undefined, options: RemoveOptions): Promise<number> {
-  if (!name) throw new Error("Usage: cchandover remove <name> [--purge] [--yes]");
+  if (!name) throw new Error("Usage: handova remove <name> [--purge] [--yes]");
   const account = getAccount(name);
-  if (account.isDefault) throw new Error(`"${name}" is the default account (~/.claude) and can't be removed.`);
+  if (account.isDefault) throw new Error(`"${name}" is a default account (${tildify(account.dir)}) and can't be removed.`);
 
   if (options.purge && !options.yes) {
     const ok = await confirm(
@@ -26,7 +28,7 @@ export async function removeCommand(name: string | undefined, options: RemoveOpt
     p.log.success(`Removed "${name}". Its folder ${tildify(account.dir)} and login were kept.`);
     return 0;
   }
-  await runClaude(account, ["auth", "logout"]);
+  await runTool(account, getHarness(account.harness).logoutArgs);
   rmSync(account.dir, { recursive: true, force: true });
   p.log.success(`Removed "${name}", logged it out and deleted ${tildify(account.dir)}.`);
   return 0;

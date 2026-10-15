@@ -6,11 +6,11 @@ export const FAKE_CLAUDE = join(import.meta.dir, "fixtures", "fake-claude.sh");
 
 // A throwaway HOME, so tests never touch the real ~/.claude.
 export function tempHome(): string {
-  const home = realpathSync(mkdtempSync(join(tmpdir(), "cchandover-test-")));
+  const home = realpathSync(mkdtempSync(join(tmpdir(), "handova-test-")));
   process.env.HOME = home;
   delete process.env.XDG_CONFIG_HOME;
   delete process.env.CLAUDE_CONFIG_DIR;
-  process.env.CCHANDOVER_CLAUDE_BIN = FAKE_CLAUDE;
+  process.env.HANDOVA_CLAUDE_BIN = FAKE_CLAUDE;
   return home;
 }
 

@@ -1,8 +1,8 @@
 import * as p from "@clack/prompts";
 import { getAccount } from "../accounts";
-import { authStatus, runClaude } from "../claude";
-import { listSessions } from "../claude-paths";
 import { handoff, sourceProject } from "../handoff";
+import { getHarness } from "../harness";
+import { authStatus, runTool } from "../process";
 import { confirm } from "../prompt";
 
 export interface HandoffCommandOptions {
@@ -19,7 +19,7 @@ export async function handoffCommand(
   options: HandoffCommandOptions,
 ): Promise<number> {
   if (!from || !to) {
-    throw new Error("Usage: cchandover handoff <from> <to> [--pick | --session <id>] [--no-memory] [--no-resume] [--yes]");
+    throw new Error("Usage: handova handoff <from> <to> [--pick | --session <id>] [--no-memory] [--no-resume] [--yes]");
   }
   const source = getAccount(from);
   const target = getAccount(to);
@@ -28,7 +28,7 @@ export async function handoffCommand(
 
   let sessionId = options.session;
   if (options.pick) {
-    const sessions = listSessions(sourceProject(source, cwd));
+    const sessions = getHarness(source.harness).listSessions(sourceProject(source, cwd));
     const choice = await p.select({
       message: "Which session?",
       options: sessions.map((s) => ({
@@ -42,7 +42,7 @@ export async function handoffCommand(
   }
 
   const status = authStatus(target);
-  if (status && !status.loggedIn) throw new Error(`"${to}" isn't logged in. Run: cchandover ${to} auth login`);
+  if (status && !status.loggedIn) throw new Error(`"${to}" isn't logged in. Run: handova ${to} auth login`);
   if (status?.orgName && !options.yes) {
     const ok = await confirm(`The conversation and memory will be sent to ${status.orgName} (${status.email}). Continue?`);
     if (!ok) return 1;
@@ -66,8 +66,8 @@ export async function handoffCommand(
   p.log.info(`This is a copy. What you do on "${to}" from here won't appear in "${from}".`);
 
   if (!options.resume) {
-    p.log.step(`Resume it with: cchandover ${to} --resume ${session.id}`);
+    p.log.step(`Resume it with: handova ${to} --resume ${session.id}`);
     return 0;
   }
-  return runClaude(target, ["--resume", session.id], cwd);
+  return runTool(target, getHarness(target.harness).resumeArgs(session.id), cwd);
 }

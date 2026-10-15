@@ -1,7 +1,7 @@
 import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, join, relative } from "node:path";
 import type { Account } from "./accounts";
-import { findProjectDir, listSessions, projectsDir, type Session } from "./claude-paths";
+import { getHarness, type Session } from "./harness";
 
 export interface HandoffOptions {
   from: Account;
@@ -24,14 +24,20 @@ export interface MemoryResult {
 }
 
 export function sourceProject(from: Account, cwd: string): string {
-  const dir = findProjectDir(from.dir, cwd);
+  const dir = getHarness(from.harness).findProject(from.dir, cwd);
   if (!dir) throw new Error(`No sessions for ${cwd} in the "${from.name}" account. Run handoff from the folder you worked in.`);
   return dir;
 }
 
 export function handoff(options: HandoffOptions): HandoffResult {
+  if (options.from.harness !== options.to.harness) {
+    throw new Error(
+      `"${options.from.name}" and "${options.to.name}" are for different tools. Handoff only works between accounts of the same tool for now.`,
+    );
+  }
+  const harness = getHarness(options.from.harness);
   const srcProject = sourceProject(options.from, options.cwd);
-  const sessions = listSessions(srcProject);
+  const sessions = harness.listSessions(srcProject);
   const session = options.sessionId ? sessions.find((s) => s.id === options.sessionId) : sessions[0];
   if (!session) {
     throw new Error(
@@ -42,12 +48,12 @@ export function handoff(options: HandoffOptions): HandoffResult {
   }
 
   // Same machine, so the target uses the same project folder name.
-  const dstProject = join(projectsDir(options.to.dir), basename(srcProject));
+  const dstProject = join(harness.projectsDir(options.to.dir), basename(srcProject));
   mkdirSync(dstProject, { recursive: true });
 
-  const result: HandoffResult = { session, sessionStatus: copySession(session, srcProject, dstProject, options.to.name) };
+  const result: HandoffResult = { session, sessionStatus: copySession(session, dstProject, options.to.name) };
   if (options.memory) {
-    result.memory = mergeMemory(join(srcProject, "memory"), join(dstProject, "memory"));
+    result.memory = mergeMemory(harness.memoryDir(srcProject), harness.memoryDir(dstProject));
   }
   return result;
 }
@@ -55,12 +61,7 @@ export function handoff(options: HandoffOptions): HandoffResult {
 // A target copy that the source extends is the same conversation, just behind
 // (handed over earlier, then continued on the source), so it's safe to bring up
 // to date. Anything else on the target is its own work and is never overwritten.
-function copySession(
-  session: Session,
-  srcProject: string,
-  dstProject: string,
-  target: string,
-): HandoffResult["sessionStatus"] {
+function copySession(session: Session, dstProject: string, target: string): HandoffResult["sessionStatus"] {
   const dstFile = join(dstProject, basename(session.file));
   let status: HandoffResult["sessionStatus"] = "copied";
 
@@ -72,21 +73,19 @@ function copySession(
     else if (dst.startsWith(src)) {
       throw new Error(
         `Session ${session.id} is already further along on "${target}". Nothing was copied. ` +
-          `Resume it there with: cchandover ${target} --resume ${session.id}`,
+          `Resume it there with: handova ${target} --resume ${session.id}`,
       );
     } else {
       throw new Error(
         `Session ${session.id} has been continued on both accounts, so the two copies have diverged. ` +
-          `Nothing was copied. Resume it on "${target}" with: cchandover ${target} --resume ${session.id}`,
+          `Nothing was copied. Resume it on "${target}" with: handova ${target} --resume ${session.id}`,
       );
     }
   }
   if (status !== "unchanged") copyFileSync(session.file, dstFile);
 
-  // Subagent transcripts and saved tool output.
-  const srcExtras = join(srcProject, session.id);
-  if (existsSync(srcExtras)) {
-    cpSync(srcExtras, join(dstProject, session.id), { recursive: true, force: false, errorOnExist: false });
+  if (session.extras) {
+    cpSync(session.extras, join(dstProject, basename(session.extras)), { recursive: true, force: false, errorOnExist: false });
   }
   return status;
 }

@@ -10,26 +10,26 @@ import { removeCommand } from "./commands/remove";
 import { runCommand } from "./commands/run";
 import { shellInitCommand } from "./commands/shell-init";
 
-const HELP = `cchandover ${pkg.version}
+const HELP = `handova ${pkg.version}
 Run Claude Code under several accounts, and hand a session over from one to another.
 
 Usage:
-  cchandover <account> [claude args...]   Run Claude Code under an account
-  cchandover add <name>                   Add an account and log in to it
+  handova <account> [claude args...]   Run Claude Code under an account
+  handova add <name>                   Add an account and log in to it
       --dir <path>                      Use this folder (default ~/.claude-<name>); an existing one is adopted
       --no-share                        Don't link CLAUDE.md, skills, agents and commands or copy settings.json
       --no-login                        Skip logging in
-  cchandover list                         Show accounts with their email and organization
-  cchandover handoff <from> <to>          Copy this folder's latest session and its memory, then resume it
+  handova list                         Show accounts with their email and organization
+  handova handoff <from> <to>          Copy this folder's latest session and its memory, then resume it
       --pick                            Choose the session from a list
       --session <id>                    Hand over this session
       --no-memory                       Leave memory behind
       --no-resume                       Copy only; don't start Claude Code
       --yes                             Skip the confirmation
-  cchandover remove <name>                Forget an account (its folder and login are kept)
+  handova remove <name>                Forget an account (its folder and login are kept)
       --purge                           Also log out and delete its folder
-  cchandover doctor                       Check Claude Code, every account's login and shared links
-  cchandover shell-init                   Print claude-<account> aliases, for: eval "$(cchandover shell-init)"
+  handova doctor                       Check Claude Code, every account's login and shared links
+  handova shell-init                   Print claude-<account> aliases, for: eval "$(handova shell-init)"
 
 The "personal" account is Claude Code's default (~/.claude).`;
 
@@ -41,7 +41,7 @@ async function main(argv: string[]): Promise<number> {
     } catch (error: any) {
       if (error.code !== "ERR_PARSE_ARGS_UNKNOWN_OPTION") throw error;
       const option = String(error.message).match(/'([^']+)'/)?.[1] ?? "";
-      throw new Error(`Unknown option "${option}" for cchandover ${command}. See: cchandover help`);
+      throw new Error(`Unknown option "${option}" for handova ${command}. See: handova help`);
     }
   };
 
