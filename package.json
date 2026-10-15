@@ -1,0 +1,37 @@
+{
+  "name": "ccswap",
+  "version": "1.0.0",
+  "description": "Run Claude Code under several accounts, and hand a session over from one account to another.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "ccswap": "dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20.16"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "accounts",
+    "cli"
+  ],
+  "scripts": {
+    "build": "bun build src/cli.ts --target node --outfile dist/cli.js",
+    "compile": "bun build src/cli.ts --compile --outfile build/ccswap",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "bun run typecheck && bun test && bun run build"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.8.1"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.0",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.8.0"
+  }
+}
