@@ -1,6 +1,6 @@
 {
   "name": "handova",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Run Claude Code and Codex under multiple accounts, and hand a conversation to another account when one hits its usage limit.",
   "license": "MIT",
   "author": "Franklin Okolie (https://www.franklinokolie.com)",
