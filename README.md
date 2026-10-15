@@ -1,11 +1,18 @@
 # ccswap
 
-Run Claude Code under several accounts, such as personal and work, and hand a session from one account to
-another when you hit a usage limit.
+Run Claude Code under as many accounts as you have, such as personal, work and a client's, and hand a
+conversation from one account to another when you hit a usage limit.
+
+Install it with your package manager:
 
 ```sh
-npm install -g ccswap     # or: bunx ccswap
+npm install -g ccswap
+pnpm add -g ccswap
+yarn global add ccswap    # Yarn 1; Yarn 2 and later have no global installs
+bun add -g ccswap
 ```
+
+Or run it once without installing: `npx ccswap`, `pnpm dlx ccswap` or `bunx ccswap`.
 
 ## How it works
 
@@ -18,7 +25,8 @@ by side in different terminals. Accounts are listed in `~/.config/ccswap/account
 
 ## Commands
 
-An "account" is one of your Claude logins, such as `personal` or `work`.
+An "account" is one of your Claude logins. The examples use `personal` and `work`, but you can add as many as
+you like and name them anything.
 
 ### Run Claude Code under an account
 
@@ -49,7 +57,7 @@ For when one account hits its usage limit. Run it in the folder you were working
 3. Copies the conversation and that folder's memory to **work**.
 4. Opens the conversation on **work**, so you can carry on.
 
-`ccswap handoff work personal` goes the other way.
+Any two accounts work: `ccswap handoff work client`, or back again with `ccswap handoff work personal`.
 
 ```
 ccswap  handoff  personal  work  --pick
@@ -62,12 +70,12 @@ ccswap  handoff  personal  work  --pick
 - `--no-resume` copies without opening Claude.
 - `--yes` skips the confirmation.
 
-It never overwrites anything on the other account. Memory files that already exist there are kept and
+It never overwrites anything on the receiving account. Memory files that already exist there are kept and
 listed, and missing lines are added to `MEMORY.md`. Handing the same conversation over again brings the copy
-up to date, unless it has also been continued on the other account.
+up to date, unless it has also been continued on the receiving account.
 
 The copy is a fork: what you do on the new account doesn't flow back. It also means the conversation is now
-processed under the other account's organization, which ccswap names before it copies. Don't hand work
+processed under the receiving account's organization, which ccswap names before it copies. Don't hand work
 conversations to a personal account, or personal ones to work, if that isn't allowed where you work.
 
 ### Add an account
