@@ -28,6 +28,8 @@ body {
 }
 
 html {
+  /* Geist's contextual alternates turn "--" into an em dash, which garbles flags like --pick in running text. */
+  font-feature-settings: "calt" 0;
   background: var(--color-bg);
   color: var(--color-ink);
   -webkit-font-smoothing: antialiased;

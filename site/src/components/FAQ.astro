@@ -72,7 +72,11 @@ const faqs = [
           </span>
         </summary>
         <div class="overflow-hidden" data-answer>
-          <p class="pb-5 pr-10 leading-relaxed text-ink-soft">{faq.a}</p>
+          <p class="pb-5 pr-10 leading-relaxed text-ink-soft">
+            {faq.a.split(/(--[a-z][a-z-]*(?: <[a-z]+>)?)/).map((part, i) =>
+              i % 2 ? <code class="whitespace-nowrap font-mono text-[0.88em] text-ink">{part}</code> : part,
+            )}
+          </p>
         </div>
       </details>
     ))}
