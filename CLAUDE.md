@@ -23,9 +23,9 @@ without opening `~/.claude`.
 
 | Layer | Choice | Notes |
 |---|---|---|
-| Runtime | Bun for dev, Node 20.16+ for the published build | `parseArgs` `allowNegative` needs 20.16 |
+| Runtime | Bun for dev, Node 20+ for the published build | `--no-<flag>` is handled in `cli.ts`, not by `parseArgs` `allowNegative` (20.16+ only) |
 | CLI | `node:util` `parseArgs` | `handova <account> ...` passes args to claude unparsed |
-| Prompts | `@clack/prompts` | the only runtime dependency |
+| Prompts | `@clack/prompts` | bundled into `dist/cli.js`, so the published package has no dependencies |
 | Tests | `bun test` | temp HOME + `test/fixtures/fake-claude.sh` via `HANDOVA_CLAUDE_BIN` |
 
 ## Code layout

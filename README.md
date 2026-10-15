@@ -30,7 +30,7 @@ handova setup
 It asks whether you want more than one account for Claude Code, Codex or both (only the agents you have
 installed are offered), then adds the accounts you name and logs you in to each one.
 
-**Requirements:** Claude Code or Codex, and Node.js 20.16 or newer (or Bun). Built and tested on macOS. Linux should
+**Requirements:** Claude Code or Codex, and Node.js 20 or newer (or Bun). Built and tested on macOS. Linux should
 work; Windows isn't supported yet.
 
 ## Quick start
@@ -262,14 +262,14 @@ handova --version   # the installed version
 ## Other agents
 
 Handova supports Claude Code and Codex. Everything specific to an agent lives in one file under `src/harness/`,
-so more can be added. If you'd like to add one, the checklist is in [CLAUDE.md](CLAUDE.md#adding-a-harness).
+so more can be added. If you'd like to add one, the checklist is in [CLAUDE.md](https://github.com/DeveloperAspire/handova/blob/master/CLAUDE.md#adding-a-harness).
 
 ## Development
 
 ```sh
 bun install
 bun test
-bun run build      # dist/cli.js, runs on Node 20.16+
+bun run build      # dist/cli.js, runs on Node 20+
 bun run compile    # a single binary in build/
 ```
 

@@ -24,7 +24,7 @@ A small public CLI that:
   - `ccswap`: dropped because a Python tool for the same job already ships as `ccswap` on PyPI (errhythm/ccswap).
   - `cchandover`: dropped because "cc" ties the name to Claude Code.
   - `handova`: free on npm, PyPI and Homebrew. The GitHub repos with the name are unrelated.
-- TypeScript on Bun, published to npm for Node 20.16+, with a compiled binary as an extra.
+- TypeScript on Bun, published to npm for Node 20+, with a compiled binary as an extra.
 - `personal` is Claude Code's default account and runs with `CLAUDE_CONFIG_DIR` unset; setting it even to
   `~/.claude` makes Claude Code look for a different login.
 - Login state comes from `claude auth status --json`; login uses `claude auth login`.

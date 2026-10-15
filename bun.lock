@@ -4,10 +4,8 @@
   "workspaces": {
     "": {
       "name": "handova",
-      "dependencies": {
-        "@clack/prompts": "^1.8.1",
-      },
       "devDependencies": {
+        "@clack/prompts": "^1.8.1",
         "@types/bun": "^1.2.0",
         "@types/node": "^22.0.0",
         "typescript": "^5.8.0",

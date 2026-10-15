@@ -46,9 +46,19 @@ On first run, Handova lists the normal login of each agent that's installed: "pe
 
 async function main(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;
+  type Values<T> = { [K in keyof T]?: T[K] extends { type: "boolean" } ? boolean : string };
   const parse = <T extends Record<string, { type: "boolean" | "string" }>>(options: T) => {
+    // Every boolean flag also has a --no-<flag> form. Node only does this itself from 20.16, so do it here.
+    const negatable = Object.keys(options).filter((name) => options[name].type === "boolean");
+    const all = { ...options, ...Object.fromEntries(negatable.map((name) => [`no-${name}`, { type: "boolean" as const }])) };
     try {
-      return parseArgs({ args: rest, options, allowPositionals: true, allowNegative: true });
+      const { values, positionals } = parseArgs({ args: rest, options: all, allowPositionals: true });
+      const result: Record<string, unknown> = { ...values };
+      for (const name of negatable) {
+        if (result[`no-${name}`]) result[name] = false;
+        delete result[`no-${name}`];
+      }
+      return { values: result as Values<T>, positionals };
     } catch (error: any) {
       if (error.code !== "ERR_PARSE_ARGS_UNKNOWN_OPTION") throw error;
       const option = String(error.message).match(/'([^']+)'/)?.[1] ?? "";
