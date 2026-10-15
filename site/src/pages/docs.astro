@@ -196,6 +196,33 @@ handova remove office --purge # also log out and delete its folder`} />
 handova handoff codex codex-work  # Codex to Codex
 handova handoff work personal     # and back again`} />
 
+      <h3 id="what-moves">What gets handed over</h3>
+      <p><strong>Claude Code to Claude Code</strong> copies:</p>
+      <ul>
+        <li><strong>The whole conversation:</strong> your messages, Claude's replies, and every tool call (file reads, edits, commands it ran) with its result. That's what lets the other account carry on exactly where you stopped.</li>
+        <li><strong>Files saved alongside it,</strong> like subagent transcripts and long tool output.</li>
+        <li><strong>Claude Code's memory for that folder:</strong> <code>MEMORY.md</code> and its memory files, merged without overwriting what the other account already has.</li>
+      </ul>
+      <p><strong>Codex to Codex</strong> copies:</p>
+      <ul>
+        <li><strong>The whole conversation:</strong> your messages, Codex's replies, and every tool call with its result. Codex rebuilds its own index from it when you resume.</li>
+      </ul>
+      <p><strong>Already shared, so nothing to copy.</strong> When you add an account, these are linked to your primary login, so the other account has them before any handoff and every account stays in sync:</p>
+      <ul>
+        <li>Your instructions: <code>CLAUDE.md</code> for Claude Code, <code>AGENTS.md</code> for Codex.</li>
+        <li>Your skills, plus <code>agents</code> and <code>commands</code> for Claude Code, and <code>prompts</code> for Codex. A skill you add from any account shows up in all of them.</li>
+        <li>Your code: every account works in the same folder on the same computer. Skills kept in the project (like <code>.claude/skills</code>) come with it.</li>
+      </ul>
+      <p>Accounts added with <code>--no-share</code>, or folders adopted with <code>--dir</code> that already had their own, keep their own instructions and skills instead.</p>
+      <p><strong>Never copied:</strong></p>
+      <ul>
+        <li>The undo history for file edits, so rewind on the new account can't reach before the handoff.</li>
+        <li>Your other conversations, unless you hand them over too.</li>
+        <li>Logins and settings: each account keeps its own.</li>
+        <li>Claude Code's saved plan files. The conversation where a plan was made does move.</li>
+        <li>Codex's memory, which belongs to the whole account rather than a folder.</li>
+      </ul>
+
       <h3 id="handoff-steps">What happens</h3>
       <ol>
         <li><strong>Run it where you were working.</strong> Conversations are kept per folder, so run it in the folder you used the agent in.</li>
@@ -211,7 +238,6 @@ handova handoff work personal     # and back again`} />
         <li><strong>Handing over again</strong> brings an older copy up to date, if you only carried on with the original.</li>
         <li><strong>If both copies were continued,</strong> they've diverged. Handova won't merge them and tells you to resume on the other account instead.</li>
         <li><strong>Claude Code memory</strong> merges file by file: files the other account already has are kept and listed, and missing lines are added to <code>MEMORY.md</code>. Leave memory behind with <code>--no-memory</code>.</li>
-        <li><strong>Not copied:</strong> the undo history for file edits, so rewind can't reach before the handoff.</li>
       </ul>
       <Callout title="Organizations">
         <p>

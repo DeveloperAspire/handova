@@ -1,7 +1,8 @@
 ---
 import SectionHead from "./SectionHead.astro";
 
-// How a handoff works: the one rule, the three routes, the steps, and what never moves.
+// How a handoff works: the one rule, the three routes (with what each copies), the steps, what's already shared,
+// and what never moves.
 // Keep in sync with the "Hand a conversation to another account" section of the README.
 const routes = [
   {
@@ -9,14 +10,18 @@ const routes = [
     to: "Claude Code",
     supported: true,
     command: "handova handoff personal work",
-    moves: ["The conversation, every message of it", "Files saved alongside it, like subagent transcripts", "Claude Code's memory for that folder"],
+    moves: [
+      "The whole conversation: your messages, Claude's replies, and every tool call and its result",
+      "Files saved alongside it, like subagent transcripts and long tool output",
+      "Claude Code's memory for that folder: MEMORY.md and its files, merged without overwriting",
+    ],
   },
   {
     from: "Codex",
     to: "Codex",
     supported: true,
     command: "handova handoff codex codex-work",
-    moves: ["The conversation, every message of it"],
+    moves: ["The whole conversation: your messages, Codex's replies, and every tool call and its result"],
     note: "Codex keeps its memory per account, not per folder, so memory stays where it is.",
   },
   {
@@ -36,10 +41,20 @@ const steps = [
   ["It opens it there", "The agent starts on the other account with the conversation loaded, and you carry on."],
 ];
 
+// Already on every account, so a handoff doesn't need to copy it.
+const shared = [
+  "Your instructions: CLAUDE.md for Claude Code, AGENTS.md for Codex",
+  "Your skills, plus agents and commands for Claude Code, and prompts for Codex",
+  "Your code, because every account works in the same folder on the same computer",
+];
+
 const stays = [
   "Anything you do after the handoff. The copy is its own fork.",
-  "The undo history for file edits, so rewind can't reach before the handoff.",
-  "Your other conversations, unless you hand them over too.",
+  "The undo history for file edits, so rewind can't reach before the handoff",
+  "Your other conversations, unless you hand them over too",
+  "Logins and settings: each account keeps its own",
+  "Claude Code's saved plan files (the conversation where a plan was made does move)",
+  "Codex's memory, which belongs to the whole account",
 ];
 ---
 
@@ -98,16 +113,36 @@ const stays = [
     </ol>
   </div>
 
-  <div class="reveal mt-14 grid gap-6 rounded-2xl border border-line p-6 sm:grid-cols-[1fr_1.4fr] sm:p-8">
-    <h3 class="font-mono text-[0.75rem] uppercase tracking-[0.12em] text-muted">Never copied</h3>
-    <ul class="space-y-2.5">
-      {stays.map((item) => (
-        <li class="flex gap-2.5 text-[0.92rem] leading-relaxed text-muted">
-          <svg class="mt-1.5 h-3.5 w-3.5 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h8" /></svg>
-          {item}
-        </li>
-      ))}
-    </ul>
+  <div class="mt-14 grid gap-4 md:grid-cols-2">
+    <div class="reveal rounded-2xl border border-line bg-surface p-6 sm:p-8">
+      <h3 class="font-mono text-[0.75rem] uppercase tracking-[0.12em] text-ink">Already shared</h3>
+      <p class="mt-3 text-[0.9rem] leading-relaxed text-muted">
+        Linked to your primary login when you add an account, so the other account has them before any handoff.
+      </p>
+      <ul class="mt-5 space-y-2.5">
+        {shared.map((item) => (
+          <li class="flex gap-2.5 text-[0.92rem] leading-relaxed text-ink-soft">
+            <svg class="mt-1.5 h-3.5 w-3.5 shrink-0 text-ink" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 9.5l3-3M5 7.5 3.8 8.7a2.3 2.3 0 0 0 3.3 3.3L8.3 10.8M11 8.5l1.2-1.2a2.3 2.3 0 0 0-3.3-3.3L7.7 5.2" /></svg>
+            {item}
+          </li>
+        ))}
+      </ul>
+      <p class="mt-5 text-[0.82rem] leading-relaxed text-faint">
+        Not for accounts added with <code class="font-mono">--no-share</code>, or folders adopted with
+        <code class="font-mono">--dir</code> that already had their own.
+      </p>
+    </div>
+    <div class="reveal rounded-2xl border border-line p-6 sm:p-8">
+      <h3 class="font-mono text-[0.75rem] uppercase tracking-[0.12em] text-muted">Never copied</h3>
+      <ul class="mt-5 space-y-2.5">
+        {stays.map((item) => (
+          <li class="flex gap-2.5 text-[0.92rem] leading-relaxed text-muted">
+            <svg class="mt-1.5 h-3.5 w-3.5 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h8" /></svg>
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
   </div>
 
   <p class="reveal mt-6 max-w-3xl text-[0.92rem] leading-relaxed text-muted">

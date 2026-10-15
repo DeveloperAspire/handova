@@ -127,6 +127,37 @@ handova handoff codex codex-work    # Codex → Codex
 handova handoff work personal       # and back again
 ```
 
+#### What gets handed over
+
+**Claude Code → Claude Code** copies:
+- **The whole conversation:** your messages, Claude's replies, and every tool call (file reads, edits, commands
+  it ran) with its result, so the other account carries on exactly where you stopped.
+- **Files saved alongside it,** like subagent transcripts and long tool output.
+- **Claude Code's memory for that folder:** `MEMORY.md` and its memory files, merged without overwriting.
+
+**Codex → Codex** copies:
+- **The whole conversation:** your messages, Codex's replies, and every tool call with its result.
+
+**Already shared, so nothing to copy.** These are linked to your primary login when you add an account, so every
+account has them before any handoff and they stay in sync:
+- Your instructions: `CLAUDE.md` for Claude Code, `AGENTS.md` for Codex.
+- Your skills, plus `agents` and `commands` for Claude Code, and `prompts` for Codex. A skill added from any
+  account shows up in all of them.
+- Your code: every account works in the same folder on the same computer. Skills kept in the project (like
+  `.claude/skills`) come with it.
+
+Accounts added with `--no-share`, or folders adopted with `--dir` that already had their own, keep their own
+instructions and skills instead.
+
+**Never copied:**
+- The undo history for file edits, so rewind on the new account can't reach before the handoff.
+- Your other conversations, unless you hand them over too.
+- Logins and settings: each account keeps its own.
+- Claude Code's saved plan files. The conversation where a plan was made does move.
+- Codex's memory, which belongs to the whole account rather than a folder.
+
+#### How it runs
+
 Run it in the folder you were working in. It:
 
 1. Finds the latest conversation you had in this folder on the first account.
