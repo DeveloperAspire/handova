@@ -43,7 +43,7 @@ export function addAccount(name: string, options: AddOptions): Account {
 }
 
 export async function addCommand(name: string | undefined, options: AddOptions): Promise<number> {
-  if (!name) throw new Error("Usage: ccswap add <name> [--dir <path>] [--no-share] [--no-login]");
+  if (!name) throw new Error("Usage: cchandover add <name> [--dir <path>] [--no-share] [--no-login]");
   const account = addAccount(name, options);
   p.log.success(`Added "${name}" at ${tildify(account.dir)}.`);
 

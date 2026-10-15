@@ -10,26 +10,26 @@ import { removeCommand } from "./commands/remove";
 import { runCommand } from "./commands/run";
 import { shellInitCommand } from "./commands/shell-init";
 
-const HELP = `ccswap ${pkg.version}
+const HELP = `cchandover ${pkg.version}
 Run Claude Code under several accounts, and hand a session over from one to another.
 
 Usage:
-  ccswap <account> [claude args...]   Run Claude Code under an account
-  ccswap add <name>                   Add an account and log in to it
+  cchandover <account> [claude args...]   Run Claude Code under an account
+  cchandover add <name>                   Add an account and log in to it
       --dir <path>                      Use this folder (default ~/.claude-<name>); an existing one is adopted
       --no-share                        Don't link CLAUDE.md, skills, agents and commands or copy settings.json
       --no-login                        Skip logging in
-  ccswap list                         Show accounts with their email and organization
-  ccswap handoff <from> <to>          Copy this folder's latest session and its memory, then resume it
+  cchandover list                         Show accounts with their email and organization
+  cchandover handoff <from> <to>          Copy this folder's latest session and its memory, then resume it
       --pick                            Choose the session from a list
       --session <id>                    Hand over this session
       --no-memory                       Leave memory behind
       --no-resume                       Copy only; don't start Claude Code
       --yes                             Skip the confirmation
-  ccswap remove <name>                Forget an account (its folder and login are kept)
+  cchandover remove <name>                Forget an account (its folder and login are kept)
       --purge                           Also log out and delete its folder
-  ccswap doctor                       Check Claude Code, every account's login and shared links
-  ccswap shell-init                   Print claude-<account> aliases, for: eval "$(ccswap shell-init)"
+  cchandover doctor                       Check Claude Code, every account's login and shared links
+  cchandover shell-init                   Print claude-<account> aliases, for: eval "$(cchandover shell-init)"
 
 The "personal" account is Claude Code's default (~/.claude).`;
 
@@ -41,7 +41,7 @@ async function main(argv: string[]): Promise<number> {
     } catch (error: any) {
       if (error.code !== "ERR_PARSE_ARGS_UNKNOWN_OPTION") throw error;
       const option = String(error.message).match(/'([^']+)'/)?.[1] ?? "";
-      throw new Error(`Unknown option "${option}" for ccswap ${command}. See: ccswap help`);
+      throw new Error(`Unknown option "${option}" for cchandover ${command}. See: cchandover help`);
     }
   };
 

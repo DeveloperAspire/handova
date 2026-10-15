@@ -1,11 +1,11 @@
-# ccswap
+# cchandover
 
 ## What this is
 
 A public CLI for running Claude Code under several accounts and handing a session (plus that folder's
 memory) from one account to another. Product notes: docs/PRD.md. User docs: README.md.
 
-**One sentence:** `ccswap work` runs Claude Code as your work account; `ccswap handoff personal work` moves
+**One sentence:** `cchandover work` runs Claude Code as your work account; `cchandover handoff personal work` moves
 what you were doing over when personal hits its limit.
 
 **It wins if:** someone who hits a usage limit is working again on their other account within 30 seconds,
@@ -23,9 +23,9 @@ without opening `~/.claude`.
 | Layer | Choice | Notes |
 |---|---|---|
 | Runtime | Bun for dev, Node 20.16+ for the published build | `parseArgs` `allowNegative` needs 20.16 |
-| CLI | `node:util` `parseArgs` | `ccswap <account> ...` passes args to claude unparsed |
+| CLI | `node:util` `parseArgs` | `cchandover <account> ...` passes args to claude unparsed |
 | Prompts | `@clack/prompts` | the only runtime dependency |
-| Tests | `bun test` | temp HOME + `test/fixtures/fake-claude.sh` via `CCSWAP_CLAUDE_BIN` |
+| Tests | `bun test` | temp HOME + `test/fixtures/fake-claude.sh` via `CCHANDOVER_CLAUDE_BIN` |
 
 ## How Claude Code stores things (verified on 2.1.296)
 
@@ -41,7 +41,7 @@ without opening `~/.claude`.
 
 ## Website (site/)
 
-Astro + Tailwind v4, deployed on Vercel with the root folder set to `site/`, at https://ccswap.vercel.app for now.
+Astro + Tailwind v4, deployed on Vercel with the root folder set to `site/`, at https://cchandover.franklinokolie.com.
 Neutral dark (`#0a0a0a`, true greys), Geist + Geist Mono. One accent, `--color-active` (mint): it means "the active
 account" and nothing else. The version comes from the CLI's package.json (`site/src/data/project.ts`), and the
 commands section (`site/src/data/commands.ts`) mirrors the README: change both together. Demo data is made up
@@ -49,8 +49,8 @@ commands section (`site/src/data/commands.ts`) mirrors the README: change both t
 
 ## Working conventions
 
-- Never touch the real `~/.claude`, `~/.claude-*`, `~/.config/ccswap` or shell profile in tests or manual
-  checks. Use a temp HOME. `ccswap list` is read-only and safe on the real machine.
+- Never touch the real `~/.claude`, `~/.claude-*`, `~/.config/cchandover` or shell profile in tests or manual
+  checks. Use a temp HOME. `cchandover list` is read-only and safe on the real machine.
 - Every command that sends data to another organization or deletes something confirms first, needs `--yes`
   when there's no TTY, and says what it did.
 - Errors are `throw new Error(<sentence that says what to do next>)`; `cli.ts` prints them.

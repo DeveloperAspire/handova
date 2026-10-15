@@ -1,11 +1,11 @@
 {
-  "name": "ccswap",
+  "name": "cchandover",
   "version": "1.0.0",
   "description": "Run Claude Code under several accounts, and hand a session over from one account to another.",
   "license": "MIT",
   "type": "module",
   "bin": {
-    "ccswap": "dist/cli.js"
+    "cchandover": "dist/cli.js"
   },
   "files": [
     "dist"
@@ -21,7 +21,7 @@
   ],
   "scripts": {
     "build": "bun build src/cli.ts --target node --outfile dist/cli.js",
-    "compile": "bun build src/cli.ts --compile --outfile build/ccswap",
+    "compile": "bun build src/cli.ts --compile --outfile build/cchandover",
     "test": "bun test",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "bun run typecheck && bun test && bun run build"

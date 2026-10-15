@@ -18,14 +18,14 @@ export function doctorCommand(): number {
   if (process.env.CLAUDE_CONFIG_DIR) {
     p.log.warn(
       `CLAUDE_CONFIG_DIR is set in your shell (${process.env.CLAUDE_CONFIG_DIR}), so plain \`claude\` uses that account. ` +
-        "ccswap sets it per account, so you can remove it from your shell profile.",
+        "cchandover sets it per account, so you can remove it from your shell profile.",
     );
   }
 
   for (const account of loadAccounts()) {
     const label = `${account.name} (${tildify(account.dir)})`;
     if (!existsSync(account.dir)) {
-      fail(`${label}: the folder doesn't exist. Remove the account or run: ccswap ${account.name} auth login`);
+      fail(`${label}: the folder doesn't exist. Remove the account or run: cchandover ${account.name} auth login`);
       continue;
     }
     const broken = readdirSync(account.dir).filter((name) => {
@@ -37,7 +37,7 @@ export function doctorCommand(): number {
     if (!version) continue;
     const status = authStatus(account);
     if (status?.loggedIn) p.log.success(`${label}: ${status.email} (${status.orgName})`);
-    else fail(`${label}: not logged in. Run: ccswap ${account.name} auth login`);
+    else fail(`${label}: not logged in. Run: cchandover ${account.name} auth login`);
   }
   return problems ? 1 : 0;
 }

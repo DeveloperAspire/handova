@@ -19,7 +19,7 @@ export async function handoffCommand(
   options: HandoffCommandOptions,
 ): Promise<number> {
   if (!from || !to) {
-    throw new Error("Usage: ccswap handoff <from> <to> [--pick | --session <id>] [--no-memory] [--no-resume] [--yes]");
+    throw new Error("Usage: cchandover handoff <from> <to> [--pick | --session <id>] [--no-memory] [--no-resume] [--yes]");
   }
   const source = getAccount(from);
   const target = getAccount(to);
@@ -42,7 +42,7 @@ export async function handoffCommand(
   }
 
   const status = authStatus(target);
-  if (status && !status.loggedIn) throw new Error(`"${to}" isn't logged in. Run: ccswap ${to} auth login`);
+  if (status && !status.loggedIn) throw new Error(`"${to}" isn't logged in. Run: cchandover ${to} auth login`);
   if (status?.orgName && !options.yes) {
     const ok = await confirm(`The conversation and memory will be sent to ${status.orgName} (${status.email}). Continue?`);
     if (!ok) return 1;
@@ -66,7 +66,7 @@ export async function handoffCommand(
   p.log.info(`This is a copy. What you do on "${to}" from here won't appear in "${from}".`);
 
   if (!options.resume) {
-    p.log.step(`Resume it with: ccswap ${to} --resume ${session.id}`);
+    p.log.step(`Resume it with: cchandover ${to} --resume ${session.id}`);
     return 0;
   }
   return runClaude(target, ["--resume", session.id], cwd);

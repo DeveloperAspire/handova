@@ -1,4 +1,4 @@
-# ccswap: product notes
+# cchandover: product notes
 
 Written at kickoff, 12 October 2026, from the planning conversation.
 
@@ -19,7 +19,10 @@ A small public CLI that:
 
 ## Decisions
 
-- Name `ccswap` (`cc` = Claude Code; avoids "claude" in a third-party name). Free on npm.
+- Name `cchandover` (`cc` = Claude Code; avoids "claude" in a third-party name). Renamed from `ccswap` on
+  15 October 2026, before the first npm release: a Python tool for the same job already ships as `ccswap` on
+  PyPI (errhythm/ccswap), so both would install a `ccswap` command. `cchandover` was free on npm, PyPI and
+  GitHub.
 - TypeScript on Bun, published to npm for Node 20.16+, with a compiled binary as an extra.
 - `personal` is Claude Code's default account and runs with `CLAUDE_CONFIG_DIR` unset; setting it even to
   `~/.claude` makes Claude Code look for a different login.
@@ -31,6 +34,6 @@ A small public CLI that:
 ## Out of scope for now
 
 - Migrating the author's own `.zshrc` aliases and `~/.claude-work` (he'll do it himself with
-  `ccswap add work --dir ~/.claude-work`).
+  `cchandover add work --dir ~/.claude-work`).
 - Syncing in both directions or merging diverged sessions.
 - Copying file-edit history, so rewind doesn't reach edits made before a handoff.

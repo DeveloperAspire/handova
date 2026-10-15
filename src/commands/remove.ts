@@ -10,7 +10,7 @@ export interface RemoveOptions {
 }
 
 export async function removeCommand(name: string | undefined, options: RemoveOptions): Promise<number> {
-  if (!name) throw new Error("Usage: ccswap remove <name> [--purge] [--yes]");
+  if (!name) throw new Error("Usage: cchandover remove <name> [--purge] [--yes]");
   const account = getAccount(name);
   if (account.isDefault) throw new Error(`"${name}" is the default account (~/.claude) and can't be removed.`);
 

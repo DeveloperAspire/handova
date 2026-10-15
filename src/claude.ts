@@ -9,7 +9,7 @@ export interface AuthStatus {
   subscriptionType?: string;
 }
 
-const claude = () => process.env.CCSWAP_CLAUDE_BIN || "claude";
+const claude = () => process.env.CCHANDOVER_CLAUDE_BIN || "claude";
 
 export function claudeInstalled(): string | undefined {
   const result = spawnSync(claude(), ["--version"], { encoding: "utf8" });
@@ -27,7 +27,7 @@ export function authStatus(account: Account): AuthStatus | undefined {
 
 // Runs claude in this terminal and resolves with its exit code. Ctrl-C reaches
 // claude directly (same terminal), and claude uses it to interrupt a reply, so
-// ccswap must ignore it rather than exit and hand the prompt back mid-session.
+// cchandover must ignore it rather than exit and hand the prompt back mid-session.
 export function runClaude(account: Account, args: string[], cwd = process.cwd()): Promise<number> {
   return new Promise((resolve, reject) => {
     const child = spawn(claude(), args, { stdio: "inherit", env: envFor(account), cwd });

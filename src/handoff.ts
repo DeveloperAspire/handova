@@ -72,12 +72,12 @@ function copySession(
     else if (dst.startsWith(src)) {
       throw new Error(
         `Session ${session.id} is already further along on "${target}". Nothing was copied. ` +
-          `Resume it there with: ccswap ${target} --resume ${session.id}`,
+          `Resume it there with: cchandover ${target} --resume ${session.id}`,
       );
     } else {
       throw new Error(
         `Session ${session.id} has been continued on both accounts, so the two copies have diverged. ` +
-          `Nothing was copied. Resume it on "${target}" with: ccswap ${target} --resume ${session.id}`,
+          `Nothing was copied. Resume it on "${target}" with: cchandover ${target} --resume ${session.id}`,
       );
     }
   }

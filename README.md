@@ -1,4 +1,4 @@
-# ccswap
+# cchandover
 
 Run Claude Code under as many accounts as you have, such as personal, work and a client's, and hand a
 conversation from one account to another when you hit a usage limit.
@@ -6,22 +6,22 @@ conversation from one account to another when you hit a usage limit.
 Install it with your package manager:
 
 ```sh
-npm install -g ccswap
-pnpm add -g ccswap
-yarn global add ccswap    # Yarn 1; Yarn 2 and later have no global installs
-bun add -g ccswap
+npm install -g cchandover
+pnpm add -g cchandover
+yarn global add cchandover    # Yarn 1; Yarn 2 and later have no global installs
+bun add -g cchandover
 ```
 
-Or run it once without installing: `npx ccswap`, `pnpm dlx ccswap` or `bunx ccswap`.
+Or run it once without installing: `npx cchandover`, `pnpm dlx cchandover` or `bunx cchandover`.
 
 ## How it works
 
 Claude Code keeps an account's login, settings, conversations and memory in a config folder. Your normal
-`claude` uses `~/.claude`, which ccswap calls `personal`. Every other account gets its own folder, and ccswap
+`claude` uses `~/.claude`, which cchandover calls `personal`. Every other account gets its own folder, and cchandover
 points Claude Code at it (through `CLAUDE_CONFIG_DIR`) when it starts.
 
 The logins are separate. Logging in or out of one account never affects another, and you can run them side
-by side in different terminals. Accounts are listed in `~/.config/ccswap/accounts.json`.
+by side in different terminals. Accounts are listed in `~/.config/cchandover/accounts.json`.
 
 ## Commands
 
@@ -31,22 +31,22 @@ you like and name them anything.
 ### Run Claude Code under an account
 
 ```
-ccswap  work  --continue
+cchandover  work  --continue
         ↑ account  ↑ anything after the account is passed to Claude
 ```
 
 Opens Claude Code logged in as **work**. Anything after the account name works the same as it does with plain
 `claude`:
 
-- `ccswap work` starts a new conversation.
-- `ccswap work --continue` reopens the last conversation in this folder.
-- `ccswap work --resume` shows a list of past conversations to pick from.
-- `ccswap work --resume <id>` opens one specific conversation.
+- `cchandover work` starts a new conversation.
+- `cchandover work --continue` reopens the last conversation in this folder.
+- `cchandover work --resume` shows a list of past conversations to pick from.
+- `cchandover work --resume <id>` opens one specific conversation.
 
 ### Hand a conversation to another account
 
 ```
-ccswap  handoff  personal  work
+cchandover  handoff  personal  work
         ↑ action  ↑ from     ↑ to
 ```
 
@@ -57,10 +57,10 @@ For when one account hits its usage limit. Run it in the folder you were working
 3. Copies the conversation and that folder's memory to **work**.
 4. Opens the conversation on **work**, so you can carry on.
 
-Any two accounts work: `ccswap handoff work client`, or back again with `ccswap handoff work personal`.
+Any two accounts work: `cchandover handoff work client`, or back again with `cchandover handoff work personal`.
 
 ```
-ccswap  handoff  personal  work  --pick
+cchandover  handoff  personal  work  --pick
                                  ↑ optional, see below
 ```
 
@@ -75,13 +75,13 @@ listed, and missing lines are added to `MEMORY.md`. Handing the same conversatio
 up to date, unless it has also been continued on the receiving account.
 
 The copy is a fork: what you do on the new account doesn't flow back. It also means the conversation is now
-processed under the receiving account's organization, which ccswap names before it copies. Don't hand work
+processed under the receiving account's organization, which cchandover names before it copies. Don't hand work
 conversations to a personal account, or personal ones to work, if that isn't allowed where you work.
 
 ### Add an account
 
 ```
-ccswap  add  client
+cchandover  add  client
         ↑ action  ↑ name you choose for the new account
 ```
 
@@ -90,7 +90,7 @@ Sets up a new account called **client**: creates the folder `~/.claude-client`, 
 each account can change its own), then opens the login.
 
 ```
-ccswap  add  work  --dir ~/.claude-work
+cchandover  add  work  --dir ~/.claude-work
                    ↑ use this existing folder instead of creating a new one
 ```
 
@@ -103,7 +103,7 @@ Names use lowercase letters, digits and dashes.
 ### List accounts
 
 ```
-ccswap  list
+cchandover  list
         ↑ action (no names needed)
 ```
 
@@ -118,18 +118,18 @@ work                me@company.com     Company       ~/.claude-work
 ### Remove an account
 
 ```
-ccswap  remove  work  --purge
+cchandover  remove  work  --purge
         ↑ action  ↑ account  ↑ optional: also log out and delete its folder
 ```
 
-Without `--purge`, ccswap only forgets the account; its folder and login stay, so you can add it back later.
+Without `--purge`, cchandover only forgets the account; its folder and login stay, so you can add it back later.
 With `--purge`, it also logs the account out and deletes its folder, including its conversations and memory.
 It asks first (`--yes` skips the question). The default account can't be removed.
 
 ### Check everything
 
 ```
-ccswap  doctor
+cchandover  doctor
         ↑ action (no names needed)
 ```
 
@@ -139,21 +139,21 @@ still work. For anything wrong, it tells you how to fix it.
 ### Print shortcuts
 
 ```
-ccswap  shell-init
+cchandover  shell-init
         ↑ action (no names needed)
 ```
 
-Prints one shortcut per account, such as `claude-work` for `ccswap work`. It's optional. To use them, add this
+Prints one shortcut per account, such as `claude-work` for `cchandover work`. It's optional. To use them, add this
 line to your `~/.zshrc` or `~/.bashrc`:
 
 ```sh
-eval "$(ccswap shell-init)"
+eval "$(cchandover shell-init)"
 ```
 
 ### Help and version
 
 ```
-ccswap  help             ccswap  --version
+cchandover  help             cchandover  --version
         ↑ every command          ↑ the installed version
 ```
 

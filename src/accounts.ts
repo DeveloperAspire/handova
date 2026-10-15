@@ -16,7 +16,7 @@ export const RESERVED_NAMES = ["add", "list", "handoff", "remove", "doctor", "sh
 
 export function registryPath(): string {
   const configHome = process.env.XDG_CONFIG_HOME || join(home(), ".config");
-  return join(configHome, "ccswap", "accounts.json");
+  return join(configHome, "cchandover", "accounts.json");
 }
 
 // Until something is saved, the registry holds just the default account.
@@ -37,7 +37,7 @@ export function getAccount(name: string): Account {
   const account = loadAccounts().find((a) => a.name === name);
   if (!account) {
     const names = loadAccounts().map((a) => a.name).join(", ");
-    throw new Error(`No account named "${name}". Accounts: ${names}. Add one with: ccswap add ${name}`);
+    throw new Error(`No account named "${name}". Accounts: ${names}. Add one with: cchandover add ${name}`);
   }
   return account;
 }
@@ -47,7 +47,7 @@ export function validateName(name: string): void {
     throw new Error(`"${name}" isn't a valid account name. Use lowercase letters, digits and dashes.`);
   }
   if (RESERVED_NAMES.includes(name)) {
-    throw new Error(`"${name}" is a ccswap command, so it can't be an account name.`);
+    throw new Error(`"${name}" is a cchandover command, so it can't be an account name.`);
   }
 }
 
