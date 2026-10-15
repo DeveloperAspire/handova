@@ -19,13 +19,13 @@ Run your AI coding agent under several accounts, and hand a conversation from on
 Supports Claude Code and Codex.
 
 Usage:
-  handova setup                        Guided setup: pick your agents, add accounts and log in
+  handova setup                        Guided setup: pick agents, name primary logins, add accounts
   handova <account> [args...]          Run the account's agent; args are passed to it
-  handova add <name>                   Add an account and log in to it
-      --agent claude|codex               Which agent (default claude)
+  handova add <name>                   Add an account (asks which agent) and log in to it
+      --agent claude|codex               Which agent; asked if you have both and leave it out
       --dir <path>                       Use this folder (default ~/.claude-<name> or ~/.codex-<name>);
                                          an existing one is adopted
-      --no-share                         Don't share instructions, skills and settings from your normal account
+      --no-share                         Don't share instructions, skills and settings from your primary login
       --no-login                         Skip logging in
   handova list                         Show accounts with their agent, email and organization
   handova handoff <from> <to>          Copy this folder's latest conversation (and memory, for Claude Code),
@@ -36,13 +36,13 @@ Usage:
       --no-resume                        Copy only; don't start the agent
       --yes                              Skip the confirmation
   handova remove <name>                Forget an account (its folder and login are kept)
-      --purge                            Also log out and delete its folder (never an agent's normal folder)
+      --purge                            Also log out and delete its folder (never an agent's usual folder)
   handova rename <old> <new>           Rename an account
   handova doctor                       Check each agent, every account's login and shared links
   handova shell-init                   Print <agent>-<account> aliases, for: eval "$(handova shell-init)"
 
-On first run, Handova lists the normal login of each agent that's installed: "personal" for Claude Code
-(~/.claude) and "codex" for Codex (~/.codex).`;
+Your usual login for each installed agent is its primary login. Setup asks what to call it; until then it shows
+as "personal" for Claude Code (~/.claude) and "codex" for Codex (~/.codex).`;
 
 async function main(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;

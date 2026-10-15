@@ -35,14 +35,17 @@ without opening `~/.claude`.
 - `src/process.ts`: `envFor`, `authStatus`, `runTool`, `installedVersion`. These launch whichever tool an
   account uses.
 - `src/accounts.ts`: the registry. Every account has a `harness`, and entries without one load as `"claude"`.
-  Before anything is saved, `loadAccounts()` returns the normal login (`defaultAccountName`, `defaultDir()`) of
+  Before anything is saved, `loadAccounts()` returns the primary login (`defaultAccountName`, `defaultDir()`) of
   every harness whose binary is on PATH. Once saved, the file is the source of truth, so removed accounts stay
   removed.
 - `src/handoff.ts`: copies a session file (and its extras) to the same path relative to the other account's
   folder, and merges memory when the harness has `memoryDir`. Same-harness only.
 - `src/commands/*`: one file per command. Commands never name a tool directly; they go through the harness.
   `setup.ts` is the guided first run: it offers only installed agents (no question at all when there's just one),
-  saves their normal logins with `ensureNormalLogins`, then adds and logs in to accounts.
+  asks what to call each agent's primary login (its usual folder, `isDefault` in the data) and saves it with
+  `addPrimary`, then adds and logs in to accounts. Names during setup are checked with `savedAccounts()`, because
+  on a first run the detected primary logins aren't saved yet. `handova add` asks which agent through
+  `chooseAgent` unless `--agent` is given or only one agent is installed; it never guesses between two.
 - `src/spinner.ts`: `busy(promise)` shows a spinner with Handova's own handoff-themed words (Dilly-dallying…,
   Passing the baton…). It only appears if work takes longer than 150ms, never adds a delay, and stays silent
   without a terminal. Login checks run through `src/spawn.ts` `capture` (async) so the spinner keeps moving and
@@ -99,6 +102,9 @@ never its copy or assets): two-tone headings via `SectionHead` (heavy line, grey
 right), rounded `Button`s, white-on-dark cards with hairline borders, generous spacing, `max-w-6xl` everywhere.
 The docs are the full reference: when behaviour changes, update the docs page, the README and `data/commands.ts`
 together. Docs code blocks are `components/docs/CodeBlock.astro`; keep its `<pre>` markup on one line.
+
+Wording: an agent's usual login (its usual folder) is its **primary login**, shown as "(primary)" in `list`. Don't
+call it "normal" or "default" in anything people read.
 
 Copy rules: the product is **Handova** in prose and titles; only typed things (commands, install lines, package
 name, paths, URLs) are lowercase `handova`. Position it as a tool for any AI coding agent's accounts, but be honest:

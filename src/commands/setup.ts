@@ -1,5 +1,5 @@
 import * as p from "@clack/prompts";
-import { ensureNormalLogins, loadAccounts, validateName, type Account } from "../accounts";
+import { addPrimary, checkNewName, loadAccounts, savedAccounts, type Account } from "../accounts";
 import { allHarnesses, getHarness, type Harness } from "../harness";
 import { onPath } from "../paths";
 import { authStatus, runTool } from "../process";
@@ -7,7 +7,7 @@ import { busy } from "../spinner";
 import { addAccount } from "./add";
 import { accountTable } from "./list";
 
-// The guided first run: pick the agents, confirm the normal logins, add more accounts and log in to each.
+// The guided first run: pick the agents, name each one's primary login, add more accounts and log in to each.
 export async function setupCommand(): Promise<number> {
   if (!process.stdin.isTTY) throw new Error("handova setup asks questions, so run it in a terminal.");
   p.intro("Welcome to Handova");
@@ -33,17 +33,16 @@ export async function setupCommand(): Promise<number> {
     chosen = choice === "both" ? installed : [getHarness(choice)];
   }
 
-  ensureNormalLogins(chosen);
   for (const harness of chosen) {
     if (!(await setUpAgent(harness))) return cancelled();
   }
 
   p.note(await accountTable(loadAccounts()), "Your accounts");
   const extra = loadAccounts().find((a) => !a.isDefault);
-  const normal = extra && loadAccounts().find((a) => a.isDefault && a.harness === extra.harness);
+  const primary = extra && loadAccounts().find((a) => a.isDefault && a.harness === extra.harness);
   p.outro(
-    extra && normal
-      ? `Run ${extra.name} with: handova ${extra.name}\n   When ${normal.name} hits its limit: handova handoff ${normal.name} ${extra.name}`
+    extra && primary
+      ? `Run ${extra.name} with: handova ${extra.name}\n   When ${primary.name} hits its limit: handova handoff ${primary.name} ${extra.name}`
       : "Add more accounts any time with: handova add <name>",
   );
   return 0;
@@ -51,8 +50,8 @@ export async function setupCommand(): Promise<number> {
 
 // Returns false when the person cancels.
 async function setUpAgent(harness: Harness): Promise<boolean> {
-  const normal = loadAccounts().find((a) => a.isDefault && a.harness === harness.id);
-  if (normal && !(await ensureLoggedIn(normal, harness, `${harness.name}: your normal login is "${normal.name}"`))) {
+  const primary = await namePrimary(harness);
+  if (!primary || !(await ensureLoggedIn(primary, harness, `Your primary ${harness.name} login is "${primary.name}"`))) {
     return false;
   }
 
@@ -66,9 +65,9 @@ async function setUpAgent(harness: Harness): Promise<boolean> {
 
     const name = await p.text({
       message: `Name for the new ${harness.name} account`,
-      placeholder: suggestName(harness),
-      defaultValue: suggestName(harness),
-      validate: (value) => nameProblem(value || suggestName(harness)),
+      placeholder: suggestName(harness.id === "claude" ? "work" : `${harness.id}-work`),
+      defaultValue: suggestName(harness.id === "claude" ? "work" : `${harness.id}-work`),
+      validate: (value) => nameProblem(value || suggestName(harness.id === "claude" ? "work" : `${harness.id}-work`)),
     });
     if (p.isCancel(name)) return false;
 
@@ -90,21 +89,39 @@ async function ensureLoggedIn(account: Account, harness: Harness, label: string)
   return true;
 }
 
-function suggestName(harness: Harness): string {
-  const base = harness.id === "claude" ? "work" : `${harness.id}-work`;
-  const taken = new Set(loadAccounts().map((a) => a.name));
+// Names the agent's primary login the first time setup sees it. Returns undefined when the person cancels.
+async function namePrimary(harness: Harness): Promise<Account | undefined> {
+  const saved = savedAccounts().find((a) => a.isDefault && a.harness === harness.id);
+  if (saved) return saved;
+
+  const probe: Account = { name: harness.defaultAccountName, dir: harness.defaultDir(), isDefault: true, harness: harness.id };
+  const status = await busy(authStatus(probe));
+  const who = status?.loggedIn && status.email ? ` (${status.email})` : "";
+  const suggestion = suggestName(harness.defaultAccountName);
+  const name = await p.text({
+    message: `What should we call your primary ${harness.name} login${who}?`,
+    placeholder: suggestion,
+    defaultValue: suggestion,
+    validate: (value) => nameProblem(value || suggestion),
+  });
+  if (p.isCancel(name)) return undefined;
+  return addPrimary(harness, name);
+}
+
+function suggestName(base: string): string {
+  // Only saved accounts count: on a first run the detected primary logins aren't on the list yet.
+  const taken = new Set(savedAccounts().map((a) => a.name));
   if (!taken.has(base)) return base;
   for (let n = 2; ; n++) if (!taken.has(`${base}-${n}`)) return `${base}-${n}`;
 }
 
 function nameProblem(name: string): string | undefined {
   try {
-    validateName(name);
+    checkNewName(name, savedAccounts());
+    return undefined;
   } catch (error) {
     return (error as Error).message;
   }
-  if (loadAccounts().some((a) => a.name === name)) return `There's already an account named "${name}".`;
-  return undefined;
 }
 
 function cancelled(): number {

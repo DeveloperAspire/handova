@@ -4,7 +4,7 @@ import type { Account } from "./accounts";
 import { getHarness, type AuthStatus } from "./harness";
 import { capture } from "./spawn";
 
-// The default account runs with the tool's config variable unset, so it uses the tool's normal login.
+// A primary login runs with the agent's config variable unset, exactly as the agent runs on its own.
 export function envFor(account: Account): NodeJS.ProcessEnv {
   const { configEnv } = getHarness(account.harness);
   const env = { ...process.env };

@@ -18,9 +18,9 @@ export const commands: Command[] = [
   {
     id: "setup",
     title: "Guided setup",
-    short: "Pick your agents, add accounts and log in, step by step.",
+    short: "Pick your agents, name your primary logins, add accounts and log in.",
     parts: [{ text: "handova" }, { text: "setup", label: "action" }],
-    body: "Asks whether you want more than one account for Claude Code, Codex or both (only installed agents are offered), then adds the accounts you name and logs you in to each. Run it again any time to add more.",
+    body: "Asks whether you want more than one account for Claude Code, Codex or both (only installed agents are offered), asks what to call your primary login for each, then adds the accounts you name and logs you in to each. Run it again any time to add more.",
   },
   {
     id: "run",
@@ -51,11 +51,11 @@ export const commands: Command[] = [
   {
     id: "add",
     title: "Add an account",
-    short: "Add a Claude Code or Codex account and log in to it.",
+    short: "Add an account, choose its agent and log in to it.",
     parts: [{ text: "handova" }, { text: "add", label: "action" }, { text: "client", label: "name you choose" }],
-    body: "Creates a folder for the account, shares your instructions and skills with it, copies your settings, then opens the login. It's a Claude Code account unless you pick another agent.",
+    body: "Asks which agent the account is for (unless you have only one installed), creates a folder for it, shares your instructions and skills, copies your settings, then opens the login.",
     options: [
-      ["--agent codex", "make it a Codex account"],
+      ["--agent claude|codex", "say which agent, so it doesn't ask"],
       ["--dir <folder>", "use a folder you already have"],
       ["--no-share", "start without your shared files"],
       ["--no-login", "skip the login step"],
@@ -73,14 +73,14 @@ export const commands: Command[] = [
     title: "Remove an account",
     short: "Take an account off the list, or delete its folder too.",
     parts: [{ text: "handova" }, { text: "remove", label: "action" }, { text: "work", label: "account" }, { text: "--purge", label: "optional" }],
-    body: "Forgets the account and keeps its folder and login. With --purge, it also logs the account out and deletes its folder, after asking. It never deletes an agent's normal folder.",
+    body: "Forgets the account and keeps its folder and login. With --purge, it also logs the account out and deletes its folder, after asking. It never deletes an agent's usual folder.",
   },
   {
     id: "rename",
     title: "Rename an account",
     short: "Change an account's name; folder and login stay put.",
     parts: [{ text: "handova" }, { text: "rename", label: "action" }, { text: "work", label: "current name" }, { text: "office", label: "new name" }],
-    body: "Changes only the name; the folder and login stay the same. Works for your normal logins too, so personal can become claude or anything you like.",
+    body: "Changes only the name; the folder and login stay the same. Works for your primary logins too, so personal can become main or anything you like.",
   },
   {
     id: "doctor",

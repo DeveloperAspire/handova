@@ -22,8 +22,8 @@ export function registryPath(): string {
   return join(configHome, "handova", "accounts.json");
 }
 
-// Until something is saved, the registry holds the normal login of every agent that's installed. After that the
-// saved list is the source of truth, so a removed normal login stays removed.
+// Until something is saved, the registry holds the primary login of every agent that's installed. After that the
+// saved list is the source of truth, so a removed primary login stays removed.
 export function loadAccounts(): Account[] {
   const file = registryPath();
   if (!existsSync(file)) {
@@ -35,19 +35,18 @@ export function loadAccounts(): Account[] {
   return registry.accounts.map((account) => ({ ...account, harness: account.harness ?? DEFAULT_HARNESS }));
 }
 
-// Saves the account list with the normal login of each chosen agent on it. On a first run only the chosen agents
-// are kept; after that, existing accounts stay and missing normal logins are added back.
-export function ensureNormalLogins(harnesses: Harness[]): Account[] {
-  const firstRun = !existsSync(registryPath());
-  const accounts = loadAccounts().filter((a) => !firstRun || harnesses.some((h) => h.id === a.harness));
-  for (const harness of harnesses) {
-    if (accounts.some((a) => a.dir === harness.defaultDir())) continue;
-    const taken = accounts.some((a) => a.name === harness.defaultAccountName);
-    const name = taken ? `${harness.defaultAccountName}-main` : harness.defaultAccountName;
-    accounts.push({ name, dir: harness.defaultDir(), isDefault: true, harness: harness.id });
-  }
-  saveAccounts(accounts);
-  return accounts;
+// Accounts the person has actually saved. Unlike loadAccounts, this is empty on a first run.
+export function savedAccounts(): Account[] {
+  return existsSync(registryPath()) ? loadAccounts() : [];
+}
+
+// Puts an agent's primary login (its usual folder) on the list under the name the person chose. On a first run the
+// list starts empty, so agents that weren't chosen in setup don't appear.
+export function addPrimary(harness: Harness, name: string): Account {
+  checkNewName(name, savedAccounts());
+  const account: Account = { name, dir: harness.defaultDir(), isDefault: true, harness: harness.id };
+  saveAccounts([...savedAccounts().filter((a) => a.dir !== account.dir), account]);
+  return account;
 }
 
 export function saveAccounts(accounts: Account[]): void {
@@ -65,6 +64,12 @@ export function getAccount(name: string): Account {
   }
   const names = accounts.map((a) => a.name).join(", ");
   throw new Error(`No account named "${name}". Accounts: ${names}. Add one with: handova add ${name}`);
+}
+
+// Throws with a sentence a person can act on if the name can't be used for a new account.
+export function checkNewName(name: string, existing: Account[] = loadAccounts()): void {
+  validateName(name);
+  if (existing.some((a) => a.name === name)) throw new Error(`There's already an account named "${name}".`);
 }
 
 export function validateName(name: string): void {

@@ -1,36 +1,53 @@
 import { expect, test } from "bun:test";
 import { join } from "node:path";
-import { ensureNormalLogins, loadAccounts } from "../src/accounts";
-import { addAccount } from "../src/commands/add";
+import { addPrimary, loadAccounts, savedAccounts } from "../src/accounts";
+import { addAccount, chooseAgent } from "../src/commands/add";
 import { removeCommand } from "../src/commands/remove";
 import { getHarness } from "../src/harness";
 import { busy } from "../src/spinner";
 import { tempHome } from "./helpers";
 
-test("first-run setup saves only the agents that were chosen", () => {
-  tempHome();
-  ensureNormalLogins([getHarness("codex")]);
-  expect(loadAccounts().map((a) => a.name)).toEqual(["codex"]);
+test("the primary login gets the name the person chose, and agents not chosen stay off the list", () => {
+  const home = tempHome();
+  expect(savedAccounts()).toEqual([]);
+  addPrimary(getHarness("claude"), "main");
+  expect(loadAccounts()).toEqual([{ name: "main", dir: join(home, ".claude"), isDefault: true, harness: "claude" }]);
 });
 
-test("running setup again keeps existing accounts and adds back a removed normal login", async () => {
-  const home = tempHome();
+test("on a first run the detected names don't block the person's choice", () => {
+  tempHome();
+  // personal and codex are detected (not saved), so they're free to use.
+  addPrimary(getHarness("claude"), "personal");
+  addPrimary(getHarness("codex"), "codex");
+  expect(loadAccounts().map((a) => a.name)).toEqual(["personal", "codex"]);
+  expect(() => addPrimary(getHarness("codex"), "personal")).toThrow(/already an account/);
+  expect(() => addPrimary(getHarness("codex"), "Primary")).toThrow(/valid account name/);
+});
+
+test("naming a primary login again replaces its old entry instead of adding a second one", async () => {
+  tempHome();
+  addPrimary(getHarness("claude"), "main");
   addAccount("work", { share: false, login: false });
-  await removeCommand("personal", { purge: false, yes: true });
-  ensureNormalLogins([getHarness("claude"), getHarness("codex")]);
-  expect(loadAccounts().map((a) => [a.name, a.dir])).toEqual([
-    ["codex", join(home, ".codex")],
-    ["work", join(home, ".claude-work")],
-    ["personal", join(home, ".claude")],
+  await removeCommand("main", { purge: false, yes: true });
+  addPrimary(getHarness("claude"), "primary");
+  expect(loadAccounts().map((a) => [a.name, a.isDefault])).toEqual([
+    ["work", false],
+    ["primary", true],
   ]);
 });
 
-test("a normal login whose usual name is taken gets a -main name", () => {
+test("add picks the only installed agent, and never guesses when there are two", async () => {
   tempHome();
-  ensureNormalLogins([getHarness("claude")]);
-  addAccount("codex", { share: false, login: false });
-  ensureNormalLogins([getHarness("codex")]);
-  expect(loadAccounts().find((a) => a.harness === "codex" && a.isDefault)?.name).toBe("codex-main");
+  // Both fake agents are installed and there's no terminal to ask in.
+  await expect(chooseAgent(undefined)).rejects.toThrow(/--agent claude or --agent codex/);
+  expect((await chooseAgent("codex")).id).toBe("codex");
+
+  process.env.HANDOVA_CODEX_BIN = "/not/installed/codex";
+  expect((await chooseAgent(undefined)).id).toBe("claude");
+  await expect(chooseAgent("codex")).rejects.toThrow(/Codex isn't installed/);
+
+  process.env.HANDOVA_CLAUDE_BIN = "/not/installed/claude";
+  await expect(chooseAgent(undefined)).rejects.toThrow(/Neither Claude Code nor Codex is installed/);
 });
 
 test("the spinner stays out of the way when there's no terminal", async () => {

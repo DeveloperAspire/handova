@@ -5,7 +5,7 @@ const agents = [
   {
     name: "Claude Code",
     command: "claude",
-    normal: "~/.claude",
+    primary: "~/.claude",
     extra: "~/.claude-<name>",
     shared: "CLAUDE.md, skills, agents, commands",
     handoff: "Conversation and that folder's memory",
@@ -13,7 +13,7 @@ const agents = [
   {
     name: "Codex",
     command: "codex",
-    normal: "~/.codex",
+    primary: "~/.codex",
     extra: "~/.codex-<name>",
     shared: "AGENTS.md, prompts, skills",
     handoff: "Conversation (memory stays per account)",
@@ -36,8 +36,8 @@ const agents = [
         </div>
         <dl class="mt-6 space-y-3.5 text-[0.88rem]">
           <div>
-            <dt class="text-muted">Normal login</dt>
-            <dd class="mt-0.5 font-mono text-[0.8rem] text-ink-soft">{agent.normal}</dd>
+            <dt class="text-muted">Primary login</dt>
+            <dd class="mt-0.5 font-mono text-[0.8rem] text-ink-soft">{agent.primary}</dd>
           </div>
           <div>
             <dt class="text-muted">Extra accounts</dt>

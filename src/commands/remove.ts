@@ -15,7 +15,7 @@ export async function removeCommand(name: string | undefined, options: RemoveOpt
   if (!name) throw new Error("Usage: handova remove <name> [--purge] [--yes]");
   const account = getAccount(name);
   if (account.isDefault && options.purge) {
-    throw new Error(`"${name}" is your normal ${getHarness(account.harness).name} folder (${tildify(account.dir)}), so handova won't delete it. Remove it without --purge.`);
+    throw new Error(`"${name}" is your primary ${getHarness(account.harness).name} login (${tildify(account.dir)}), so Handova won't delete its folder. Remove it without --purge.`);
   }
 
   if (options.purge && !options.yes) {

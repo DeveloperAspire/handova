@@ -87,8 +87,9 @@ const toc = [
           the question.
         </li>
         <li>
-          <strong>Your normal login.</strong> For each agent it shows the login you already have (<code>personal</code> for
-          Claude Code, <code>codex</code> for Codex) and offers to log in if it isn't yet.
+          <strong>Your primary login.</strong> For each agent it asks what to call the login you already have, the one the
+          agent uses on its own, and shows which email it belongs to. Call it <code>personal</code>, <code>main</code>,
+          <code>primary</code> or anything you like. If it isn't logged in yet, setup offers to log in.
         </li>
         <li>
           <strong>More accounts.</strong> It asks whether to add another account, suggests a name, creates it with your
@@ -112,7 +113,7 @@ const toc = [
       </p>
       <table>
         <thead>
-          <tr><th>Agent</th><th>Normal folder</th><th>Extra accounts</th><th>Set with</th></tr>
+          <tr><th>Agent</th><th>Usual folder</th><th>Extra accounts</th><th>Set with</th></tr>
         </thead>
         <tbody>
           <tr><td>Claude Code</td><td><code>~/.claude</code></td><td><code>~/.claude-&lt;name&gt;</code></td><td><code>CLAUDE_CONFIG_DIR</code></td></tr>
@@ -125,7 +126,7 @@ const toc = [
       </p>
       <p>
         Handova keeps its list of accounts in <code>~/.config/handova/accounts.json</code>. Until something is saved there, it
-        shows the normal login of each agent you have installed.
+        shows the primary login of each agent you have installed.
       </p>
 
       <h2 id="accounts">Accounts</h2>
@@ -135,20 +136,25 @@ const toc = [
         Codex account. The name is only a label.
       </p>
 
-      <h3 id="normal-logins">Normal logins</h3>
+      <h3 id="primary-logins">Primary logins</h3>
       <p>
-        The first time you run Handova, it lists the login you already have for each installed agent: <code>personal</code> for
-        Claude Code and <code>codex</code> for Codex. They're marked <strong>(default)</strong> in <code>handova list</code> and
-        run the agent exactly as it runs on its own. Rename them if you like, or take one off the list if you don't use that
-        agent.
+        Your primary login for an agent is the one it already uses on its own, in its usual folder. Setup asks what to call
+        each one. Until you've run setup, Handova shows them as <code>personal</code> for Claude Code and <code>codex</code> for
+        Codex. They're marked <strong>(primary)</strong> in <code>handova list</code> and run the agent exactly as it runs on
+        its own. Rename them any time, or take one off the list if you don't use that agent.
       </p>
 
       <h3 id="adding">Adding an account</h3>
-      <CodeBlock code={`handova add work                    # a Claude Code account
-handova add codex-work --agent codex # a Codex account`} />
+      <CodeBlock code={`handova add work                     # asks which agent it's for
+handova add codex-work --agent codex # says so up front`} />
+      <p>
+        If you have both Claude Code and Codex installed, <code>handova add</code> asks which agent the account is for. With
+        only one installed, it uses that one without asking. In scripts, where there's no one to ask, pass
+        <code>--agent</code>.
+      </p>
       <p>
         A new account gets its own folder and opens the agent's login. Your instructions follow it: these are linked from your
-        normal login, so edits show up in every account, while settings are copied so each account can change its own.
+        primary login, so edits show up in every account, while settings are copied so each account can change its own.
       </p>
       <table>
         <thead><tr><th>Agent</th><th>Shared (linked)</th><th>Copied</th></tr></thead>
@@ -159,7 +165,7 @@ handova add codex-work --agent codex # a Codex account`} />
       </table>
       <p>
         Use <code>--dir</code> to adopt a folder you already have; if it's logged in, the login step is skipped. Pointing it at an
-        agent's normal folder registers that login, for example if you installed Codex after you started using Handova:
+        agent's usual folder registers your primary login, for example if you installed Codex after you started using Handova:
       </p>
       <CodeBlock code="handova add codex --agent codex --dir ~/.codex" />
       <p>Names use lowercase letters, digits and dashes.</p>
@@ -169,8 +175,8 @@ handova add codex-work --agent codex # a Codex account`} />
 handova remove office         # forget it; folder and login stay
 handova remove office --purge # also log out and delete its folder`} />
       <p>
-        <code>--purge</code> asks first, and never deletes an agent's normal folder: removing <code>personal</code> or
-        <code>codex</code> only takes them off Handova's list.
+        <code>--purge</code> asks first, and never deletes an agent's usual folder: removing a primary login only takes it off
+        Handova's list.
       </p>
 
       <h2 id="handoff">Handoff</h2>
@@ -220,14 +226,14 @@ handova handoff work personal     # and back again`} />
         <li>Logins are checked with <code>claude auth status</code> and opened with <code>claude auth login</code>. <code>handova list</code> shows the email and organization.</li>
         <li>Conversations live in <code>projects/</code> inside the account's folder, grouped by the folder you started Claude Code in.</li>
         <li>Memory is per folder, so a handoff can bring it along.</li>
-        <li>Your normal login runs with <code>CLAUDE_CONFIG_DIR</code> unset, exactly like plain <code>claude</code>.</li>
+        <li>Your primary login runs with <code>CLAUDE_CONFIG_DIR</code> unset, exactly like plain <code>claude</code>.</li>
       </ul>
       <h3 id="codex">Codex</h3>
       <ul>
         <li>Logins are checked with <code>codex login status</code> and opened with <code>codex login</code>. For a ChatGPT login, <code>handova list</code> shows the email and plan (for example "ChatGPT plus") in the organization column; for an API key, "API key".</li>
         <li>Conversations live in <code>sessions/</code> inside the account's folder, filed by date. A handoff copies the conversation to the same place in the other account, and <code>codex resume</code> picks it up with its full history.</li>
         <li>Memory is per account, so it isn't moved.</li>
-        <li>Your normal login runs with <code>CODEX_HOME</code> unset, exactly like plain <code>codex</code>.</li>
+        <li>Your primary login runs with <code>CODEX_HOME</code> unset, exactly like plain <code>codex</code>.</li>
       </ul>
       <h3 id="adding-agents">Adding more agents</h3>
       <p>
@@ -281,14 +287,14 @@ handova handoff work personal     # and back again`} />
         <li><strong>No network requests.</strong> Handova copies files on your computer and starts your agent, which talks to its provider as it always does.</li>
         <li><strong>Logins stay with the agents.</strong> Handova never stores logins. It asks each agent whether it's logged in, and for Codex reads the email and plan from Codex's own login file to show in the list.</li>
         <li><strong>It confirms before it sends or deletes.</strong> Handoffs and <code>--purge</code> both ask first.</li>
-        <li><strong>It never deletes your normal folders</strong> (<code>~/.claude</code>, <code>~/.codex</code>), and never edits your shell profile.</li>
+        <li><strong>It never deletes your agents' usual folders</strong> (<code>~/.claude</code>, <code>~/.codex</code>), and never edits your shell profile.</li>
       </ul>
 
       <h2 id="uninstall">Uninstall</h2>
       <CodeBlock code={`handova remove work --purge   # optional: delete extra accounts first
 npm uninstall -g handova      # or: pnpm remove -g, yarn global remove, bun remove -g`} />
       <p>
-        Your normal Claude Code and Codex logins aren't touched. To forget Handova's account list too, delete
+        Your primary Claude Code and Codex logins aren't touched. To forget Handova's account list too, delete
         <code>~/.config/handova</code>.
       </p>
     </article>

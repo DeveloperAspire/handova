@@ -8,7 +8,7 @@ export interface Harness {
   /** The environment variable that points the tool at a config folder. Unset for the default account. */
   configEnv: string;
   defaultDir(): string;
-  /** What Handova calls the agent's normal login when it adds it on first run. */
+  /** What Handova suggests calling the agent's primary login (its usual folder). */
   defaultAccountName: string;
   newAccountDir(account: string): string;
   /** Linked from the default account into new ones, so edits show up everywhere. */

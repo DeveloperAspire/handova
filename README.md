@@ -28,7 +28,8 @@ handova setup
 ```
 
 It asks whether you want more than one account for Claude Code, Codex or both (only the agents you have
-installed are offered), then adds the accounts you name and logs you in to each one.
+installed are offered), asks what to call your primary login for each, then adds the accounts you name and logs
+you in to each one.
 
 **Requirements:** Claude Code or Codex, and Node.js 20 or newer (or Bun). Built and tested on macOS. Linux should
 work; Windows isn't supported yet.
@@ -38,36 +39,36 @@ work; Windows isn't supported yet.
 After `handova setup`, or without it:
 
 ```sh
-handova add work                  # set up a second Claude Code account and log in to it
-handova work                      # run Claude Code as work
+handova add work                  # asks which agent, then logs you in to the new account
+handova work                      # run work's agent as work
 handova handoff personal work     # personal hit its limit: carry on as work
 ```
 
-Your normal `claude` keeps working as before. Handova calls it `personal`.
+Your usual `claude` and `codex` keep working as before. Handova calls them your **primary logins**, and you choose
+their names in setup (for example `personal` or `main`). Without setup they start as `personal` for Claude Code
+and `codex` for Codex.
 
-With Codex:
+With Codex, skip the question by naming the agent:
 
 ```sh
 handova add codex-work --agent codex   # add a second Codex account
 handova handoff codex codex-work       # carry on in the other Codex account
 ```
 
-Your normal `codex` login is the `codex` account.
-
 ## How it works
 
 Each coding agent keeps an account's login, settings and conversations in a config folder, and lets you point it
 at a different one:
 
-| Agent | Normal folder | Other accounts | Set with |
+| Agent | Usual folder | Other accounts | Set with |
 |---|---|---|---|
 | Claude Code | `~/.claude` | `~/.claude-<name>` | `CLAUDE_CONFIG_DIR` |
 | Codex | `~/.codex` | `~/.codex-<name>` | `CODEX_HOME` |
 
-The first time you run Handova, it lists the normal login of each agent you have installed: `personal` for
-Claude Code and `codex` for Codex. These are marked **(default)** in `handova list`. The names are only labels:
-change them with `handova rename`. Every other account gets its own folder, and Handova points the agent at it
-when it starts.
+Your usual login for each agent, the one in its usual folder, is your **primary login**, marked **(primary)** in
+`handova list`. Setup asks what to call each one; until then Handova shows them as `personal` for Claude Code and
+`codex` for Codex. Names are only labels: change any of them with `handova rename`. Every other account gets its own
+folder, and Handova points the agent at it when it starts.
 
 The logins are separate. Logging in or out of one account never affects another, and you can run them side
 by side in different terminals. Handova keeps its list of accounts in `~/.config/handova/accounts.json`.
@@ -81,8 +82,8 @@ handova  setup
          └─ action, no names needed
 ```
 
-Walks you through everything: which agents you use, your normal logins, extra accounts and their logins. Run it
-again any time to add more; it keeps what you already have.
+Walks you through everything: which agents you use, what to call your primary login for each, extra accounts and
+their logins. Run it again any time to add more; it keeps what you already have.
 
 An "account" is one of your logins. The examples use `personal` and `work`, but you can add as many as you
 like and name them anything.
@@ -160,9 +161,10 @@ handova  add  client
          └─ action
 ```
 
-Sets up a new Claude Code account called **client**: creates the folder `~/.claude-client`, shares your
-`CLAUDE.md`, `skills`, `agents` and `commands` with it (so edits show up in every account), copies
-`settings.json` (so each account can change its own), then opens the login.
+Sets up a new account called **client**. If you have both Claude Code and Codex installed, it first asks which
+agent the account is for; with only one installed, it uses that one. A Claude Code account gets the folder
+`~/.claude-client`, shares your `CLAUDE.md`, `skills`, `agents` and `commands` with it (so edits show up in every
+account), copies `settings.json` (so each account can change its own), then opens the login.
 
 ```
 handova  add  client  --agent codex
@@ -177,9 +179,10 @@ handova  add  work  --dir ~/.claude-work
                     └─ use this existing folder instead of creating one
 ```
 
-- `--agent claude|codex` picks the agent. The default is `claude`.
+- `--agent claude|codex` names the agent, so it doesn't ask. Without a terminal to ask in (scripts, CI), it's
+  required whenever both agents are installed.
 - `--dir <folder>` uses a folder you already have. If it's already logged in, the login step is skipped. Pointing
-  it at an agent's normal folder (`--agent codex --dir ~/.codex`) registers that login, for example if you
+  it at an agent's usual folder (`--agent codex --dir ~/.codex`) registers your primary login, for example if you
   installed Codex after you started using Handova.
 - `--no-share` starts the account without your shared files.
 - `--no-login` skips the login step.
@@ -197,9 +200,9 @@ Shows every account with its agent, email, organization and folder:
 
 ```
 ACCOUNT             AGENT        EMAIL           ORGANIZATION  FOLDER
-personal (default)  Claude Code  me@example.com  Personal      ~/.claude
+personal (primary)  Claude Code  me@example.com  Personal      ~/.claude
 work                Claude Code  me@company.com  Company       ~/.claude-work
-codex (default)     Codex        me@example.com  ChatGPT plus  ~/.codex
+codex (primary)     Codex        me@example.com  ChatGPT plus  ~/.codex
 ```
 
 ### Remove an account
@@ -213,8 +216,8 @@ handova  remove  work  --purge
 
 Without `--purge`, Handova only forgets the account; its folder and login stay, so you can add it back later.
 With `--purge`, it also logs the account out and deletes its folder, including its conversations and memory.
-It asks first (`--yes` skips the question). You can take a normal login off the list too (for example
-`personal`, if you don't use Claude Code), but `--purge` never deletes an agent's normal folder.
+It asks first (`--yes` skips the question). You can take a primary login off the list too (for example if you
+don't use Claude Code), but `--purge` never deletes an agent's usual folder.
 
 ### Rename an account
 
@@ -225,8 +228,8 @@ handova  rename  work  office
          └─ action
 ```
 
-Changes only the name. The folder and login stay the same. Works for normal logins too, so `personal` can
-become `claude` or anything you like.
+Changes only the name. The folder and login stay the same. Works for primary logins too, so `personal` can
+become `main` or anything you like.
 
 ### Check everything
 

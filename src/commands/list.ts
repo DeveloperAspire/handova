@@ -23,7 +23,7 @@ export async function accountTable(accounts: Account[]): Promise<string> {
     // No status at all means the agent couldn't be run, which is different from being logged out.
     const login = !status ? `can't run "${harness.bin()}"` : status.loggedIn ? (status.email ?? "") : "not logged in";
     return [
-      account.name + (account.isDefault ? " (default)" : ""),
+      account.name + (account.isDefault ? " (primary)" : ""),
       harness.name,
       login,
       status?.loggedIn ? (status.orgName ?? "") : "",

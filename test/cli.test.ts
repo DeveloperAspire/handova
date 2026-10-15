@@ -10,9 +10,13 @@ const cli = (...args: string[]) =>
 // --no-<flag> is handled by Handova itself, so it works on every Node 20, not only 20.16 and later.
 test("--no-<flag> turns a flag off, and unknown flags get a clear error", () => {
   const home = tempHome();
-  const added = cli("add", "work", "--no-login", "--no-share");
+  const added = cli("add", "work", "--agent", "claude", "--no-login", "--no-share");
   expect(added.status).toBe(0);
   expect(existsSync(join(home, ".claude-work"))).toBe(true);
+
+  const unsure = cli("add", "other", "--no-login");
+  expect(unsure.status).toBe(1);
+  expect(unsure.stdout + unsure.stderr).toContain("Which agent is this account for?");
 
   const bogus = cli("add", "other", "--bogus");
   expect(bogus.status).toBe(1);
