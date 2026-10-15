@@ -1,20 +1,24 @@
 ---
+import Button from "./Button.astro";
 import CopyCommand from "./CopyCommand.astro";
 import InstallCommand from "./InstallCommand.astro";
 import { repo } from "../data/project";
 ---
 
-<section class="border-t border-line">
-  <div class="reveal mx-auto max-w-2xl px-4 py-24 text-center sm:px-8">
-    <h2 class="text-[2rem] font-semibold leading-tight tracking-[-0.03em] sm:text-[2.4rem]">Keep working when the limit hits.</h2>
-    <p class="mt-4 text-ink-soft">Install it, then add your other accounts:</p>
-    <div class="mx-auto mt-7 max-w-sm space-y-2.5 text-left">
+<section class="mx-auto max-w-6xl px-4 pb-28 sm:px-8">
+  <div class="reveal relative overflow-hidden rounded-3xl border border-line bg-surface px-6 py-16 text-center sm:px-12 sm:py-20">
+    <div class="pointer-events-none absolute inset-x-0 top-0 mx-auto h-64 max-w-2xl bg-[radial-gradient(ellipse_at_top,rgb(255_255_255/0.07),transparent_70%)]" aria-hidden="true"></div>
+    <h2 class="relative text-[2.15rem] font-semibold leading-[1.02] tracking-[-0.045em] sm:text-[3rem]">
+      Keep working<br /><span class="text-muted">when the limit hits.</span>
+    </h2>
+    <p class="relative mt-5 text-ink-soft">Install it, then let setup walk you through your accounts.</p>
+    <div class="relative mx-auto mt-8 max-w-sm space-y-2.5 text-left">
       <InstallCommand />
-      <CopyCommand command="handova add work" label="Copy add account command" />
+      <CopyCommand command="handova setup" label="Copy setup command" />
     </div>
-    <a href={repo} class="press mt-8 inline-flex items-center gap-1.5 text-[0.9rem] text-ink-soft hover:text-ink">
-      Read the source on GitHub
-      <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5" /></svg>
-    </a>
+    <div class="relative mt-8 flex flex-wrap justify-center gap-2.5">
+      <Button href="/docs">Read the docs <span aria-hidden="true">→</span></Button>
+      <Button href={repo} variant="secondary">Source on GitHub</Button>
+    </div>
   </div>
 </section>

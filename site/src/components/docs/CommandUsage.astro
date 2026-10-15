@@ -1,0 +1,17 @@
+---
+// A command with each labelled part named underneath.
+import type { Part } from "../../data/commands";
+interface Props {
+  parts: Part[];
+}
+const { parts } = Astro.props;
+---
+
+<div class="block flex flex-wrap gap-x-3 gap-y-3 rounded-xl border border-line bg-surface px-4 py-4 font-mono text-[0.85rem] sm:px-5">
+  {parts.map((part) => (
+    <span class="flex flex-col">
+      <span class={part.label ? "text-ink" : "text-muted"}>{part.text}</span>
+      {part.label && <span class="mt-1 whitespace-nowrap font-sans text-[0.7rem] text-faint">↑ {part.label}</span>}
+    </span>
+  ))}
+</div>

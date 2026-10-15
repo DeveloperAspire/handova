@@ -1,0 +1,319 @@
+---
+import Base from "../layouts/Base.astro";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+import InstallCommand from "../components/InstallCommand.astro";
+import CodeBlock from "../components/docs/CodeBlock.astro";
+import Callout from "../components/docs/Callout.astro";
+import CommandUsage from "../components/docs/CommandUsage.astro";
+import { commands } from "../data/commands";
+
+// The "On this page" list. Keep the ids in step with the h2s below.
+const toc = [
+  ["install", "Install"],
+  ["setup", "Guided setup"],
+  ["how-it-works", "How it works"],
+  ["accounts", "Accounts"],
+  ["handoff", "Handoff"],
+  ["agents", "Agents"],
+  ["commands", "Commands"],
+  ["troubleshooting", "Troubleshooting"],
+  ["privacy", "Privacy and safety"],
+  ["uninstall", "Uninstall"],
+];
+---
+
+<Base
+  title="Handova — Documentation"
+  description="Install Handova, set up accounts for Claude Code and Codex, and hand a conversation from one account to another. Every command and option, explained."
+>
+  <Nav />
+  <main class="mx-auto max-w-6xl px-4 pb-28 pt-12 sm:px-8 sm:pt-16 lg:grid lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-16">
+    <aside class="lg:sticky lg:top-24 lg:self-start" aria-label="On this page">
+      <details class="group rounded-xl border border-line bg-surface lg:hidden">
+        <summary class="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-[0.9rem] text-ink-soft [&::-webkit-details-marker]:hidden">
+          On this page
+          <span class="text-faint transition-transform group-open:rotate-90" aria-hidden="true">›</span>
+        </summary>
+        <nav class="border-t border-line px-2 py-2">
+          {toc.map(([id, label]) => (
+            <a href={`#${id}`} class="block rounded-md px-2 py-1.5 text-[0.88rem] text-muted hover:text-ink">{label}</a>
+          ))}
+        </nav>
+      </details>
+      <nav class="hidden lg:block">
+        <p class="font-mono text-[0.68rem] uppercase tracking-[0.14em] text-faint">On this page</p>
+        <ul class="mt-4 space-y-0.5 border-l border-line">
+          {toc.map(([id, label]) => (
+            <li>
+              <a href={`#${id}`} class="toc-link -ml-px block border-l border-transparent py-1.5 pl-4 text-[0.88rem] text-muted transition-colors hover:text-ink" data-toc={id}>{label}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </aside>
+
+    <article class="docs-prose mt-10 max-w-[44rem] lg:mt-0">
+      <h1 class="text-[2.6rem] font-semibold leading-[1] tracking-[-0.05em] text-ink sm:text-[3.4rem]">
+        Getting <span class="text-muted">started.</span>
+      </h1>
+      <p class="!mt-5 text-[1.08rem]">
+        Install Handova, let the guided setup add your accounts, then hand a conversation to another account whenever one
+        hits its usage limit. Handova works with Claude Code and Codex.
+      </p>
+
+      <h2 id="install">Install</h2>
+      <p>Install it globally with your package manager:</p>
+      <div class="block max-w-md"><InstallCommand /></div>
+      <p>
+        Yarn 2 and later have no global installs, so use Yarn 1 or another manager. To try it once without installing, run
+        <code>npx handova</code>, <code>pnpm dlx handova</code> or <code>bunx handova</code>.
+      </p>
+      <p><strong>You'll need:</strong></p>
+      <ul>
+        <li>Claude Code, Codex or both, installed and working on their own first.</li>
+        <li>Node.js 20.16 or newer, or Bun.</li>
+        <li>macOS. Linux should work; Windows isn't supported yet.</li>
+      </ul>
+
+      <h2 id="setup">Guided setup</h2>
+      <p>Once it's installed, run:</p>
+      <CodeBlock code="handova setup" />
+      <p>Setup walks you through everything, one question at a time:</p>
+      <ol>
+        <li>
+          <strong>Which agents.</strong> If both Claude Code and Codex are installed, it asks whether you want more than one
+          account for Claude Code, Codex or both. Agents you haven't installed aren't offered. With only one installed, it skips
+          the question.
+        </li>
+        <li>
+          <strong>Your normal login.</strong> For each agent it shows the login you already have (<code>personal</code> for
+          Claude Code, <code>codex</code> for Codex) and offers to log in if it isn't yet.
+        </li>
+        <li>
+          <strong>More accounts.</strong> It asks whether to add another account, suggests a name, creates it with your
+          instructions and skills shared, and opens the agent's own login. It keeps asking until you say no.
+        </li>
+        <li><strong>Summary.</strong> It lists your accounts and shows the commands to try next.</li>
+      </ol>
+      <p>
+        Run it again any time to add more accounts. It keeps everything you already have, and if you stop halfway, whatever
+        was added stays.
+      </p>
+      <Callout title="Prefer commands?">
+        <p>Setup is optional. Everything it does is also a command: <code>handova add</code>, <code>handova list</code> and so on. See <a href="#commands">Commands</a>.</p>
+      </Callout>
+
+      <h2 id="how-it-works">How it works</h2>
+      <p>
+        Each coding agent keeps an account's login, settings and conversations in a config folder, and lets you point it at a
+        different folder with an environment variable. Handova gives every account its own folder and sets that variable when it
+        starts the agent.
+      </p>
+      <table>
+        <thead>
+          <tr><th>Agent</th><th>Normal folder</th><th>Extra accounts</th><th>Set with</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Claude Code</td><td><code>~/.claude</code></td><td><code>~/.claude-&lt;name&gt;</code></td><td><code>CLAUDE_CONFIG_DIR</code></td></tr>
+          <tr><td>Codex</td><td><code>~/.codex</code></td><td><code>~/.codex-&lt;name&gt;</code></td><td><code>CODEX_HOME</code></td></tr>
+        </tbody>
+      </table>
+      <p>
+        Because every account has its own folder, the logins are separate. Logging in or out of one account never affects
+        another, and you can run several at once in different terminals.
+      </p>
+      <p>
+        Handova keeps its list of accounts in <code>~/.config/handova/accounts.json</code>. Until something is saved there, it
+        shows the normal login of each agent you have installed.
+      </p>
+
+      <h2 id="accounts">Accounts</h2>
+      <p>
+        An account is one of your logins for one agent. Each account remembers its agent, so after you add it you only use its
+        name: <code>handova work</code> starts Claude Code if <code>work</code> is a Claude Code account, and Codex if it's a
+        Codex account. The name is only a label.
+      </p>
+
+      <h3 id="normal-logins">Normal logins</h3>
+      <p>
+        The first time you run Handova, it lists the login you already have for each installed agent: <code>personal</code> for
+        Claude Code and <code>codex</code> for Codex. They're marked <strong>(default)</strong> in <code>handova list</code> and
+        run the agent exactly as it runs on its own. Rename them if you like, or take one off the list if you don't use that
+        agent.
+      </p>
+
+      <h3 id="adding">Adding an account</h3>
+      <CodeBlock code={`handova add work                    # a Claude Code account
+handova add codex-work --agent codex # a Codex account`} />
+      <p>
+        A new account gets its own folder and opens the agent's login. Your instructions follow it: these are linked from your
+        normal login, so edits show up in every account, while settings are copied so each account can change its own.
+      </p>
+      <table>
+        <thead><tr><th>Agent</th><th>Shared (linked)</th><th>Copied</th></tr></thead>
+        <tbody>
+          <tr><td>Claude Code</td><td><code>CLAUDE.md</code>, <code>skills</code>, <code>agents</code>, <code>commands</code></td><td><code>settings.json</code></td></tr>
+          <tr><td>Codex</td><td><code>AGENTS.md</code>, <code>prompts</code>, <code>skills</code></td><td><code>config.toml</code></td></tr>
+        </tbody>
+      </table>
+      <p>
+        Use <code>--dir</code> to adopt a folder you already have; if it's logged in, the login step is skipped. Pointing it at an
+        agent's normal folder registers that login, for example if you installed Codex after you started using Handova:
+      </p>
+      <CodeBlock code="handova add codex --agent codex --dir ~/.codex" />
+      <p>Names use lowercase letters, digits and dashes.</p>
+
+      <h3 id="renaming">Renaming and removing</h3>
+      <CodeBlock code={`handova rename work office   # only the name changes
+handova remove office         # forget it; folder and login stay
+handova remove office --purge # also log out and delete its folder`} />
+      <p>
+        <code>--purge</code> asks first, and never deletes an agent's normal folder: removing <code>personal</code> or
+        <code>codex</code> only takes them off Handova's list.
+      </p>
+
+      <h2 id="handoff">Handoff</h2>
+      <p>
+        A handoff moves a conversation from one of your accounts to another, so you can keep going when one hits its usage
+        limit. <strong>Both accounts must be the same agent.</strong>
+      </p>
+      <table>
+        <thead><tr><th>From</th><th>To</th><th>Works?</th><th>What moves</th></tr></thead>
+        <tbody>
+          <tr><td>Claude Code</td><td>Claude Code</td><td>Yes</td><td>The conversation, files saved with it (like subagent transcripts) and that folder's memory</td></tr>
+          <tr><td>Codex</td><td>Codex</td><td>Yes</td><td>The conversation. Codex keeps memory per account, not per folder, so it stays</td></tr>
+          <tr><td>Claude Code</td><td>Codex, or back</td><td>Not yet</td><td>Nothing. Handova stops before copying and explains why</td></tr>
+        </tbody>
+      </table>
+      <CodeBlock code={`handova handoff personal work     # Claude Code to Claude Code
+handova handoff codex codex-work  # Codex to Codex
+handova handoff work personal     # and back again`} />
+
+      <h3 id="handoff-steps">What happens</h3>
+      <ol>
+        <li><strong>Run it where you were working.</strong> Conversations are kept per folder, so run it in the folder you used the agent in.</li>
+        <li><strong>It finds the conversation:</strong> your latest one in that folder, or the one you pick with <code>--pick</code> or <code>--session &lt;id&gt;</code>.</li>
+        <li><strong>It asks first.</strong> It names the account and organization the conversation is going to, and waits for a yes. Skip the question with <code>--yes</code>.</li>
+        <li><strong>It copies, never overwriting.</strong> Anything already on the other account is kept.</li>
+        <li><strong>It opens it there.</strong> The agent starts on the other account with the conversation loaded. Use <code>--no-resume</code> to copy only.</li>
+      </ol>
+
+      <h3 id="handoff-rules">The fine print</h3>
+      <ul>
+        <li><strong>The copy is a fork.</strong> What you do on the new account doesn't flow back to the old one.</li>
+        <li><strong>Handing over again</strong> brings an older copy up to date, if you only carried on with the original.</li>
+        <li><strong>If both copies were continued,</strong> they've diverged. Handova won't merge them and tells you to resume on the other account instead.</li>
+        <li><strong>Claude Code memory</strong> merges file by file: files the other account already has are kept and listed, and missing lines are added to <code>MEMORY.md</code>. Leave memory behind with <code>--no-memory</code>.</li>
+        <li><strong>Not copied:</strong> the undo history for file edits, so rewind can't reach before the handoff.</li>
+      </ul>
+      <Callout title="Organizations">
+        <p>
+          Handing a conversation to another account means it's processed under that account's organization. Handova names it
+          and asks before copying. If your workplace doesn't allow moving work between accounts, don't.
+        </p>
+      </Callout>
+
+      <h2 id="agents">Agents</h2>
+      <h3 id="claude-code">Claude Code</h3>
+      <ul>
+        <li>Logins are checked with <code>claude auth status</code> and opened with <code>claude auth login</code>. <code>handova list</code> shows the email and organization.</li>
+        <li>Conversations live in <code>projects/</code> inside the account's folder, grouped by the folder you started Claude Code in.</li>
+        <li>Memory is per folder, so a handoff can bring it along.</li>
+        <li>Your normal login runs with <code>CLAUDE_CONFIG_DIR</code> unset, exactly like plain <code>claude</code>.</li>
+      </ul>
+      <h3 id="codex">Codex</h3>
+      <ul>
+        <li>Logins are checked with <code>codex login status</code> and opened with <code>codex login</code>. For a ChatGPT login, <code>handova list</code> shows the email and plan (for example "ChatGPT plus") in the organization column; for an API key, "API key".</li>
+        <li>Conversations live in <code>sessions/</code> inside the account's folder, filed by date. A handoff copies the conversation to the same place in the other account, and <code>codex resume</code> picks it up with its full history.</li>
+        <li>Memory is per account, so it isn't moved.</li>
+        <li>Your normal login runs with <code>CODEX_HOME</code> unset, exactly like plain <code>codex</code>.</li>
+      </ul>
+      <h3 id="adding-agents">Adding more agents</h3>
+      <p>
+        Everything specific to an agent lives in one file in <code>src/harness/</code>. Before an agent is added, its login and
+        conversation storage are checked against a real install. The checklist is in the
+        <a href="https://github.com/DeveloperAspire/handova/blob/master/CLAUDE.md#adding-a-harness">project's CLAUDE.md</a>.
+      </p>
+
+      <h2 id="commands">Commands</h2>
+      <p>Every command, part by part.</p>
+      {commands.map((command) => (
+        <>
+          <h3 id={`cmd-${command.id}`}>{command.title}</h3>
+          <CommandUsage parts={command.parts} />
+          <p>{command.body}</p>
+          {command.options && (
+            <table>
+              <tbody>
+                {command.options.map(([flag, meaning]) => (
+                  <tr><td class="whitespace-nowrap"><code>{flag}</code></td><td>{meaning}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </>
+      ))}
+      <p>
+        <code>handova help</code> lists every command and <code>handova --version</code> prints the installed version.
+      </p>
+
+      <h2 id="troubleshooting">Troubleshooting</h2>
+      <p>Start with:</p>
+      <CodeBlock code="handova doctor" caption="Checks each agent is installed, every account is logged in and the shared links still work, and says how to fix anything that isn't." />
+      <table>
+        <thead><tr><th>You see</th><th>What to do</th></tr></thead>
+        <tbody>
+          <tr><td><code>can't run "codex"</code> in the list</td><td>That agent isn't installed or isn't on your PATH. Install it, or take the account off the list.</td></tr>
+          <tr><td><code>not logged in</code></td><td>Log in with <code>handova &lt;account&gt; auth login</code> for Claude Code, or <code>handova &lt;account&gt; login</code> for Codex.</td></tr>
+          <tr><td>No sessions for this folder</td><td>Run the handoff from the folder you started the agent in.</td></tr>
+          <tr><td>Already further along on the other account</td><td>That account has the newer copy. Resume it there with the command Handova prints.</td></tr>
+          <tr><td>The two copies have diverged</td><td>Both were continued. Handova won't merge them; resume on the account you want to keep.</td></tr>
+          <tr><td>A Claude Code account and a Codex account</td><td>Handoffs only work between accounts of the same agent.</td></tr>
+          <tr><td>This needs a confirmation</td><td>You're not in an interactive terminal. Run it again with <code>--yes</code>.</td></tr>
+          <tr><td>No accounts yet</td><td>Install Claude Code or Codex, then run <code>handova setup</code>.</td></tr>
+          <tr><td><code>CLAUDE_CONFIG_DIR</code> or <code>CODEX_HOME</code> is set in your shell</td><td>Remove it from your shell profile. Handova sets it per account.</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="privacy">Privacy and safety</h2>
+      <ul>
+        <li><strong>No network requests.</strong> Handova copies files on your computer and starts your agent, which talks to its provider as it always does.</li>
+        <li><strong>Logins stay with the agents.</strong> Handova never stores logins. It asks each agent whether it's logged in, and for Codex reads the email and plan from Codex's own login file to show in the list.</li>
+        <li><strong>It confirms before it sends or deletes.</strong> Handoffs and <code>--purge</code> both ask first.</li>
+        <li><strong>It never deletes your normal folders</strong> (<code>~/.claude</code>, <code>~/.codex</code>), and never edits your shell profile.</li>
+      </ul>
+
+      <h2 id="uninstall">Uninstall</h2>
+      <CodeBlock code={`handova remove work --purge   # optional: delete extra accounts first
+npm uninstall -g handova      # or: pnpm remove -g, yarn global remove, bun remove -g`} />
+      <p>
+        Your normal Claude Code and Codex logins aren't touched. To forget Handova's account list too, delete
+        <code>~/.config/handova</code>.
+      </p>
+    </article>
+  </main>
+  <Footer />
+</Base>
+
+<style is:global>
+  .toc-link.is-active {
+    border-color: var(--color-ink);
+    color: var(--color-ink);
+  }
+</style>
+
+<script>
+  // Highlight the section you're reading in the "On this page" list.
+  const links = new Map(
+    [...document.querySelectorAll<HTMLAnchorElement>("[data-toc]")].map((link) => [link.dataset.toc!, link]),
+  );
+  const headings = [...links.keys()].map((id) => document.getElementById(id)).filter((el): el is HTMLElement => !!el);
+
+  function update() {
+    const current = headings.filter((h) => h.getBoundingClientRect().top < 140).at(-1) ?? headings[0];
+    links.forEach((link, id) => link.classList.toggle("is-active", id === current?.id));
+  }
+  addEventListener("scroll", update, { passive: true });
+  update();
+</script>

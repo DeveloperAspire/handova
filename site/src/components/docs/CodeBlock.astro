@@ -1,0 +1,52 @@
+---
+// A shell code block with a Copy button. Text after "#" is shown as a comment and left out of the copy.
+interface Props {
+  code: string;
+  caption?: string;
+}
+const { code, caption } = Astro.props;
+const lines = code.trim().split("\n");
+// Split each line into the command and an optional trailing "# comment".
+const rows = lines.map((line) => {
+  if (line.trim().startsWith("#")) return { command: "", comment: line };
+  const at = line.search(/\s+#/);
+  return at > -1 ? { command: line.slice(0, at), comment: line.slice(at) } : { command: line, comment: "" };
+});
+const copyText = lines
+  .filter((line) => !line.trim().startsWith("#"))
+  .map((line) => line.replace(/\s+#.*$/, ""))
+  .join("\n");
+---
+
+<div class="block">
+  <div class="relative rounded-xl border border-line bg-surface">
+    {/* Kept on one line: inside <pre>, any whitespace in the markup shows up as blank space. */}
+    <pre class="overflow-x-auto px-4 py-3.5 pr-20 font-mono text-[0.8rem] leading-[1.75] text-ink"><code>{rows.map((row) => row.comment && !row.command ? <span class="block text-faint">{row.comment}</span> : <span class="block"><span class="select-none text-faint">$ </span>{row.command}{row.comment && <span class="text-faint">{row.comment}</span>}</span>)}</code></pre>
+    <button
+      type="button"
+      class="press absolute right-2 top-2 rounded-[6px] bg-white/[0.07] px-2.5 py-1 text-[0.72rem] font-medium text-ink-soft hover:bg-white/[0.12] hover:text-ink"
+      data-copy-text={copyText}
+    >
+      Copy
+    </button>
+  </div>
+  {caption && <p class="!mt-2 text-[0.82rem] text-muted">{caption}</p>}
+</div>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>("[data-copy-text]").forEach((button) => {
+    let timer: number | undefined;
+    button.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(button.dataset.copyText ?? "");
+        button.textContent = "Copied";
+      } catch {
+        // No clipboard access: select the code so it can be copied by hand.
+        getSelection()?.selectAllChildren(button.previousElementSibling!);
+        button.textContent = "Press ⌘C";
+      }
+      clearTimeout(timer);
+      timer = window.setTimeout(() => (button.textContent = "Copy"), 1800);
+    });
+  });
+</script>

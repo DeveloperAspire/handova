@@ -1,4 +1,5 @@
 ---
+import SectionHead from "./SectionHead.astro";
 import { repo } from "../data/project";
 
 const faqs = [
@@ -8,7 +9,15 @@ const faqs = [
   },
   {
     q: "Which coding agents does it work with?",
-    a: "Handova supports Claude Code and Codex. Add a Codex account with handova add <name> --agent codex. Handoffs work between two accounts of the same agent; handing a conversation from Claude Code to Codex isn't supported yet.",
+    a: "Claude Code and Codex. Add a Codex account with handova add <name> --agent codex, and a Claude Code account with handova add <name>.",
+  },
+  {
+    q: "Which accounts can I hand a conversation between?",
+    a: "Any two accounts of the same agent: one Claude Code account to another, or one Codex account to another. Claude Code handoffs also move that folder's memory; Codex keeps memory per account, so only the conversation moves.",
+  },
+  {
+    q: "Can I hand a conversation from Claude Code to Codex?",
+    a: "Not yet. The two agents save conversations in different ways, so one can't open the other's. If you try, Handova stops and says so before copying anything.",
   },
   {
     q: "Does Handova send my data anywhere?",
@@ -41,9 +50,15 @@ const faqs = [
 ];
 ---
 
-<section id="faq" class="mx-auto max-w-3xl px-4 py-24 sm:px-8">
-  <h2 class="reveal text-center text-[2rem] font-semibold tracking-[-0.03em] sm:text-[2.4rem]">Questions</h2>
-  <div class="reveal mt-10 divide-y divide-line border-y border-line">
+<section id="faq" class="mx-auto grid max-w-6xl gap-12 px-4 py-28 sm:px-8 lg:grid-cols-[1fr_1.6fr]">
+  <div class="lg:sticky lg:top-24 lg:self-start">
+    <SectionHead title="Questions," muted="answered." />
+    <p class="reveal mt-6 max-w-sm leading-relaxed text-ink-soft">
+      The short answers. Everything else, step by step, is in the <a href="/docs" class="text-ink underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-ink">docs</a>.
+    </p>
+  </div>
+  <div>
+  <div class="reveal divide-y divide-line border-y border-line">
     {faqs.map((faq) => (
       <details class="faq" data-faq>
         <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-[1.02rem] font-medium transition-colors hover:text-ink-soft [&::-webkit-details-marker]:hidden">
@@ -58,10 +73,11 @@ const faqs = [
       </details>
     ))}
   </div>
-  <p class="reveal mt-8 text-center text-ink-soft">
+  <p class="reveal mt-8 text-ink-soft">
     Something else?{" "}
     <a href={`${repo}/issues`} class="text-ink underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-ink">Open an issue on GitHub</a>.
   </p>
+  </div>
 </section>
 
 <style>

@@ -1,0 +1,11 @@
+---
+interface Props {
+  title?: string;
+}
+const { title = "Note" } = Astro.props;
+---
+
+<div class="block rounded-xl border border-line bg-surface/60 px-5 py-4 text-[0.92rem]">
+  <p class="!mt-0 font-medium text-ink">{title}</p>
+  <div class="mt-1.5 text-ink-soft [&>p]:!mt-1.5"><slot /></div>
+</div>

@@ -72,3 +72,96 @@ html {
     transform: none;
   }
 }
+
+/* Long-form text on the docs page. */
+.docs-prose {
+  color: var(--color-ink-soft);
+  line-height: 1.75;
+}
+.docs-prose h2 {
+  color: var(--color-ink);
+  font-size: 1.85rem;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  margin-top: 5rem;
+  scroll-margin-top: 5.5rem;
+}
+.docs-prose h3 {
+  color: var(--color-ink);
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-top: 2.75rem;
+  scroll-margin-top: 5.5rem;
+}
+.docs-prose h2 + p,
+.docs-prose h3 + p {
+  margin-top: 0.85rem;
+}
+.docs-prose p,
+.docs-prose ul,
+.docs-prose ol,
+.docs-prose table,
+.docs-prose .block {
+  margin-top: 1.1rem;
+}
+.docs-prose ul,
+.docs-prose ol {
+  padding-left: 1.25rem;
+}
+.docs-prose ul {
+  list-style: disc;
+}
+.docs-prose ol {
+  list-style: decimal;
+}
+.docs-prose li + li {
+  margin-top: 0.4rem;
+}
+.docs-prose li::marker {
+  color: var(--color-faint);
+}
+.docs-prose strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+.docs-prose a {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-decoration-color: var(--color-line-strong);
+  text-underline-offset: 4px;
+  transition: text-decoration-color 0.2s;
+}
+.docs-prose a:hover {
+  text-decoration-color: var(--color-ink);
+}
+.docs-prose :not(pre) > code {
+  border: 1px solid var(--color-line);
+  border-radius: 5px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  padding: 0.1em 0.4em;
+  /* Flags like --session must not break between their dashes. */
+  white-space: nowrap;
+}
+.docs-prose table {
+  display: block;
+  overflow-x: auto;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.docs-prose th {
+  color: var(--color-muted);
+  font-weight: 500;
+  text-align: left;
+}
+.docs-prose th,
+.docs-prose td {
+  border-bottom: 1px solid var(--color-line);
+  padding: 0.65rem 1.25rem 0.65rem 0;
+  vertical-align: top;
+}

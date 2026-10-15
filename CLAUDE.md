@@ -41,6 +41,12 @@ without opening `~/.claude`.
 - `src/handoff.ts`: copies a session file (and its extras) to the same path relative to the other account's
   folder, and merges memory when the harness has `memoryDir`. Same-harness only.
 - `src/commands/*`: one file per command. Commands never name a tool directly; they go through the harness.
+  `setup.ts` is the guided first run: it offers only installed agents (no question at all when there's just one),
+  saves their normal logins with `ensureNormalLogins`, then adds and logs in to accounts.
+- `src/spinner.ts`: `busy(promise)` shows a spinner with Handova's own handoff-themed words (Dilly-dallying…,
+  Passing the baton…). It only appears if work takes longer than 150ms, never adds a delay, and stays silent
+  without a terminal. Login checks run through `src/spawn.ts` `capture` (async) so the spinner keeps moving and
+  `list` checks all accounts at once.
 
 ## Adding a harness
 
@@ -86,6 +92,13 @@ Neutral dark (`#0a0a0a`, true greys), Geist + Geist Mono. One accent, `--color-a
 account" and nothing else. The version comes from the CLI's package.json (`site/src/data/project.ts`), and the
 commands section (`site/src/data/commands.ts`) mirrors the README: change both together. Demo data is made up
 (alex@mail.com, Lumen Studio); never use real names or emails.
+
+Two pages: the landing page (`src/pages/index.astro`) and the docs (`src/pages/docs.astro`, one long page with a
+sticky "On this page" list that follows the scroll). Layout borrowed from tasteskill.dev (structure and mood only,
+never its copy or assets): two-tone headings via `SectionHead` (heavy line, grey second line, short note on the
+right), rounded `Button`s, white-on-dark cards with hairline borders, generous spacing, `max-w-6xl` everywhere.
+The docs are the full reference: when behaviour changes, update the docs page, the README and `data/commands.ts`
+together. Docs code blocks are `components/docs/CodeBlock.astro`; keep its `<pre>` markup on one line.
 
 Copy rules: the product is **Handova** in prose and titles; only typed things (commands, install lines, package
 name, paths, URLs) are lowercase `handova`. Position it as a tool for any AI coding agent's accounts, but be honest:

@@ -1,0 +1,20 @@
+---
+// A rounded link button. "primary" is light on dark; "secondary" is outlined.
+interface Props {
+  href: string;
+  variant?: "primary" | "secondary";
+  external?: boolean;
+}
+const { href, variant = "primary", external = false } = Astro.props;
+---
+
+<a
+  href={href}
+  {...(external ? { target: "_blank", rel: "noopener" } : {})}
+  class:list={[
+    "press inline-flex h-10 items-center gap-2 rounded-full px-5 text-[0.9rem] font-medium",
+    variant === "primary" ? "bg-ink text-bg hover:bg-white" : "border border-line-strong text-ink hover:bg-white/[0.06]",
+  ]}
+>
+  <slot />
+</a>

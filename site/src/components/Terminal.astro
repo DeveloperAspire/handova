@@ -3,6 +3,7 @@
 // Demo data is made up (alex@mail.com, Lumen Studio).
 const commands = [
   { id: "handoff", label: "handova handoff personal work" },
+  { id: "codex", label: "handova handoff codex codex-work" },
   { id: "list", label: "handova list" },
   { id: "continue", label: "handova work --continue" },
   { id: "personal", label: "handova personal" },
@@ -120,24 +121,39 @@ const commands = [
   const dim = (text: string) => `<span class="text-muted">${text}</span>`;
   const faint = (text: string) => `<span class="text-faint">${text}</span>`;
   const active = (text: string) => `<span class="text-active">${text}</span>`;
-  const claudeHeader = (account: string, email: string) =>
-    `${dim("claude ·")} ${active(account)} ${dim(`· ${email}`)}`;
+  const header = (agent: string, account: string, email: string) =>
+    `${dim(`${agent} ·`)} ${active(account)} ${dim(`· ${email}`)}`;
 
   const scripts: Record<string, { command: string; steps: Step[] }> = {
     handoff: {
       command: "handova handoff personal work",
       steps: [
-        { html: `${faint("◇")}  Send the conversation and memory to Lumen Studio (alex@lumen.studio)?`, wait: 380 },
+        { html: `${faint("◇")}  The conversation and memory will go to "work" (alex@lumen.studio, Lumen Studio). Continue?`, wait: 380 },
         { html: `${faint("│")}  Yes`, wait: 520 },
         { html: `◆  Session 42decdbd ("Add rate limiting to the upload API") copied.`, wait: 300 },
         { html: `${dim("●")}  Memory: 3 file(s) copied.`, wait: 200 },
         { html: `${dim("●")}  This is a copy. What you do on "work" from here won't appear in "personal".`, wait: 520 },
         { account: "work" },
         { html: " " },
-        { html: claudeHeader("work", "alex@lumen.studio"), wait: 260 },
+        { html: header("claude", "work", "alex@lumen.studio"), wait: 260 },
         { html: `${faint(">")} Add rate limiting to the upload API`, wait: 120 },
         { html: `<span class="text-ink-soft">⏺</span> Added a token bucket to /upload. Writing the tests next…`, wait: 520 },
         { html: `<span class="text-ink-soft">⏺</span> Picking up where we left off: tests for /upload.`, wait: 300 },
+      ],
+    },
+    codex: {
+      command: "handova handoff codex codex-work",
+      steps: [
+        { html: `${faint("◇")}  The conversation will go to "codex-work" (alex@lumen.studio, ChatGPT pro). Continue?`, wait: 380 },
+        { html: `${faint("│")}  Yes`, wait: 520 },
+        { html: `◆  Session 019a6c2e ("Fix the flaky upload test") copied.`, wait: 300 },
+        { html: `${dim("●")}  Codex keeps memory per account, not per project, so only the conversation moved.`, wait: 200 },
+        { html: `${dim("●")}  This is a copy. What you do on "codex-work" from here won't appear in "codex".`, wait: 520 },
+        { account: "codex-work" },
+        { html: " " },
+        { html: header("codex", "codex-work", "alex@lumen.studio"), wait: 260 },
+        { html: `${faint(">")} Fix the flaky upload test`, wait: 120 },
+        { html: `<span class="text-ink-soft">•</span> Picking up from the retry logic in upload.test.ts.`, wait: 300 },
       ],
     },
     list: {
@@ -145,10 +161,11 @@ const commands = [
       steps: [
         {
           table: [
-            dim("ACCOUNT             AGENT        EMAIL               ORGANIZATION"),
-            "personal (default)  Claude Code  alex@mail.com       Personal",
-            "work                Claude Code  alex@lumen.studio   Lumen Studio",
-            "codex               Codex        alex@mail.com       ChatGPT plus",
+            dim("ACCOUNT             AGENT        EMAIL              ORGANIZATION"),
+            "personal (default)  Claude Code  alex@mail.com      Personal",
+            "work                Claude Code  alex@lumen.studio  Lumen Studio",
+            "codex (default)     Codex        alex@mail.com      ChatGPT plus",
+            "codex-work          Codex        alex@lumen.studio  ChatGPT pro",
           ],
         },
       ],
@@ -157,7 +174,7 @@ const commands = [
       command: "handova work --continue",
       steps: [
         { account: "work", wait: 200 },
-        { html: claudeHeader("work", "alex@lumen.studio"), wait: 260 },
+        { html: header("claude", "work", "alex@lumen.studio"), wait: 260 },
         { html: `${faint(">")} Add rate limiting to the upload API`, wait: 120 },
         { html: `<span class="text-ink-soft">⏺</span> Tests for /upload are passing. Anything else?`, wait: 200 },
       ],
@@ -166,7 +183,7 @@ const commands = [
       command: "handova personal",
       steps: [
         { account: "personal", wait: 200 },
-        { html: claudeHeader("personal", "alex@mail.com"), wait: 260 },
+        { html: header("claude", "personal", "alex@mail.com"), wait: 260 },
         { html: `<span class="text-[#f28b82]">✗ Usage limit reached for alex@mail.com · resets at 4pm</span>`, wait: 200 },
       ],
     },

@@ -1,0 +1,26 @@
+---
+// A section heading in two tones: a heavy first line, a grey second line, and a short note on the right.
+interface Props {
+  eyebrow?: string;
+  title: string;
+  muted?: string;
+  as?: "h1" | "h2";
+}
+const { eyebrow, title, muted, as: Tag = "h2" } = Astro.props;
+const hasNote = Astro.slots.has("default");
+---
+
+<div class:list={["reveal grid gap-6", hasNote && "md:grid-cols-[1.25fr_1fr] md:items-end md:gap-12"]}>
+  <div>
+    {eyebrow && <p class="font-mono text-[0.72rem] uppercase tracking-[0.14em] text-muted">{eyebrow}</p>}
+    <Tag class:list={["text-[2.15rem] font-semibold leading-[1.02] tracking-[-0.045em] sm:text-[3rem]", eyebrow && "mt-4"]}>
+      {title}
+      {muted && <><br /><span class="text-muted">{muted}</span></>}
+    </Tag>
+  </div>
+  {hasNote && (
+    <div class="max-w-md leading-relaxed text-ink-soft md:justify-self-end md:pb-1.5">
+      <slot />
+    </div>
+  )}
+</div>

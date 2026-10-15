@@ -1,18 +1,19 @@
-<section class="border-y border-line bg-surface/50">
-  <div class="reveal mx-auto grid max-w-5xl gap-8 px-4 py-14 sm:grid-cols-[1fr_1.4fr] sm:px-8">
-    <h2 class="text-[1.6rem] font-semibold leading-tight tracking-[-0.03em]">
-      More than one account, and your work is always in the wrong one.
-    </h2>
-    <div class="space-y-4 leading-relaxed text-ink-soft">
+---
+import SectionHead from "./SectionHead.astro";
+---
+
+<section class="border-y border-line bg-surface/40">
+  <div class="mx-auto max-w-6xl px-4 py-24 sm:px-8">
+    <SectionHead title="Your work is stuck" muted="in the wrong account.">
       <p>
-        AI coding agents like Claude Code and Codex hold one login at a time. Switching means logging out and back in, and when
-        an account runs out mid-task, the conversation and everything the tool learned about your project stay behind
-        with it.
+        AI coding agents like Claude Code and Codex hold one login at a time. Switching means logging out and back in,
+        and when an account runs out mid-task, the conversation and everything the agent learned about your project stay
+        behind with it.
       </p>
-      <p class="text-ink">
-        Handova gives every account its own login, so they all stay signed in, and moves a conversation to whichever
-        one you need to keep going.
+      <p class="mt-4 text-ink">
+        Handova gives every account its own login, so they all stay signed in, and moves a conversation to whichever one
+        you need to keep going.
       </p>
-    </div>
+    </SectionHead>
   </div>
 </section>
