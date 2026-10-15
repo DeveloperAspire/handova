@@ -1,7 +1,7 @@
 {
   "name": "handova",
-  "version": "1.0.0",
-  "description": "Run Claude Code under several accounts, and hand a conversation over from one account to another.",
+  "version": "1.0.1",
+  "description": "Run Claude Code and Codex under multiple accounts, and hand a conversation to another account when one hits its usage limit.",
   "license": "MIT",
   "author": "Franklin Okolie (https://www.franklinokolie.com)",
   "homepage": "https://handova.franklinokolie.com",
@@ -24,7 +24,10 @@
     "claude",
     "claude-code",
     "accounts",
-    "cli"
+    "cli",
+    "codex",
+    "openai",
+    "ai-agents"
   ],
   "scripts": {
     "build": "bun build src/cli.ts --target node --outfile dist/cli.js",
