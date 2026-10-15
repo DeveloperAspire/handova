@@ -2,13 +2,13 @@
 
 **Hit your limit. Hand it over.**
 
-Handova runs your AI coding tool under as many accounts as you have: personal, work, a client's. When one
+Handova runs your AI coding agent under as many accounts as you have: personal, work, a client's. When one
 account hits its usage limit, it hands the conversation and what the tool learned about your project to another
 account, and you carry on.
 
 [handova.franklinokolie.com](https://handova.franklinokolie.com)
 
-**Works with:** Claude Code. Codex is planned; see [Other tools](#other-tools).
+**Works with:** Claude Code. Codex is planned; see [Other agents](#other-agents).
 
 ## Install
 
@@ -48,7 +48,7 @@ by side in different terminals. Handova keeps its list of accounts in `~/.config
 An "account" is one of your logins. The examples use `personal` and `work`, but you can add as many as you
 like and name them anything.
 
-### Run your coding tool under an account
+### Run your coding agent under an account
 
 ```
 handova  work  --continue
@@ -159,7 +159,7 @@ handova  doctor
          └─ action, no names needed
 ```
 
-Checks that each account's coding tool is installed, every account is logged in, and the shared `CLAUDE.md`
+Checks that each account's coding agent is installed, every account is logged in, and the shared `CLAUDE.md`
 and skills links still work. For anything wrong, it tells you how to fix it.
 
 ### Print shortcuts
@@ -183,10 +183,10 @@ handova help        # every command
 handova --version   # the installed version
 ```
 
-## Other tools
+## Other agents
 
-Handova supports Claude Code today. It's built so other AI coding tools can be added: everything specific to a
-tool lives in one file under `src/harness/`. Codex is planned next. If you'd like to add a tool, the checklist is
+Handova supports Claude Code today. It's built so other AI coding agents can be added: everything specific to an
+agent lives in one file under `src/harness/`. Codex is planned next. If you'd like to add an agent, the checklist is
 in [CLAUDE.md](CLAUDE.md#adding-a-harness).
 
 ## Development

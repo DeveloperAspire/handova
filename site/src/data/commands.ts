@@ -15,9 +15,9 @@ export interface Command {
 export const commands: Command[] = [
   {
     id: "run",
-    title: "Run your coding tool under an account",
+    title: "Run your coding agent under an account",
     parts: [{ text: "handova" }, { text: "work", label: "account" }, { text: "--continue", label: "passed to the tool" }],
-    body: "Opens the account's coding tool, today Claude Code, logged in as work. Anything after the account name works the same as it does with plain claude.",
+    body: "Opens the account's coding agent, today Claude Code, logged in as work. Anything after the account name works the same as it does with plain claude.",
     options: [
       ["handova work", "starts a new conversation"],
       ["handova work --continue", "reopens the last conversation in this folder"],
@@ -64,7 +64,7 @@ export const commands: Command[] = [
     id: "doctor",
     title: "Check everything",
     parts: [{ text: "handova" }, { text: "doctor", label: "action" }],
-    body: "Checks that each account's coding tool is installed, every account is logged in, and the shared links still work. For anything wrong, it says how to fix it.",
+    body: "Checks that each account's coding agent is installed, every account is logged in, and the shared links still work. For anything wrong, it says how to fix it.",
   },
   {
     id: "shell-init",

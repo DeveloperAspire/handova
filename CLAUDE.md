@@ -2,7 +2,7 @@
 
 ## What this is
 
-A public CLI for running a coding tool under several accounts and handing a session (plus that folder's memory)
+A public CLI for running a coding agent under several accounts and handing a session (plus that folder's memory)
 from one account to another. v1 supports Claude Code only; the name is neutral on purpose so other tools (Codex,
 Gemini CLI, ...) can be added as harnesses. Product notes: docs/PRD.md. User docs: README.md.
 
@@ -71,7 +71,7 @@ commands section (`site/src/data/commands.ts`) mirrors the README: change both t
 (alex@mail.com, Lumen Studio); never use real names or emails.
 
 Copy rules: the product is **Handova** in prose and titles; only typed things (commands, install lines, package
-name, paths, URLs) are lowercase `handova`. Position it as a tool for any AI coding tool's accounts, but be honest:
+name, paths, URLs) are lowercase `handova`. Position it as a tool for any AI coding agent's accounts, but be honest:
 Claude Code is the only one supported today. Codex appears only as "planned". Never imply it works.
 
 ## Working conventions
