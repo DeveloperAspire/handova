@@ -70,6 +70,10 @@ account" and nothing else. The version comes from the CLI's package.json (`site/
 commands section (`site/src/data/commands.ts`) mirrors the README: change both together. Demo data is made up
 (alex@mail.com, Lumen Studio); never use real names or emails.
 
+Copy rules: the product is **Handova** in prose and titles; only typed things (commands, install lines, package
+name, paths, URLs) are lowercase `handova`. Position it as a tool for any AI coding tool's accounts, but be honest:
+Claude Code is the only one supported today. Codex appears only as "planned". Never imply it works.
+
 ## Working conventions
 
 - Never touch the real `~/.claude`, `~/.claude-*`, `~/.config/handova` or shell profile in tests or manual
