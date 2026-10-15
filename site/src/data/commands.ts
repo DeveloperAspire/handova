@@ -64,9 +64,9 @@ export const commands: Command[] = [
   {
     id: "list",
     title: "List accounts",
-    short: "See every account, its agent, email and organization.",
+    short: "See every account in a table: agent, login, organization and folder.",
     parts: [{ text: "handova" }, { text: "list", label: "action" }],
-    body: "Shows every account with its agent, email, organization and folder.",
+    body: "Shows every account in a table: its agent, who it's signed in as, the organization and its folder.",
   },
   {
     id: "remove",
