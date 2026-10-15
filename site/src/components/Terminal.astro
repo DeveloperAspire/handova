@@ -46,21 +46,34 @@ const commands = [
     </div>
   </div>
 
-  <div class="mt-4 flex flex-wrap justify-center gap-2" role="group" aria-label="Commands to try">
+  <div class="mt-5 flex flex-col items-center gap-1.5 text-center">
+    <p class="flex items-center gap-2 text-[0.85rem] text-ink-soft">
+      <span class="shrink-0 whitespace-nowrap rounded-full border border-line-strong bg-raised px-2 py-0.5 font-mono text-[0.68rem] uppercase tracking-[0.12em] text-ink">Try it</span>
+      <span>Click a command to run it<span class="hidden sm:inline"> in the session above</span></span>
+      <svg class="h-3.5 w-3.5 shrink-0 text-muted" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3v10M4 9l4 4 4-4" /></svg>
+    </p>
+  </div>
+  <div class="mt-3 flex flex-wrap justify-center gap-2" role="group" aria-label="Commands to try">
     {commands.map((command, i) => (
       <button
         type="button"
         class:list={[
-          "press rounded-[5px] border px-3 py-1.5 font-mono text-[0.75rem]",
-          i === 0 ? "border-line-strong bg-white/[0.07] text-ink hover:bg-white/[0.12]" : "border-line text-ink-soft hover:border-line-strong hover:text-ink",
+          "press flex items-center gap-1.5 rounded-[5px] border px-3 py-1.5 font-mono text-[0.75rem]",
+          i === 0 ? "first-run border-line-strong bg-white/[0.07] text-ink hover:bg-white/[0.12]" : "border-line text-ink-soft hover:border-line-strong hover:text-ink",
         ]}
         data-run={command.id}
       >
+        <svg class="h-2.5 w-2.5 shrink-0 opacity-70" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true"><path d="M2.5 1.6v6.8a.5.5 0 0 0 .76.43l5.3-3.4a.5.5 0 0 0 0-.86L3.26 1.17a.5.5 0 0 0-.76.43Z" /></svg>
         {command.label}
       </button>
     ))}
   </div>
-  <p class="mt-3 text-center text-[0.8rem] text-faint">The session above just hit its limit. Click a command to run it.</p>
+  <p class="mt-3 text-center text-[0.8rem] text-faint">
+    <span data-hint>Start with the first one: the session above just hit its usage limit.</span>
+    <button type="button" class="hidden text-ink-soft underline decoration-line-strong underline-offset-4 transition-colors hover:text-ink" data-reset>
+      ↺ Start over
+    </button>
+  </p>
 </div>
 
 <!-- Global, because the script adds lines that Astro's scoped styles wouldn't reach. -->
@@ -151,6 +164,19 @@ const commands = [
   [data-terminal] .account-chip.is-switching {
     animation: chip 0.42s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
+  /* Draws the eye to the first command until someone runs one. */
+  [data-terminal]:not(.has-run) .first-run {
+    animation: nudge 2.2s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+  }
+  @keyframes nudge {
+    0% {
+      box-shadow: 0 0 0 0 rgb(255 255 255 / 0.22);
+    }
+    70%,
+    100% {
+      box-shadow: 0 0 0 10px rgb(255 255 255 / 0);
+    }
+  }
   @keyframes line-in {
     from {
       opacity: 0;
@@ -171,7 +197,8 @@ const commands = [
   @media (prefers-reduced-motion: reduce) {
     [data-terminal] .line,
     [data-terminal] .account-chip.is-switching,
-    [data-terminal] .cursor {
+    [data-terminal] .cursor,
+    [data-terminal]:not(.has-run) .first-run {
       animation: none;
     }
   }
@@ -287,6 +314,9 @@ const commands = [
     const agentLabel = root.querySelector<HTMLElement>("[data-agent]")!;
     const chip = activeLabel.closest<HTMLElement>(".account-chip")!;
     let mode: Mode = "claude";
+    const startHtml = output.innerHTML;
+    const hint = root.querySelector<HTMLElement>("[data-hint]")!;
+    const reset = root.querySelector<HTMLButtonElement>("[data-reset]")!;
     // Bumped on every click, so a newer run stops an older one mid-way.
     let run = 0;
 
@@ -352,7 +382,24 @@ const commands = [
     }
 
     root.querySelectorAll<HTMLButtonElement>("[data-run]").forEach((button) => {
-      button.addEventListener("click", () => play(button.dataset.run!));
+      button.addEventListener("click", () => {
+        root.classList.add("has-run");
+        hint.hidden = true;
+        reset.classList.remove("hidden");
+        play(button.dataset.run!);
+      });
+    });
+
+    // Back to the session that just hit its limit, as the page first showed it.
+    reset.addEventListener("click", () => {
+      run++;
+      mode = "claude";
+      output.innerHTML = startHtml;
+      input.hidden = false;
+      inputPrefix.textContent = ">";
+      activeLabel.textContent = "primary";
+      agentLabel.textContent = "Claude Code";
+      output.scrollTo({ top: 0 });
     });
   });
 </script>
