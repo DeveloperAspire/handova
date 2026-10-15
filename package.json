@@ -1,6 +1,6 @@
 {
   "name": "handova",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Got more than one Claude Code or Codex account? Switch between them without logging out, hand a conversation and its memory to another when one hits its usage limit, and keep every account's profile clean.",
   "license": "MIT",
   "author": "Franklin Okolie (https://www.franklinokolie.com)",
